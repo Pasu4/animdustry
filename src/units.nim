@@ -292,6 +292,41 @@ template createUnits*() =
     patSpin(%"23232c", %"49474d")
     patVertGradient(colorBlack)
   )
+
+  #region Custom unit drawers
+  unitCustom1.draw = (proc(unit: Unit, basePos: Vec2) =
+    let 
+      scl = getScl(0.165f)
+      pos = basePos + hoverOffset()
+
+    patStripes(%"ffa664", %"ffcb82", angle = 45f.rad)
+
+    unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
+    unit.getTexture.draw(pos - shadowOffset, scl = scl)
+  )
+
+  unitCustom2.draw = (proc(unit: Unit, basePos: Vec2) =
+    let 
+      scl = getScl(0.165f)
+      pos = basePos + hoverOffset()
+
+    patStripes(%"ffa664", %"ffcb82", angle = 45f.rad)
+
+    unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
+    unit.getTexture.draw(pos - shadowOffset, scl = scl)
+  )
+  
+  unitCustom3.draw = (proc(unit: Unit, basePos: Vec2) =
+    let 
+      scl = getScl(0.165f)
+      pos = basePos + hoverOffset()
+
+    patStripes(%"ffa664", %"ffcb82", angle = 45f.rad)
+
+    unit.getTexture.draw(pos - shadowOffset, scl = scl, color = shadowColor)
+    unit.getTexture.draw(pos - shadowOffset, scl = scl)
+  )
+  #endregion
   
   unitAlpha.abilityProc = proc(entity: EntityRef, moves: int) =
     if moves mod 10 == 0:
@@ -356,3 +391,11 @@ template createUnits*() =
         for i in 1..2:
           effectExplode((pos + dir * i).vec2)
           damageBlocks(pos + dir * i)
+
+  #region Custom unit abilities
+  unitCustom1.abilityProc = proc(entity: EntityRef, moves: int) =
+    let customVar = 0 # TODO implement
+  
+  unitCustom2.abilityProc = proc(entity: EntityRef, moves: int) =
+    let customVar = 0 # TODO implement
+  #endregion

@@ -169,7 +169,7 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei])
+  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitCustom1, unitCustom2, unitCustom3])
 
 proc fading(): bool = fadeTarget != nil
 
@@ -269,6 +269,7 @@ makeSystem("core", []):
 
     loadGame()
     loadSettings()
+    save.copper = 1000
 
     setGlobalVolume(settings.globalVolume)
 
@@ -398,7 +399,7 @@ makeSystem("input", [GridPos, Input, UnitDraw, Pos]):
     axis2 = axisTap2(keyLeft, keyRight, keyDown, keyUp)
 
   all:
-    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0]
+    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0, keyKp1, keyKp2, keyKp3, keyKp4, keyKp5, keyKp6, keyKp7, keyKp8, keyKp9, keyKp0]
 
     if item.input.lastSwitchTime == 0f or musicTime() >= item.input.lastSwitchTime + switchDelay:
       for i, unit in save.units:

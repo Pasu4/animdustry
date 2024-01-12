@@ -157,4 +157,28 @@ let
     unobtainable: true
   )
 
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder]
+  #region Custom units
+  unitCustom1* = Unit(
+    name: "custom1",
+    title: "-CUSTOM 1-",
+    subtitle: "lorem ipsum",
+    ability: "dolor sit amet",
+    abilityReload: 4
+  )
+  unitCustom2* = Unit(
+    name: "custom2",
+    title: "-CUSTOM 2-",
+    subtitle: "lorem ipsum",
+    ability: "dolor sit amet",
+    abilityReload: 4
+  )
+  unitCustom3* = Unit(
+    name: "custom3",
+    title: "-CUSTOM 3-",
+    subtitle: "lorem ipsum",
+    ability: "dolor sit amet",
+    abilityReload: 4
+  )
+  #endregion
+
+  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder, unitCustom1, unitCustom2, unitCustom3]
