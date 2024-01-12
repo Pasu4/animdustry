@@ -181,4 +181,4 @@ let
   )
   #endregion
 
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder, unitCustom1, unitCustom2, unitCustom3]
+  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitCustom1, unitCustom2, unitCustom3, unitBoulder]
