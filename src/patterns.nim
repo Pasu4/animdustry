@@ -9,13 +9,13 @@ proc patFft*(pos: Vec2, radius = 90f.px, length = 8f, color = colorWhite) =
     let rot = i / fftSize.float32 * pi2
     draw(fau.white, vec2l(rot, radius) + pos, size = vec2(fftValues[i].px * length, w), rotation = rot, align = daLeft, origin = vec2(0f, w / 2f), color = color)
 
-proc patTiles*() =
+proc patTiles*(col = colorWhite, col2 = colorBlue) =
   for x in -mapSize..mapSize:
     for y in -mapSize..mapSize:
       let 
         absed = ((x + mapSize) + (y + mapSize) + state.turn).mod 5
         strength = (absed == 0).float32 * state.moveBeat
-      draw("tile".patchConst, vec2(x, y), color = colorWhite.mix(colorBlue, strength).withA(0.4f), scl = vec2(1f - 0.11f * state.moveBeat))
+      draw("tile".patchConst, vec2(x, y), color = col.mix(col2, strength).withA(0.4f), scl = vec2(1f - 0.11f * state.moveBeat))
 
 proc patTilesFft*() =
   for x in -mapSize..mapSize:
@@ -258,6 +258,62 @@ proc patStars*(col = colorWhite, flash = colorWhite, amount = 40, seed = 1) =
     pos = fau.cam.viewport.wrap(pos, 4f.px)
 
     draw(sprite, pos.round(1f / tileSize), color = col.mix(flash, state.moveBeat))
+
+proc patCrux*() =
+  let
+    col = %"f25555" # Crux
+    col2 = %"a04553"
+
+    size = 2.5f + state.moveBeat.pow(2f) * 3f.px
+    rc = col.mix(col2, state.moveBeat.pow(3f))
+
+  fillQuad(vec2(0f, 2.8f) * size, vec2(1.9f, 0.9f) * size, vec2(0.35f, -0.65f) * size, vec2(-1.55f, 1.25f) * size, rc)
+  fillQuad(vec2(0.7f, 2.8f) * size, vec2(1.5f, 2f) * size, vec2(1.5f, 1.3f) * size, vec2(0.7f, 2.1f) * size, rc)
+  fillQuad(vec2(-1.55f, 1.25f) * size, vec2(-1.1f, 0.8f) * size, vec2(-1.1f, 0.1f) * size, vec2(-1.9f, 0.9f) * size, rc)
+  fillQuad(vec2(-0.3f, 0f) * size, vec2(0.35f, -0.65f) * size, vec2(0f, -1f) * size, vec2(-0.3f, -0.7f) * size, rc)
+  fillQuad(vec2(-2.4f, 0.4f) * size, vec2(0f, -2f) * size, vec2(0f, -2.8f) * size, vec2(-2.4f, -0.4f) * size, rc)
+  fillQuad(vec2(2.4f, 0.4f) * size, vec2(2.4f, -0.4f) * size, vec2(0f, -2.8f) * size, vec2(0f, -2f) * size, rc)
+  fillQuad(vec2(-1.8f, -1f) * size, vec2(-1f, -1.8f) * size, vec2(-1f, -2.7f) * size, vec2(-1.8f, -1.9f) * size, rc)
+
+proc patFloatSquares*(col1 = colorWhite, col2 = colorBlue, time = 0f, distance = 0.5f, seed = 1) =
+  assert distance > 0f
+
+  const
+    minX = -18f
+    maxX = 18f
+    minZ = 2f
+    maxZ = 5f
+    minSpeed = 1f
+    maxSpeed = 2f
+    minRotSpeed = -1f
+    maxRotSpeed = 1f
+    spawnY = -12f
+    maxY = 12f
+    fPi = 3.141593f
+  let
+    minDist = distance * 0.5f
+    maxDist = distance * 1.5f
+    sizeMul = 1.5f + state.moveBeat.pow(2f) * 6f.px
+    rc = col1.mix(col2, state.moveBeat.pow(3f))
+
+  var
+    r = initRand(seed)
+    t = 0f
+  
+  while t < time:
+    let
+      objTime = time - t                          # time the square existed for
+      z = r.rand(minZ..maxZ)                      # z coord
+      v = r.rand(minSpeed..maxSpeed)              # speed
+      vr = r.rand(minRotSpeed..maxRotSpeed)       # rotation speed
+      x = r.rand(minX..maxX)                      # x coord
+      y = spawnY + v * objTime / z                # y coord
+      a = r.rand(0f..(2*fPi)) + vr * time         # angle
+      s = sizeMul / z                             # size
+
+    if y <= maxY:
+      fillPoly(vec2(x, y), 4, s, a, rc)
+    t += r.rand(minDist..maxDist)
 
 proc patTris*(col1 = colorWhite, col2 = colorWhite, amount = 50, seed = 1) =
   let 

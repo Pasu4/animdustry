@@ -2,7 +2,8 @@ import os, vars, types, strformat, core, fau/assets, tables, msgpack4nim, msgpac
 
 let 
   dataDir = getSaveDir("animdustry")
-  dataFile = dataDir / "data.bin"
+  dataFile = dataDir / "data_mod.bin"
+  dataFileUnmod = dataDir / "data.bin"
   #TODO
   settingsFile = dataDir / "settings.bin"
 
@@ -45,10 +46,11 @@ proc saveGame* =
     echo &"Error: Failed to write save data: {getCurrentExceptionMsg()}"
 
 proc loadGame* =
-  echo "Loading game from ", dataFile
+  let file = (if fileExists(dataFile): dataFile else: dataFileUnmod) # Load unmodded file 
+  echo "Loading game from ", file
   ## Loads game data from the save file. Does nothing if there is no data.
-  if fileExists(dataFile):
+  if fileExists(file):
     try:
-      unpack(dataFile.readFile, save)
+      unpack(file.readFile, save)
       echo "Loaded game state."
     except: echo &"Failed to load save state: {getCurrentExceptionMsg()}"

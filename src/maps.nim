@@ -1,7 +1,7 @@
 import sugar, vars, core, types, math
 
 var
-  map1*, map2*, map3*, map4*, map5*: Beatmap
+  map1*, map2*, map3*, map4*, map5*, map6*: Beatmap
 
 template delayBullet*(pos: Vec2i, dir: Vec2i, tex = "") =
   let 
@@ -956,5 +956,53 @@ template createMaps* =
         
         if turn in 300..340:
           botRouters(300)
+    )
+  )
+
+  map6 = BeatMap(
+    songName: "Anuke - Boss 1",
+    music: "boss1",
+    bpm: 100f,
+    beatOffset: 0f / 1000f,
+    maxHits: 10,
+    copperAmount: 8,
+    fadeColor: %"fa874c",
+    drawPixel: (proc() =
+      patBackground(%"000000")
+      patStars((%"ffffff").withA(0.4f), (%"ffffff").withA(1f), 150, 3)
+      patFloatSquares(%"3c3838", %"f25555", state.time + 40f)
+      patCrux()
+    ),
+    draw: (proc() =
+      patTiles(%"4a4b53", %"fff7bf") # Core zone colors
+    ),
+    update: (proc() =
+      if state.newTurn:
+        let turn = state.turn
+
+        template walls =
+            let space = 8
+            if turn mod 2 == 0:
+              for x in -mapSize..mapSize:
+                if x.mod(2) != 0:
+                  if turn mod space == 0:
+                    makeConveyor(vec2i(x, mapSize), vec2i(0, -1), 1) # top
+                  elif turn mod space == 2:
+                    makeConveyor(vec2i(mapSize, x), vec2i(-1, 0), 1) # right
+                else:
+                  if turn mod space == 4:
+                    makeConveyor(vec2i(x, -mapSize), vec2i(0, 1), 1) # bottom
+                  elif turn mod space == 6:
+                    makeConveyor(vec2i(-mapSize, x), vec2i(1, 0), 1) # left
+        
+        template laserGrid(offset: int) = 
+          let 
+            space = 4
+            t = turn - offset
+          if t mod space == 0:
+            laser(vec2i(mapSize, (((t div space) - mapSize div 2) * 2)), vec2i(-1, 0))
+        
+        if turn in 0..31:
+          walls()
     )
   )

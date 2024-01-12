@@ -263,7 +263,7 @@ makeSystem("core", []):
     enableSoundVisualization()
 
     createMaps()
-    allMaps = @[map1, map2, map3, map4, map5]
+    allMaps = @[map1, map2, map3, map4, map5, map6]
 
     createUnits()
 
