@@ -58,6 +58,10 @@ type Unit* = ref object
   jumping*: bool
   clickTime*: float32
 
+  # mod
+  isModded*: bool
+  modPath*: string
+
 type Gamemode* = enum
   #in game intro headphones screen
   gmIntro,

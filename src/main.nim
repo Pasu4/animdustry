@@ -2,6 +2,7 @@ import core, fau/presets/[basic, effects], fau/g2/[font, ui, bloom], fau/assets
 import std/[tables, sequtils, algorithm, macros, options, random, math, strformat, deques]
 import pkg/polymorph
 import types, vars, saveio, patterns, maps, sugar, units
+import std/os
 
 include components
 include fx
@@ -153,7 +154,12 @@ proc clearTextures*(unit: Unit) = unit.textures.clear()
 proc getTexture*(unit: Unit, name: string = ""): Texture =
   ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
   if not unit.textures.hasKey(name):
-    let tex = loadTextureAsset("textures/" & unit.name & name & ".png")
+    let tex = (
+      if unit.isModded:
+        loadTextureAsset("textures/" & unit.name & name & ".png")
+      else:
+        loadTextureFile(unit.modPath / "unitSprites" / unit.name & name & ".png")
+      )
     tex.filter = tfLinear
     unit.textures[name] = tex
     return tex
@@ -169,7 +175,7 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei])
+  return sample(unlockableUnits)
 
 proc fading(): bool = fadeTarget != nil
 
@@ -269,6 +275,7 @@ makeSystem("core", []):
 
     loadGame()
     loadSettings()
+    loadMods()
 
     setGlobalVolume(settings.globalVolume)
 
