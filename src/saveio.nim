@@ -78,7 +78,7 @@ proc loadMods* =
           mapPath = modPath / "maps"
           unitSpritePath = modPath / "unitSprites"
         
-        echo &"Loading mod {modName} by {modAuthor}"
+        echo &"Loading {modName} by {modAuthor}"
 
         # Units
         if dirExists(unitPath):
@@ -99,6 +99,7 @@ proc loadMods* =
                     isModded: true,
                     modPath: modPath
                   )
+                parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
                 # TODO draw, abilityProc
                 
                 allUnits.add(parsedUnit)

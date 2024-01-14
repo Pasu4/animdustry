@@ -61,6 +61,7 @@ type Unit* = ref object
   # mod
   isModded*: bool
   modPath*: string
+  canAngery*: bool # only used for modded units!
 
 type Gamemode* = enum
   #in game intro headphones screen

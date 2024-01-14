@@ -177,7 +177,11 @@ makeSystem("drawUI", []):
           pos = screen.xy + vec2(i.float32 * 0.8f, bottomMargin)
           current = player.unitDraw.unit == unit
           bounds = rect(pos, vec2(23f.px, 32f.px))
-        draw(patch(&"unit-{unit.name}"), pos, align = daBotLeft, mixColor = if current: rgb(0.1f).withA(0.8f) else: colorClear, scl = vec2(0.75f))
+
+        if not unit.isModded:
+          draw(patch(&"unit-{unit.name}"), pos, align = daBotLeft, mixColor = if current: rgb(0.1f).withA(0.8f) else: colorClear, scl = vec2(0.75f))
+        else:
+          draw(unit.getGameTexture(), pos, align = daBotLeft, mixColor = if current: rgb(0.1f).withA(0.8f) else: colorClear, scl = vec2(0.75f))
         defaultFont.draw($(i + 1), rect(pos + vec2(4f.px, -2f.px), 1f.vec2), align = daBotLeft, color = if current: colorGray else: colorWhite)
 
         if keyMouseLeft.tapped and bounds.contains(mouseWorld):
@@ -370,12 +374,20 @@ makeSystem("drawUI", []):
       
       draw("shadow".patchConst, vec2(x, y - jumpScl * 3f.px), color = rgba(0f, 0f, 0f, 0.3f))
 
-      draw(patch, vec2(x, y + jumpScl * 6f.px), 
-        align = daBot, 
-        mixColor = if unlock.not: rgb(0.26f) else: rgba(1f, 1f, 1f, unit.fade * 0.2f), 
-        scl = vec2(1f + click * 0.1f, 1f - click * 0.1f),
-        z = 1f
-      )
+      if not unit.isModded:
+        draw(patch, vec2(x, y + jumpScl * 6f.px), 
+          align = daBot, 
+          mixColor = if unlock.not: rgb(0.26f) else: rgba(1f, 1f, 1f, unit.fade * 0.2f), 
+          scl = vec2(1f + click * 0.1f, 1f - click * 0.1f),
+          z = 1f
+        )
+      else:
+        draw(unit.getGameTexture(suffix), vec2(x, y + jumpScl * 6f.px),
+          align = daBot, 
+          mixColor = if unlock.not: rgb(0.26f) else: rgba(1f, 1f, 1f, unit.fade * 0.2f), 
+          scl = vec2(1f + click * 0.1f, 1f - click * 0.1f),
+          z = 1f
+        )
     
     #TODO remove
     when defined(debug):
