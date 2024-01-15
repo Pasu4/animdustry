@@ -2,7 +2,6 @@
 import core, vars
 
 template createUnits*() =
-  echo "creating units"
   const 
     shadowOffset = vec2(0.3f)
     shadowColor = rgba(0f, 0f, 0f, 0.4f)

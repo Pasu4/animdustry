@@ -41,7 +41,7 @@ type Unit* = ref object
   #called every move (optional)
   abilityProc*: proc(unit: EntityRef, moves: int)
   #draw the unit in the splash screen
-  draw*: proc(unit: Unit, pos: Vec2) {.nimcall.}
+  draw*: proc(unit: Unit, pos: Vec2) #{.nimcall.}
   #cached textures
   textures*: Table[string, Texture]
   #true for boulder

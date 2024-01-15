@@ -3,6 +3,7 @@ import std/[tables, sequtils, algorithm, macros, options, random, math, strforma
 import pkg/polymorph
 import types, vars, saveio, patterns, maps, sugar, units
 import std/os
+import mods, jsonapi
 
 include components
 include fx
@@ -283,6 +284,17 @@ makeSystem("core", []):
     createMaps()
     allMaps = @[map1, map2, map3, map4, map5]
     createUnits()
+
+    initJsonApi(
+      (proc() =
+        drawBuffer(sysDraw.bloom.buffer)
+      ),
+      (proc() =
+        drawBufferScreen()
+        sysDraw.bloom.blit(params = meshParams(blend = blendNormal))
+      )
+    )
+
     loadMods()
 
     loadGame()
