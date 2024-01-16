@@ -131,7 +131,6 @@ proc updateDrawEvals(unit: Unit, basePos: Vec2) =
     eval.addVar("state_healTime", state.healTime)
     eval.addVar("state_points", state.points.float)
     eval.addVar("state_turn", state.turn.float)
-    eval.addVar("state_copperReceived", state.copperReceived.float)
     eval.addVar("state_hits", state.hits.float)
     eval.addVar("state_totalHits", state.totalHits.float)
     eval.addVar("state_misses", state.misses.float)
