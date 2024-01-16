@@ -1,4 +1,4 @@
-import os, vars, types, strformat, core, fau/assets, tables, msgpack4nim, msgpack4nim/msgpack4collection, std/json, std/strutils, std/sequtils
+import os, vars, types, strformat, core, fau/assets, std/json, std/strutils
 import mathexpr
 import jsonapi
 
