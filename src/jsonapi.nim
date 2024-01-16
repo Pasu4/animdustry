@@ -273,8 +273,10 @@ proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
   var procs = parseDrawStack(drawStack);
   # procs.add(proc(u: Unit, v: Vec2) = echo "test")
   return (proc(u: Unit, v: Vec2) =
+    echo procs.len
     updateDrawEvals(u, v)
     for p in procs:
       p(u, v)
+      echo ""
   )
   
