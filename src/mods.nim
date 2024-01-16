@@ -59,6 +59,7 @@ proc loadMods* =
                     modPath: modPath
                   )
                 parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
+                parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
                 # TODO draw, abilityProc
                 parsedUnit.draw = getUnitDraw(unitNode["draw"])
 

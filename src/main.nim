@@ -874,12 +874,11 @@ makeSystem("drawLaser", [Pos, DrawLaser, Scaled]):
 
 makeSystem("drawUnit", [Pos, UnitDraw, Input]):
   all:
-
-    # TODO load modded textures
     let unit = item.unitDraw.unit
     let suffix = 
       if item.unitDraw.hitTime > 0: "-hit"
       elif item.unitDraw.failTime > 0 and ((&"unit-{unit.name}-angery").patch.exists or unit.canAngery): "-angery"
+      elif state.map.soundLength - state.secs < 1 and ((&"unit-{unit.name}-happy").patch.exists or unit.canHappy): "-happy"
       else: ""
     
     if item.unitDraw.shieldTime > 0.001f:
