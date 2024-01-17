@@ -6,11 +6,11 @@ A modloader for the anime gacha bullet hell rhythm game by Anuke.
 
 [Downloads for windows/linux/android are available on the releases page.](https://github.com/Pasu4/animdustry/releases)
 
-# compiling
+# Compiling
 
 For information on compiling, please refer to [the original repository](https://github.com/Anuken/animdustry/blob/master/README.md#compiling).
 
-# credits
+# Credits
 
 Original game by Anuke
 
@@ -100,6 +100,8 @@ Sets a color variable that is accessible from anywhere.
 
 ### DrawFft
 
+(TODO check source)
+
 - **Vec2** *pos*:
 - **float** *radius*: (Default: *px(90)*)
 - **float** *length*: (Default: *8*)
@@ -107,20 +109,28 @@ Sets a color variable that is accessible from anywhere.
 
 ### DrawTiles
 
+Draws the playing field.
+
 ### DrawTilesFft
 
+Draws the playing field. (TODO check source)
+
 ### DrawTilesSquare
+
+Draws diagonal stripes. (TODO check source)
 
 - **Color** *col1*: (Default: *colorWhite*)
 - **Color** *col2*: (Default: *colorBlue*)
 
 ### DrawBackground
 
-- **Color** *col*: 
+Why does everything draw stripes?? (TODO check source)
+
+- **Color** *col*: The color of the stripes.
 
 ### DrawStripes
 
-Draws stripes on the screen.
+Draws construction-tape-like stripes.
 
 - **Color** *col1*: Background color. (Default: *colorPink*)
 - **Color** *col2*: Stripe color. (Default: *colorPink* with 20% *colorWhite*)
