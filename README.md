@@ -4,9 +4,7 @@
 
 A modloader for the anime gacha bullet hell rhythm game by Anuke.
 
-[downloads for windows/linux/android are available on the releases page.](https://github.com/Anuken/animdustry/releases)
-
-please read [the last release notes](https://github.com/Anuken/animdustry/releases/tag/v1.2) for information about the future of this game.
+[Downloads for windows/linux/android are available on the releases page.](https://github.com/Pasu4/animdustry/releases)
 
 # compiling
 
