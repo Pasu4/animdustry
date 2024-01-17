@@ -30,6 +30,7 @@ music used:
 
 ## Functions
 
+- **float** *px(val)*: Turns pixel units into world units.
 - **vec2** *getScl(base)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears.
 - **vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically.
 - **vec2** *vec2(x, y)*: Constructs a 2D vector from x and y components.
@@ -98,6 +99,12 @@ Sets a color variable that is accessible from anywhere.
 
 - **string** *name*: The name of the variable to be set.
 - **Color** *value*: The color in hexadecimal notation (e.g. "#ff0000").
+
+### DrawFft
+
+### DrawTiles
+
+### DrawTilesFft
 
 ### DrawStripes
 
