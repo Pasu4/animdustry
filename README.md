@@ -146,29 +146,35 @@ Draws construction-tape-like stripes.
 
 ### DrawTriSquare
 
-- **Vec2** *pos*:
-- **Color** *col*:
-- **float** *len*:
-- **float** *rad*:
-- **float** *offset*:(Default: *rad(45)*)
-- **int** *amount*:(Default: *4*)
-- **int** *sides*:(Default: *3*)
-- **float** *shapeOffset*:(Default: *rad(0)*)
+Draws regular polygons in a circle around a position.
+
+- **Vec2** *pos*: The position to draw the polygons around.
+- **Color** *col*: The color of the polygons.
+- **float** *len*: How far away the polygons are from the position.
+- **float** *rad*: The size of the polygons.
+- **float** *offset*: Additional rotation around the target position applied to each polygon. (Default: *rad(45)*)
+- **int** *amount*: The number of polygons to draw. (Default: *4*)
+- **int** *sides*: How many sides each polygon has. (Default: *3*)
+- **float** *shapeOffset*: Additional rotation applied to each polygon around its own center. (Default: *rad(0)*)
 
 ### DrawSpin
 
-- **Color** *col1*:
-- **Color** *col2*:
-- **int** *blades*: (Default: *10*)
+Draws stripes radially from the center. (TODO better explanation)
+
+- **Color** *col1*: The first color.
+- **Color** *col2*: The second color.
+- **int** *blades*: The number of stripes to draw. (Default: *10*)
 
 ### DrawSpinGradient
 
-- **Vec2** *pos*:
-- **Color** *col1*:
-- **Color** *col2*:
-- **float** *len*: (Default: *5*)
-- **int** *blades*: (Default: *10*)
-- **int** *spacing*: (Default: *2*)
+Draws a "fan" of triangles. (TODO better explanation)
+
+- **Vec2** *pos*: The position to center the fan on.
+- **Color** *col1*: The inner color of the triangles.
+- **Color** *col2*: The outer color of the triangles.
+- **float** *len*: The radius of the fan. (Default: *5*)
+- **int** *blades*: The number of triangles that the fan is made of. (Default: *10*)
+- **int** *spacing*: How often a triangle occurs. (Default: *2*)
 
 ### DrawSpinShape
 
@@ -231,142 +237,176 @@ Draws construction-tape-like stripes.
 
 ### DrawCircles
 
-- **Color** *col*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *50*)
-- **int** *seed*: (Default: *1*)
-- **float** *minSize*: (Default: *2*)
-- **float** *maxSize*: (Default: *7*)
-- **float** *moveSpeed*: (Default: *0.2*)
+Draws circles in random sizes that move around the screen in random directions. This effect is used for Mono, Oct and Sei.
+
+- **Color** *col*: The color of the circles. (Default: *colorWhite*)
+- **float** *time*: The circles will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of circles to draw. (Default: *50*)
+- **int** *seed*: The random seed. (Default: *1*)
+- **float** *minSize*: The smallest size a circle can be. (Default: *2*)
+- **float** *maxSize*: The largest size a circle can be. (Default: *7*)
+- **float** *moveSpeed*: The speed at which the circles move. (Default: *0.2*)
 
 ### DrawRadTris
 
-- **Color** *col*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *50*)
-- **int** *seed*: (Default: *1*)
+Draws triangles in random sizes that point away from the center and move around the screen in random directions. This effect is used for Crawler.
+
+- **Color** *col*: The color of the triangles. (Default: *colorWhite*)
+- **float** *time*: The triangles will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of triangles to draw (Default: *50*)
+- **int** *seed*: The random seed. (Default: *1*)
 
 ### DrawMissiles
 
-- **Color** *col*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *50*)
-- **int** *seed*: (Default: *1*)
+Draws moving circles with a trail of smaller circles ("missiles"). This effect is used for Zenith.
+
+- **Color** *col*: The color of the circles. (Default: *colorWhite*)
+- **float** *time*: The circles will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of circles to draw (not including the trailing circles). (Default: *50*)
+- **int** *seed*: The random seed. (Default: *1*)
 
 ### DrawFallSquares
 
-- **Color** *col1*: (Default: *colorWhite*)
-- **Color** *col2*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *50*)
+Draws squares that fall down while spinning and changing color. This effect is used for Quad.
+
+- **Color** *col1*: The initial color of the squares. (Default: *colorWhite*)
+- **Color** *col2*: The color the squares change to over their lifetime. (Default: *colorWhite*)
+- **float** *time*: The squares will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of squares to draw. (Default: *50*)
 
 ### DrawFlame
 
-- **Color** *col1*: (Default: *colorWhite*)
-- **Color** *col2*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *80*)
+Draws circles that move upwards while becoming smaller and changing color. This effect is used for Oxynoe.
+
+- **Color** *col1*: The initial color of the circles. (Default: *colorWhite*)
+- **Color** *col2*: The color the circles change to. (Default: *colorWhite*)
+- **float** *time*: The circles will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of circles to draw. (Default: *80*)
 
 ### DrawSquares
 
-- **Color** *col*: (Default: *colorWhite*)
-- **float** *time*: (Default: *state_time*)
-- **int** *amount*: (Default: *50*)
-- **int** *seed*: (Default: *2*)
+Draws squares that slowly move around the screen and periodically shrink and grow. This effect is used for Alpha.
+
+- **Color** *col*: The color of the squares. (Default: *colorWhite*)
+- **float** *time*: The squares will move if you put in a value that changes over time. (Default: *state_time*)
+- **int** *amount*: The number of squares to draw. (Default: *50*)
+- **int** *seed*: The random seed. (Default: *2*)
 
 ### DrawRoundLine
 
-- **Vec2** *pos*:
-- **float** *angle*:
-- **float** *len*:
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *stroke*: (Default: *1*)
+Draws a line with rounded endpoints.
+
+- **Vec2** *pos*: The position of the midpoint of the line.
+- **float** *angle*: The angle of the line.
+- **float** *len*: The length of the line.
+- **Color** *color*: The color of the line. (Default: *colorWhite*)
+- **float** *stroke*: The thickness of the line. (Default: *1*)
 
 ### DrawLines
 
-- **Color** *col*: (Default: *colorWhite*)
-- **int** *seed*: (Default: *1*)
-- **int** *amount*: (Default: *30*)
-- **float** *angle*: (Default: *rad(45)*)
+Draws rounded lines that move around slightly (looks a bit like rays of light).
+
+- **Color** *col*: The color of the lines. (Default: *colorWhite*)
+- **int** *seed*: The random seed. (Default: *1*)
+- **int** *amount*: The number of lines to draw. (Default: *30*)
+- **float** *angle*: The angle at which to draw the lines. (Default: *rad(45)*)
 
 ### DrawRadLines
 
-- **Color** *col*: (Default: *colorWhite*)
-- **int** *seed*: (Default: *6*)
-- **int** *amount*: (Default: *40*)
-- **float** *stroke*: (Default: *0.25*)
-- **float** *posScl*: (Default: *1*)
-- **float** *lenScl*: (Default: *1*)
+Draws rounded lines pointing at the center of the screen that move around slightly.
+
+- **Color** *col*: The color of the lines. (Default: *colorWhite*)
+- **int** *seed*: The random seed. (Default: *6*)
+- **int** *amount*: The number of lines to draw. (Default: *40*)
+- **float** *stroke*: The thickness of the lines. (Default: *0.25*)
+- **float** *posScl*: How far away the lines are from the center on average. A higher value means the lines are further away. (Default: *1*)
+- **float** *lenScl*: How long the lines are. (Default: *1*)
 
 ### DrawRadCircles
 
-- **Color** *col*: (Default: *colorWhite*)
-- **int** *seed*: (Default: *7*)
-- **int** *amount*: (Default: *40*)
-- **float** *fin*: (Default: *0.5*)
+Draws circles in random sizes scattered around the center of the screen.
+
+- **Color** *col*: The color of the circles. (Default: *colorWhite*)
+- **int** *seed*: The random seed. (Default: *7*)
+- **int** *amount*: The number of circles to draw. (Default: *40*)
+- **float** *fin*: How far away the circles are from the center on average. Also scales the circles. (Default: *0.5*)
 
 ### DrawSpikes
 
-- **Vec2** *pos*:
-- **Color** *col*:
-- **int** *amount*: (Default: *10*)
-- **float** *offset*: (Default: *8*)
-- **float** *len*: (Default: *3*)
-- **float** *angleOffset*: (Default: *0*)
+Draws rounded lines pointing to a position. The angle between all lines is the same.
+
+- **Vec2** *pos*: The position the lines will point to.
+- **Color** *col*: The color of the lines.
+- **int** *amount*: The number of lines to draw. (Default: *10*)
+- **float** *offset*: How far away the midpoint of each line is from the targeted position. (Default: *8*)
+- **float** *len*: The length of the line. (Default: *3*)
+- **float** *angleOffset*: Additional rotation around the target position applied to each line. (Default: *0*)
 
 ### DrawGradient
 
-- **Color** *col1*: (Default: *colorClear*)
-- **Color** *col2*: (Default: *colorClear*)
-- **Color** *col3*: (Default: *colorClear*)
-- **Color** *col4*: (Default: *colorClear*)
+Draws a gradient across the screen.
+
+- **Color** *col1*: The color of the bottom left corner. (Default: *colorClear*)
+- **Color** *col2*: The color of the bottom right corner. (Default: *colorClear*)
+- **Color** *col3*: The color of the top right corner. (Default: *colorClear*)
+- **Color** *col4*: The color of the top left corner. (Default: *colorClear*)
 
 ### DrawVertGradient
 
-- **Color** *col1*: (Default: *colorClear*)
-- **Color** *col2*: (Default: *colorClear*)
+Draws a vertical gradient.
+
+- **Color** *col1*: The bottom color. (Default: *colorClear*)
+- **Color** *col2*: The top color. (Default: *colorClear*)
 
 ### DrawZoom
 
-- **Color** *col*: (Default: *colorWhite*)
-- **float** *offset*: (Default: *0*)
-- **int** *amount*: (Default: *10*)
-- **int** *sides*: (Default: *4*)
+Draws concentric polygons around the center of the screen that increase in thickness further out.
+
+- **Color** *col*: The color of the polygons. (Default: *colorWhite*)
+- **float** *offset*: The offset of the first square from the center. Periodic. (TODO explain that better) (Default: *0*)
+- **int** *amount*: The number of polygons to draw. (Default: *10*)
+- **int** *sides*: The number of sides the polygon will have. (Default: *4*)
 
 ### DrawFadeOut
 
-- **float** *time*:
+The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
+
+- **float** *time*: The screen will move if you put in a value that changes over time.
 
 ### DrawFadeIn
 
-- **float** *time*:
+A light blue screen disappears into the bottom right corner. This effect is used to transition between the menu and levels.
+
+- **float** *time*: The circles will move if you put in a value that changes over time. The value should change in reverse (?).
 
 ### DrawSpace
 
-- **Color** *col*:
+Draws many stripes pointing towards the center. (TODO check later, this probably does needs state_time)
+
+- **Color** *col*: The color of the stripes.
 
 ### DrawFillPoly
 
 Draws a filled polygon.
 
-- **Vec2** *pos*:
-- **int** *sides*:
-- **float** *radius*:
-- **float** *rotation*: (Default: *0*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+- **Vec2** *pos*: The position of the center of the polygon.
+- **int** *sides*: The number of sides the polygon has.
+- **float** *radius*: The radius of the polygon.
+- **float** *rotation*: The rotation of the polygon. (Default: *0*)
+- **Color** *color*: The color of the polygon. (Default: *colorWhite*)
+- **float** *z*: The z layer of the polygon. (Default: *0*)
 
 ### DrawPoly
 
 Draws a polygon outline.
 
-- **Vec2** *pos*:
-- **int** *sides*:
-- **float** *radius*:
-- **float** *rotation*: (Default: *0*)
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+- **Vec2** *pos*: The position of the center of the polygon.
+- **int** *sides*: The number of sides the polygon has.
+- **float** *radius*: The radius of the polygon.
+- **float** *rotation*: The rotation of the polygon. (Default: *0*)
+- **float** *stroke*: The line thickness of the polygon. (Default: *px(1)*)
+- **Color** *color*: The color of the polygon. (Default: *colorWhite*)
+- **float** *z*: The z layer of the polygon. (Default: *0*)
 
 ### DrawUnit
 
