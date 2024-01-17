@@ -301,6 +301,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
       let col = elem{"col"}.getStr($colorWhite)
       capture col:
         procs.add(proc(u: Unit, v: Vec2) = patClouds(getColor(col)))
+    
     of "DrawLongClouds":
       let col = elem{"col"}.getStr($colorWhite)
       capture col:
@@ -504,7 +505,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
     of "DrawUnit":
       let
         pos = elem["pos"].getStr()
-        scl = elem{"scl"}.getStr($elem{"scl"}.getFloat(1f))
+        scl = elem{"scl"}.getStr("1") # Same as "vec2(1, 1)" in this case
         color = elem{"color"}.getStr($colorWhite)
         part = elem{"part"}.getStr("")
       capture pos, scl, color, part:
