@@ -178,28 +178,66 @@ Parameters can either be constant or a formula. For example, the `rotation` fiel
 
 Fields that have a default value can be omitted from the call.
 
-### SetFloat
+### Setters
+
+#### SetFloat
 
 Sets a float variable that is accessible from anywhere.
 
 - **string** *name*: The name of the variable to be set.
 - **float** *value*: The value to set the variable to.
 
-### SetVec2
+#### SetVec2
 
 Sets a 2D vector variable that is accessible from anywhere.
 
 - **string** *name*: The name of the variable to be set.
 - **Vec2** *value*: The value to set the variable to.
 
-### SetColor
+#### SetColor
 
 Sets a color variable that is accessible from anywhere.
 
 - **string** *name*: The name of the variable to be set.
 - **Color** *value*: The color in hexadecimal notation (e.g. "#ff0000").
 
-### DrawFft
+### Flow control
+
+#### Condition
+
+Defines a condition. If the condition is met, the *then* block is executed, otherwise the *else* block is executed.
+
+- **bool** *condition*: The condition under which the *then* block will be executed.
+- **Array** *then*: An array of calls to execute if the condition evaluates to *true*.
+- **Array** *else*: An array of calls to execute if the condition evaluates to *false*.
+
+#### Iterate
+
+Iterates over a range with an iterator variable. The iterator is incremented by 1 each iteration until it reaches a maximum value.
+
+- **string** *iterator*: The name of the iterator variable that will hold the position within the range.
+- **int** *startValue*: The value at which the iterator starts. Must be less than *endValue*.
+- **int** *endValue*: The value the iterator must reach to end the loop. Cannot be modified after entering the loop. The iterator will have this value during its last iteration.
+- **Array** *body*: An array of calls to execute each iteration.
+
+#### Repeat
+
+Repeats an array of calls while a condition is met.
+
+- **bool** *runCondition*: The condition than must be met to execute the *body*.
+- **Array** *body*: An array of calls that will be executed repeatedly as long as the *runCondition* is met.
+
+#### Break
+
+Breaks out of the current loop. Stops execution if there is no current loop.
+
+#### Return
+
+Breaks out of all loops and stops execution.
+
+### Drawing
+
+#### DrawFft
 
 I don't know what it does, and it is never used in the base game. (TODO do more testing)
 
@@ -208,28 +246,28 @@ I don't know what it does, and it is never used in the base game. (TODO do more 
 - **float** *length*: (Default: *8*)
 - **Color** *color*: (Default: *colorWhite*)
 
-### DrawTiles
+#### DrawTiles
 
 Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
-### DrawTilesFft
+#### DrawTilesFft
 
 Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
-### DrawTilesSquare
+#### DrawTilesSquare
 
 Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
 - **Color** *col1*: (Default: *colorWhite*)
 - **Color** *col2*: (Default: *colorBlue*)
 
-### DrawBackground
+#### DrawBackground
 
 Draws a single color background.
 
 - **Color** *col*: The color of the background.
 
-### DrawStripes
+#### DrawStripes
 
 Draws construction-tape-like stripes.
 
@@ -237,15 +275,15 @@ Draws construction-tape-like stripes.
 - **Color** *col2*: Stripe color. (Default: *colorPink* with 20% *colorWhite*)
 - **float** *angle*: The angle of the stripes. (Default: *rad(135)*)
 
-### DrawBeatSquare
+#### DrawBeatSquare
 
 - **Color** *col*: (Default: *colorPink* with 70% *colorWhite*)
 
-### DrawBeatAlt
+#### DrawBeatAlt
 
 - **Color** *col*:
 
-### DrawTriSquare
+#### DrawTriSquare
 
 Draws regular polygons in a circle around a position.
 
@@ -258,7 +296,7 @@ Draws regular polygons in a circle around a position.
 - **int** *sides*: How many sides each polygon has. (Default: *3*)
 - **float** *shapeOffset*: Additional rotation applied to each polygon around its own center. (Default: *rad(0)*)
 
-### DrawSpin
+#### DrawSpin
 
 Draws stripes radially from the center. (TODO better explanation)
 
@@ -266,7 +304,7 @@ Draws stripes radially from the center. (TODO better explanation)
 - **Color** *col2*: The second color.
 - **int** *blades*: The number of stripes to draw. (Default: *10*)
 
-### DrawSpinGradient
+#### DrawSpinGradient
 
 Draws a "fan" of triangles. (TODO better explanation)
 
@@ -277,7 +315,7 @@ Draws a "fan" of triangles. (TODO better explanation)
 - **int** *blades*: The number of triangles that the fan is made of. (Default: *10*)
 - **int** *spacing*: How often a triangle occurs. (Default: *2*)
 
-### DrawSpinShape
+#### DrawSpinShape
 
 Only works inside levels. (TODO coming soon)
 
@@ -292,7 +330,7 @@ Only works inside levels. (TODO coming soon)
 - **float** *radrad*: (Default: *1.3*)
 - **float** *radrotscl*: (Default: *0.25*)
 
-### DrawShapeBack
+#### DrawShapeBack
 
 Draws concentric polygons of alternating colors around the center.
 
@@ -302,39 +340,39 @@ Draws concentric polygons of alternating colors around the center.
 - **float** *spacing*: The distance between each polygon "ring". (Default: *2.5*)
 - **float** *angle*: The angle of the polygon. (Default: *rad(90)*)
 
-### DrawFadeShapes
+#### DrawFadeShapes
 
 Only works inside levels. (TODO coming soon)
 
 - **Color** *col*:
 
-### DrawRain
+#### DrawRain
 
 Only works inside levels. (TODO coming soon)
 
 - **int** *amount*: (Default: *80*)
 
-### DrawPetals
+#### DrawPetals
 
 Only works inside levels. (TODO coming soon)
 
-### DrawSkats
+#### DrawSkats
 
 Only works inside levels. (TODO coming soon)
 
-### DrawClouds
-
-Only works inside levels. (TODO coming soon)
-
-- **Color** *col*: (Default: *colorWhite*)
-
-### DrawLongClouds
+#### DrawClouds
 
 Only works inside levels. (TODO coming soon)
 
 - **Color** *col*: (Default: *colorWhite*)
 
-### DrawStars
+#### DrawLongClouds
+
+Only works inside levels. (TODO coming soon)
+
+- **Color** *col*: (Default: *colorWhite*)
+
+#### DrawStars
 
 Only works inside levels. (TODO coming soon)
 
@@ -343,7 +381,7 @@ Only works inside levels. (TODO coming soon)
 - **int** *amount*: (Default: *40*)
 - **int** *seed*: (Default: *1*)
 
-### DrawTris
+#### DrawTris
 
 Only works inside levels. (TODO coming soon)
 
@@ -352,13 +390,13 @@ Only works inside levels. (TODO coming soon)
 - **int** *amount*: (Default: *50*)
 - **int** *seed*: (Default: *1*)
 
-### DrawBounceSquares
+#### DrawBounceSquares
 
 Only works inside levels. (TODO coming soon)
 
 - **Color** *col*: (Default: *colorWhite*)
 
-### DrawCircles
+#### DrawCircles
 
 Draws circles in random sizes that move around the screen in random directions. This effect is used for Mono, Oct and Sei.
 
@@ -370,7 +408,7 @@ Draws circles in random sizes that move around the screen in random directions. 
 - **float** *maxSize*: The largest size a circle can be. (Default: *7*)
 - **float** *moveSpeed*: The speed at which the circles move. (Default: *0.2*)
 
-### DrawRadTris
+#### DrawRadTris
 
 Draws triangles in random sizes that point away from the center and move around the screen in random directions. This effect is used for Crawler.
 
@@ -379,7 +417,7 @@ Draws triangles in random sizes that point away from the center and move around 
 - **int** *amount*: The number of triangles to draw (Default: *50*)
 - **int** *seed*: The random seed. (Default: *1*)
 
-### DrawMissiles
+#### DrawMissiles
 
 Draws moving circles with a trail of smaller circles ("missiles"). This effect is used for Zenith.
 
@@ -388,7 +426,7 @@ Draws moving circles with a trail of smaller circles ("missiles"). This effect i
 - **int** *amount*: The number of circles to draw (not including the trailing circles). (Default: *50*)
 - **int** *seed*: The random seed. (Default: *1*)
 
-### DrawFallSquares
+#### DrawFallSquares
 
 Draws squares that fall down while spinning and changing color. This effect is used for Quad.
 
@@ -397,7 +435,7 @@ Draws squares that fall down while spinning and changing color. This effect is u
 - **float** *time*: The squares will move if you put in a value that changes over time. (Default: *state_time*)
 - **int** *amount*: The number of squares to draw. (Default: *50*)
 
-### DrawFlame
+#### DrawFlame
 
 Draws circles that move upwards while becoming smaller and changing color. This effect is used for Oxynoe.
 
@@ -406,7 +444,7 @@ Draws circles that move upwards while becoming smaller and changing color. This 
 - **float** *time*: The circles will move if you put in a value that changes over time. (Default: *state_time*)
 - **int** *amount*: The number of circles to draw. (Default: *80*)
 
-### DrawSquares
+#### DrawSquares
 
 Draws squares that slowly move around the screen and periodically shrink and grow. This effect is used for Alpha.
 
@@ -415,7 +453,7 @@ Draws squares that slowly move around the screen and periodically shrink and gro
 - **int** *amount*: The number of squares to draw. (Default: *50*)
 - **int** *seed*: The random seed. (Default: *2*)
 
-### DrawRoundLine
+#### DrawRoundLine
 
 Draws a line with rounded endpoints.
 
@@ -425,7 +463,7 @@ Draws a line with rounded endpoints.
 - **Color** *color*: The color of the line. (Default: *colorWhite*)
 - **float** *stroke*: The thickness of the line. (Default: *1*)
 
-### DrawLines
+#### DrawLines
 
 Draws rounded lines that move around slightly (looks a bit like rays of light).
 
@@ -434,7 +472,7 @@ Draws rounded lines that move around slightly (looks a bit like rays of light).
 - **int** *amount*: The number of lines to draw. (Default: *30*)
 - **float** *angle*: The angle at which to draw the lines. (Default: *rad(45)*)
 
-### DrawRadLines
+#### DrawRadLines
 
 Draws rounded lines pointing at the center of the screen that move around slightly.
 
@@ -445,7 +483,7 @@ Draws rounded lines pointing at the center of the screen that move around slight
 - **float** *posScl*: How far away the lines are from the center on average. A higher value means the lines are further away. (Default: *1*)
 - **float** *lenScl*: How long the lines are. (Default: *1*)
 
-### DrawRadCircles
+#### DrawRadCircles
 
 Draws circles in random sizes scattered around the center of the screen.
 
@@ -454,7 +492,7 @@ Draws circles in random sizes scattered around the center of the screen.
 - **int** *amount*: The number of circles to draw. (Default: *40*)
 - **float** *fin*: How far away the circles are from the center on average. Also scales the circles. (Default: *0.5*)
 
-### DrawSpikes
+#### DrawSpikes
 
 Draws rounded lines pointing to a position. The angle between all lines is the same.
 
@@ -465,7 +503,7 @@ Draws rounded lines pointing to a position. The angle between all lines is the s
 - **float** *len*: The length of the line. (Default: *3*)
 - **float** *angleOffset*: Additional rotation around the target position applied to each line. (Default: *0*)
 
-### DrawGradient
+#### DrawGradient
 
 Draws a gradient across the screen.
 
@@ -474,14 +512,14 @@ Draws a gradient across the screen.
 - **Color** *col3*: The color of the top right corner. (Default: *colorClear*)
 - **Color** *col4*: The color of the top left corner. (Default: *colorClear*)
 
-### DrawVertGradient
+#### DrawVertGradient
 
 Draws a vertical gradient.
 
 - **Color** *col1*: The bottom color. (Default: *colorClear*)
 - **Color** *col2*: The top color. (Default: *colorClear*)
 
-### DrawZoom
+#### DrawZoom
 
 Draws concentric polygons around the center of the screen that increase in thickness further out.
 
@@ -490,25 +528,25 @@ Draws concentric polygons around the center of the screen that increase in thick
 - **int** *amount*: The number of polygons to draw. (Default: *10*)
 - **int** *sides*: The number of sides the polygon will have. (Default: *4*)
 
-### DrawFadeOut
+#### DrawFadeOut
 
 The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
 
 - **float** *time*: The screen will move if you put in a value that changes over time.
 
-### DrawFadeIn
+#### DrawFadeIn
 
 A light blue screen disappears into the bottom right corner. This effect is used to transition between the menu and levels.
 
 - **float** *time*: The circles will move if you put in a value that changes over time. The value should change in reverse (?).
 
-### DrawSpace
+#### DrawSpace
 
 Draws many stripes pointing towards the center. (TODO check later, this probably does needs state_time)
 
 - **Color** *col*: The color of the stripes.
 
-### DrawFillPoly
+#### DrawFillPoly
 
 Draws a filled polygon.
 
@@ -519,7 +557,7 @@ Draws a filled polygon.
 - **Color** *color*: The color of the polygon. (Default: *colorWhite*)
 - **float** *z*: The z layer of the polygon. (Default: *0*)
 
-### DrawPoly
+#### DrawPoly
 
 Draws a polygon outline.
 
@@ -531,7 +569,7 @@ Draws a polygon outline.
 - **Color** *color*: The color of the polygon. (Default: *colorWhite*)
 - **float** *z*: The z layer of the polygon. (Default: *0*)
 
-### DrawUnit
+#### DrawUnit
 
 Draws the unit's splash image.
 
@@ -540,7 +578,7 @@ Draws the unit's splash image.
 - **Color** *color*: Color of the unit. (Default: *colorWhite*)
 - **string** *part*: Suffix of the texture file to draw (e.g. *"-glow"* to draw *"mono-glow.png"*). (Default: *""*)
 
-### DrawBloom
+#### DrawBloom
 
 Draws one or more patterns with bloom enabled.
 

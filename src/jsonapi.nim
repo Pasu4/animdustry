@@ -1,11 +1,13 @@
-import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar
+import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar, pkg/polymorph
 
 var
-  drawEval_x = newEvaluator()               # General draw evaluator, holds x component of vectors
-  drawEval_y = newEvaluator()               # Holds y component of vectors
+  eval_x = newEvaluator()               # General draw evaluator, holds x component of vectors
+  eval_y = newEvaluator()               # Holds y component of vectors
   colorTable = initTable[string, Color]()   # Holds color variables
   drawBloomA, drawBloomB: proc()            # Draws bloom (it's unfortunate but what can you do)
   currentUnit: Unit                         # The current unit
+  currentEntityRef: EntityRef               # The current EntityRef (for abilityProc)
+  isBreaking, isReturning: bool             # Flow control: break or return
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -80,7 +82,7 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
   drawBloomB = bloomB
 
   # Init evals
-  for eval in [drawEval_x, drawEval_y]:
+  for eval in [eval_x, eval_y]:
     # Functions
     # eval.addFunc("getScl", apiGetScl, 1)
     # eval.addFunc("hoverOffset", apiHoverOffset)
@@ -89,12 +91,12 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
     eval.addVar("shadowOffset", 0.3f)
 
   # Vector functions
-  drawEval_x.addFunc("getScl", apiGetScl, 1)
-  drawEval_y.addFunc("getScl", apiGetScl, 1)
-  drawEval_x.addFunc("hoverOffset", apiHoverOffset_x, -1)
-  drawEval_y.addFunc("hoverOffset", apiHoverOffset_y, -1)
-  drawEval_x.addFunc("vec2", apiVec2_x, 2)
-  drawEval_y.addFunc("vec2", apiVec2_y, 2)
+  eval_x.addFunc("getScl", apiGetScl, 1)
+  eval_y.addFunc("getScl", apiGetScl, 1)
+  eval_x.addFunc("hoverOffset", apiHoverOffset_x, -1)
+  eval_y.addFunc("hoverOffset", apiHoverOffset_y, -1)
+  eval_x.addFunc("vec2", apiVec2_x, 2)
+  eval_y.addFunc("vec2", apiVec2_y, 2)
   
   # Colors
   colorTable["shadowColor"]   = rgba(0f, 0f, 0f, 0.4f)
@@ -122,16 +124,13 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
 
 # Update variables that can be used in formulas
 proc updateEvals() =
-  # if not evalsInitialized:
-  #   evalsInitialized = true
-  #   initEvals()
-  
-  for eval in [drawEval_x, drawEval_y]:
+  for eval in [eval_x, eval_y]:
     eval.addVar("state_secs", state.secs)
     eval.addVar("state_lastSecs", state.lastSecs)
     eval.addVar("state_time", state.time)
     eval.addVar("state_rawBeat", state.rawBeat)
     eval.addVar("state_moveBeat", state.moveBeat)
+    eval.addVar("state_newTurn", state.newTurn.float)
     eval.addVar("state_hitTime", state.hitTime)
     eval.addVar("state_healTime", state.healTime)
     eval.addVar("state_points", state.points.float)
@@ -143,18 +142,18 @@ proc updateEvals() =
     eval.addVar("fau_time", fau.time)
 
   # Vector
-  drawEval_x.addVar("_getScl", apigetScl_0())
-  drawEval_y.addVar("_getScl", apiGetScl_0())
-  drawEval_x.addVar("_hoverOffset", apiHoverOffset_x_0())
-  drawEval_y.addVar("_hoverOffset", apiHoverOffset_y_0())
-  drawEval_x.addVar("playerPos", state.playerPos.x.float)
-  drawEval_y.addVar("playerPos", state.playerPos.y.float)
+  eval_x.addVar("_getScl", apigetScl_0())
+  eval_y.addVar("_getScl", apiGetScl_0())
+  eval_x.addVar("_hoverOffset", apiHoverOffset_x_0())
+  eval_y.addVar("_hoverOffset", apiHoverOffset_y_0())
+  eval_x.addVar("playerPos", state.playerPos.x.float)
+  eval_y.addVar("playerPos", state.playerPos.y.float)
 
-# Parses a draw stack into a sequence of procs
-proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
+# Parses a JSON script into a sequence of procs
+proc parseScript(drawStack: JsonNode): seq[proc()] =
   # Shortcuts
-  template evalVec2(str: string): Vec2 = vec2(drawEval_x.eval(str), drawEval_y.eval(str))
-  template eval(str: string): float = drawEval_x.eval(str)
+  template evalVec2(str: string): Vec2 = vec2(eval_x.eval(str), eval_y.eval(str))
+  template eval(str: string): float = eval_x.eval(str)
   
   var procs = newSeq[proc()]()
   for elem in drawStack.getElems():
@@ -164,11 +163,11 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
     of "SetFloat", "SetVec2":
       let
         name = elem["name"].getStr()
-        value = elem["value"].getStr()
+        value = elem["value"].getStr($elem["value"].getFloat())
       capture name, value: # This has to be done so the strings can be captured
         procs.add(proc() =
-          drawEval_x.addVar(name, drawEval_x.eval(value))
-          drawEval_y.addVar(name, drawEval_y.eval(value)))
+          eval_x.addVar(name, eval_x.eval(value))
+          eval_y.addVar(name, eval_y.eval(value)))
 
     of "SetColor":
       let
@@ -176,6 +175,67 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
         value = elem["value"].getStr()
       capture name, value:
         procs.add(proc() = colorTable[name] = getColor(value))
+
+    # Flow control
+    of "Condition": # if statement
+      let
+        condition = elem["condition"].getStr($elem["condition"].getFloat(elem["condition"].getBool().float))
+        thenBody = parseScript(elem["then"])
+        elseBody = (if not elem{"else"}.isNil: parseScript(elem["else"]) else: newSeq[proc()]())
+      capture condition, thenBody, elseBody:
+        procs.add(proc() =
+          if not (eval(condition) == 0):
+            for p in thenBody:
+              p()
+              if isBreaking or isReturning: return
+          else:
+            for p in elseBody:
+              p()
+              if isBreaking or isReturning: return
+        )
+    
+    of "Iterate": # For loop
+      let
+        iteratorName = elem["iterator"].getStr()
+        startValue = elem["startValue"].getStr($elem["startValue"].getInt())
+        endValue = elem["endValue"].getStr($elem["endValue"].getInt())
+        body = parseScript(elem["body"])
+      capture iteratorName, startValue, endValue, body:
+        procs.add(proc() =
+          var iter = eval(startValue).int
+          let maxIter = eval(endValue).int
+
+          block exitLoop:
+            while true:
+              eval_x.addVar(iteratorName, iter.float)
+              eval_y.addVar(iteratorName, iter.float)
+              for p in body:
+                p()
+                if isBreaking or isReturning: break exitLoop
+              if iter >= maxIter: break
+              iter += 1
+          isBreaking = false
+        )
+    
+    of "Repeat": # While loop
+      let
+        condition = elem["condition"].getStr($elem["condition"].getFloat(elem["condition"].getBool().float))
+        body = parseScript(elem["body"])
+      capture condition, body:
+        procs.add(proc() = 
+          block exitLoop:
+            while not (eval(condition) == 0):
+              for p in body:
+                p()
+                if isBreaking or isReturning: break exitLoop
+          isBreaking = false
+        )
+    
+    of "Break":
+      procs.add(proc() = isBreaking = true)
+    
+    of "Return":
+      procs.add(proc() = isReturning = true)
 
     # Patterns
     of "DrawFft":
@@ -511,13 +571,15 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
     
     # Bloom
     of "DrawBloom": # contains a body, so recurse
-      let body = parseDrawStack(elem["body"])
+      let body = parseScript(elem["body"])
       capture body:
-        procs.add(proc() = # copied from main
+        procs.add(proc() =
           drawBloom:
             for p in body:
               p()
         )
+    
+    # Ability
     
     else:
       echo "!! Critical error !!"
@@ -525,20 +587,31 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
 
 # Returns a proc for drawing a unit portrait
 proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
-
-  # Parse
-  var procs = parseDrawStack(drawStack);
+  var procs = parseScript(drawStack);
   
   capture procs:
     return (proc(unit: Unit, basePos: Vec2) =
       updateEvals()
       # Additional updates to eval
       currentUnit = unit
-      drawEval_x.addVar("basePos", basePos.x)
-      drawEval_y.addVar("basePos", basePos.y)
+      eval_x.addVar("basePos", basePos.x)
+      eval_y.addVar("basePos", basePos.y)
 
       # execute
+      isBreaking = false
+      isReturning = false
+      for p in procs:
+        p()
+        if isBreaking or isReturning: break
+    )
+
+proc getUnitAbility*(script: JsonNode): (proc(entity: EntityRef, moves: int)) =
+  var procs = parseScript(script)
+
+  capture procs:
+    return (proc(entity: EntityRef, moves: int) =
+      updateEvals()
+      currentEntityRef = entity
       for p in procs:
         p()
     )
-  
