@@ -11,8 +11,6 @@ var
   mapEval = newEvaluator()
 
 proc loadMods* =
-  #region Evaluators
-  #endregion
   echo "Loading mods from ", modDir
   if dirExists(modDir):
     for kind, modPath in walkDir(modDir):
