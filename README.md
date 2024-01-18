@@ -224,7 +224,7 @@ Iterates over a range with an iterator variable. The iterator is incremented by 
 
 Repeats an array of calls while a condition is met.
 
-- **bool** *runCondition*: The condition than must be met to execute the *body*.
+- **bool** *condition*: The condition than must be met to execute the *body*.
 - **Array** *body*: An array of calls that will be executed repeatedly as long as the *runCondition* is met.
 
 #### Break
