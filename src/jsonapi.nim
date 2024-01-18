@@ -5,6 +5,7 @@ var
   drawEval_y = newEvaluator()               # Holds y component of vectors
   colorTable = initTable[string, Color]()   # Holds color variables
   drawBloomA, drawBloomB: proc()            # Draws bloom (it's unfortunate but what can you do)
+  currentUnit: Unit                         # The current unit
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -120,7 +121,7 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
   colorTable["colorYellow"]   = colorYellow
 
 # Update variables that can be used in formulas
-proc updateDrawEvals(unit: Unit, basePos: Vec2) =
+proc updateEvals() =
   # if not evalsInitialized:
   #   evalsInitialized = true
   #   initEvals()
@@ -142,8 +143,6 @@ proc updateDrawEvals(unit: Unit, basePos: Vec2) =
     eval.addVar("fau_time", fau.time)
 
   # Vector
-  drawEval_x.addVar("basePos", basePos.x)
-  drawEval_y.addVar("basePos", basePos.y)
   drawEval_x.addVar("_getScl", apigetScl_0())
   drawEval_y.addVar("_getScl", apiGetScl_0())
   drawEval_x.addVar("_hoverOffset", apiHoverOffset_x_0())
@@ -152,12 +151,12 @@ proc updateDrawEvals(unit: Unit, basePos: Vec2) =
   drawEval_y.addVar("playerPos", state.playerPos.y.float)
 
 # Parses a draw stack into a sequence of procs
-proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
+proc parseDrawStack(drawStack: JsonNode): seq[proc()] =
   # Shortcuts
   template evalVec2(str: string): Vec2 = vec2(drawEval_x.eval(str), drawEval_y.eval(str))
   template eval(str: string): float = drawEval_x.eval(str)
   
-  var procs = newSeq[proc(unit: Unit, basePos: Vec2)]()
+  var procs = newSeq[proc()]()
   for elem in drawStack.getElems():
     echo elem["type"].getStr()
     case elem["type"].getStr()
@@ -167,7 +166,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         name = elem["name"].getStr()
         value = elem["value"].getStr()
       capture name, value: # This has to be done so the strings can be captured
-        procs.add(proc(u: Unit, v: Vec2) =
+        procs.add(proc() =
           drawEval_x.addVar(name, drawEval_x.eval(value))
           drawEval_y.addVar(name, drawEval_y.eval(value)))
 
@@ -176,7 +175,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         name = elem["name"].getStr()
         value = elem["value"].getStr()
       capture name, value:
-        procs.add(proc(u: Unit, v: Vec2) = colorTable[name] = getColor(value))
+        procs.add(proc() = colorTable[name] = getColor(value))
 
     # Patterns
     of "DrawFft":
@@ -186,25 +185,25 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         length = elem{"length"}.getStr($elem{"length"}.getFloat(8f))
         color = elem{"color"}.getStr($colorWhite)
       capture pos, radius, length, color:
-        procs.add(proc(u: Unit, v: Vec2) = patFft(evalVec2(pos), eval(radius), eval(length), getColor(color)))
+        procs.add(proc() = patFft(evalVec2(pos), eval(radius), eval(length), getColor(color)))
     
     of "DrawTiles":
-      procs.add(proc(u: Unit, v: Vec2) = patTiles())
+      procs.add(proc() = patTiles())
     
     of "DrawTilesFft":
-      procs.add(proc(u: Unit, v: Vec2) = patTilesFft())
+      procs.add(proc() = patTilesFft())
     
     of "DrawTilesSquare":
       let
         col1 = elem{"col1"}.getStr($colorWhite)
         col2 = elem{"col2"}.getStr($colorBlue)
       capture col1, col2:
-        procs.add(proc(u: Unit, v: Vec2) = patTilesSquare(getColor(col1), getColor(col2)))
+        procs.add(proc() = patTilesSquare(getColor(col1), getColor(col2)))
     
     of "DrawBackground":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patBackground(getColor(col)))
+        procs.add(proc() = patBackground(getColor(col)))
     
     of "DrawStripes":
       let
@@ -212,17 +211,17 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         col2 = elem{"col2"}.getStr($colorPink.mix(colorWhite, 0.2f))
         angle = elem{"angle"}.getStr($elem{"angle"}.getFloat(135f.rad))
       capture col1, col2, angle:
-        procs.add(proc(u: Unit, v: Vec2) = patStripes(getColor(col1), getColor(col2), eval(angle)))
+        procs.add(proc() = patStripes(getColor(col1), getColor(col2), eval(angle)))
 
     of "DrawBeatSquare":
       let col = elem{"col"}.getStr($colorPink.mix(colorWhite, 0.7f))
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patBeatSquare(getColor(col)))
+        procs.add(proc() = patBeatSquare(getColor(col)))
     
     of "DrawBeatAlt":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patBeatAlt(getColor(col)))
+        procs.add(proc() = patBeatAlt(getColor(col)))
 
     of "DrawTriSquare":
       let
@@ -235,7 +234,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         sides = elem{"sides"}.getStr($elem{"sides"}.getInt(3))
         shapeOffset = elem{"shapeOffset"}.getStr($elem{"shapeOffset"}.getFloat(0f.rad))
       capture pos, col, len, rad, offset, amount, sides, shapeOffset:
-        procs.add(proc(u: Unit, v: Vec2) = patTriSquare(evalVec2(pos), getColor(col), eval(len), eval(rad), eval(offset), eval(amount).int, eval(sides).int, eval(shapeOffset)))
+        procs.add(proc() = patTriSquare(evalVec2(pos), getColor(col), eval(len), eval(rad), eval(offset), eval(amount).int, eval(sides).int, eval(shapeOffset)))
 
     of "DrawSpin":
       let
@@ -243,7 +242,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         col2 = elem["col2"].getStr()
         blades = elem{"blades"}.getStr($elem{"blades"}.getInt(10))
       capture col1, col2, blades:
-        procs.add(proc(u: Unit, v: Vec2) = patSpin(getColor(col1), getColor(col2), eval(blades).int))
+        procs.add(proc() = patSpin(getColor(col1), getColor(col2), eval(blades).int))
       
     of "DrawSpinGradient":
       let
@@ -254,7 +253,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         blades = elem{"blades"}.getStr($elem{"blades"}.getInt(10))
         spacing = elem{"spacing"}.getStr($elem{"spacing"}.getInt(2))
       capture pos, col1, col2, len, blades, spacing:
-        procs.add(proc(u: Unit, v: Vec2) = patSpinGradient(evalVec2(pos), getColor(col1), getColor(col2), eval(len), eval(blades).int, eval(spacing).int))
+        procs.add(proc() = patSpinGradient(evalVec2(pos), getColor(col1), getColor(col2), eval(len), eval(blades).int, eval(spacing).int))
     
     of "DrawSpinShape":
       let
@@ -269,7 +268,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         radrad = elem{"radrad"}.getStr($elem{"radrad"}.getFloat(1.3f))
         radrotscl = elem{"radrotscl"}.getStr($elem{"radrotscl"}.getFloat(0.25f))
       capture col1, col2, sides, rad, turnSpeed, rads, radsides, radOff, radrad, radrotscl:
-        procs.add(proc(u: Unit, v: Vec2) = patSpinShape(getColor(col1), getColor(col2), eval(sides).int, eval(rad), eval(turnSpeed), eval(rads).int, eval(radsides).int, eval(radOff), eval(radrad), eval(radrotscl)))
+        procs.add(proc() = patSpinShape(getColor(col1), getColor(col2), eval(sides).int, eval(rad), eval(turnSpeed), eval(rads).int, eval(radsides).int, eval(radOff), eval(radrad), eval(radrotscl)))
     
     of "DrawShapeBack":
       let
@@ -279,33 +278,33 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         spacing = elem{"spacing"}.getStr($elem{"spacing"}.getFloat(2.5f))
         angle = elem{"angle"}.getStr($elem{"angle"}.getFloat(90f.rad))
       capture col1, col2, sides, spacing, angle:
-        procs.add(proc(u: Unit, v: Vec2) = patShapeBack(getColor(col1), getColor(col2), eval(sides).int, eval(spacing), eval(angle)))
+        procs.add(proc() = patShapeBack(getColor(col1), getColor(col2), eval(sides).int, eval(spacing), eval(angle)))
     
     of "DrawFadeShapes":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patFadeShapes(getColor(col)))
+        procs.add(proc() = patFadeShapes(getColor(col)))
     
     of "DrawRain":
       let amount = elem{"amount"}.getStr($elem{"amount"}.getInt(80))
       capture amount:
-        procs.add(proc(u: Unit, v: Vec2) = patRain(eval(amount).int))
+        procs.add(proc() = patRain(eval(amount).int))
 
     of "DrawPetals":
-      procs.add(proc(u: Unit, v: Vec2) = patPetals())
+      procs.add(proc() = patPetals())
     
     of "DrawSkats":
-      procs.add(proc(u: Unit, v: Vec2) = patSkats())
+      procs.add(proc() = patSkats())
 
     of "DrawClouds":
       let col = elem{"col"}.getStr($colorWhite)
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patClouds(getColor(col)))
+        procs.add(proc() = patClouds(getColor(col)))
     
     of "DrawLongClouds":
       let col = elem{"col"}.getStr($colorWhite)
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patLongClouds(getColor(col)))
+        procs.add(proc() = patLongClouds(getColor(col)))
 
     of "DrawStars":
       let
@@ -314,7 +313,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(40))
         seed = elem{"seed"}.getStr($elem{"seed"}.getInt(1))
       capture col, flash, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) = patStars(getColor(col), getColor(flash), eval(amount).int, eval(seed).int))
+        procs.add(proc() = patStars(getColor(col), getColor(flash), eval(amount).int, eval(seed).int))
 
     of "DrawTris":
       let
@@ -323,12 +322,12 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
         seed = elem{"seed"}.getStr($elem{"seed"}.getInt(1))
       capture col1, col2, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) = patTris(getColor(col1), getColor(col2), eval(amount).int, eval(seed).int))
+        procs.add(proc() = patTris(getColor(col1), getColor(col2), eval(amount).int, eval(seed).int))
 
     of "DrawBounceSquares":
       let col = elem{"col"}.getStr($colorWhite)
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patBounceSquares(getColor(col)))
+        procs.add(proc() = patBounceSquares(getColor(col)))
 
     of "DrawCircles":
       let
@@ -340,7 +339,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         maxSize = elem{"maxSize"}.getStr($elem{"maxSize"}.getFloat(7f))
         moveSpeed = elem{"moveSpeed"}.getStr($elem{"moveSpeed"}.getFloat(0.2f))
       capture col, time, amount, seed, minSize, maxSize, moveSpeed:
-        procs.add(proc(u: Unit, v: Vec2) = patCircles(getColor(col), eval(time), eval(amount).int, eval(seed).int, eval(minSize).float32..eval(maxSize).float32, eval(moveSpeed)))
+        procs.add(proc() = patCircles(getColor(col), eval(time), eval(amount).int, eval(seed).int, eval(minSize).float32..eval(maxSize).float32, eval(moveSpeed)))
 
     of "DrawRadTris":
       let
@@ -349,7 +348,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
         seed = elem{"seed"}.getStr($elem{"seed"}.getInt(1))
       capture col, time, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) = patRadTris(getColor(col), eval(time), eval(amount).int, eval(seed).int))
+        procs.add(proc() = patRadTris(getColor(col), eval(time), eval(amount).int, eval(seed).int))
     
     of "DrawMissiles":
       let
@@ -358,7 +357,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
         seed = elem{"seed"}.getStr($elem{"seed"}.getInt(1))
       capture col, time, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) = patMissiles(getColor(col), eval(time), eval(amount).int, eval(seed).int))
+        procs.add(proc() = patMissiles(getColor(col), eval(time), eval(amount).int, eval(seed).int))
 
     of "DrawFallSquares":
       let
@@ -367,7 +366,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         time = (if elem{"time"}.isNil: "state_time" else: elem{"time"}.getStr($elem{"time"}.getFloat()))
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
       capture col1, col2, time, amount:
-        procs.add(proc(u: Unit, v: Vec2) = patFallSquares(getColor(col1), getColor(col2), eval(time), eval(amount).int))
+        procs.add(proc() = patFallSquares(getColor(col1), getColor(col2), eval(time), eval(amount).int))
 
     of "DrawFlame":
       let
@@ -376,7 +375,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         time = (if elem{"time"}.isNil: "state_time" else: elem{"time"}.getStr($elem{"time"}.getFloat()))
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(80))
       capture col1, col2, time, amount:
-        procs.add(proc(u: Unit, v: Vec2) = patFlame(getColor(col1), getColor(col2), eval(time), eval(amount).int))
+        procs.add(proc() = patFlame(getColor(col1), getColor(col2), eval(time), eval(amount).int))
     
     of "DrawSquares":
       let
@@ -385,7 +384,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
         seed = elem{"angle"}.getStr($elem{"angle"}.getInt(2))
       capture col, time, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) = patSquares(getColor(col), eval(time), eval(amount).int, eval(seed).int))
+        procs.add(proc() = patSquares(getColor(col), eval(time), eval(amount).int, eval(seed).int))
 
     of "DrawRoundLine":
       let
@@ -395,7 +394,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         color = elem{"color"}.getStr($colorWhite)
         stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f))
       capture pos, angle, len, color, stroke:
-        procs.add(proc(u: Unit, v: Vec2) = roundLine(evalVec2(pos), eval(angle), eval(len), getColor(color), eval(stroke)))
+        procs.add(proc() = roundLine(evalVec2(pos), eval(angle), eval(len), getColor(color), eval(stroke)))
 
     of "DrawLines":
       let
@@ -404,7 +403,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(30))
         angle = elem{"angle"}.getStr($elem{"angle"}.getFloat(45f.rad))
       capture col, seed, amount, angle:
-        procs.add(proc(u: Unit, v: Vec2) = patLines(getColor(col), eval(seed).int, eval(amount).int, eval(angle)))
+        procs.add(proc() = patLines(getColor(col), eval(seed).int, eval(amount).int, eval(angle)))
 
     of "DrawRadLines":
       let
@@ -415,7 +414,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         posScl = elem{"posScl"}.getStr($elem{"posScl"}.getFloat(1f))
         lenScl = elem{"lenScl"}.getStr($elem{"lenScl"}.getFloat(1f))
       capture col, seed, amount, stroke, posScl, lenScl:
-        procs.add(proc(u: Unit, v: Vec2) = patRadLines(getColor(col), eval(seed).int, eval(amount).int, eval(stroke), eval(posScl), eval(lenScl)))
+        procs.add(proc() = patRadLines(getColor(col), eval(seed).int, eval(amount).int, eval(stroke), eval(posScl), eval(lenScl)))
 
     of "DrawRadCircles":
       let
@@ -424,7 +423,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(40))
         fin = elem{"fin"}.getStr($elem{"fin"}.getFloat(0.5f))
       capture col, seed, amount, fin:
-        procs.add(proc(u: Unit, v: Vec2) = patRadCircles(getColor(col), eval(seed).int, eval(amount).int, eval(fin)))
+        procs.add(proc() = patRadCircles(getColor(col), eval(seed).int, eval(amount).int, eval(fin)))
       
     of "DrawSpikes":
       let
@@ -435,7 +434,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         len = elem{"len"}.getStr($elem{"len"}.getFloat(3f))
         angleOffset = elem{"angleOffset"}.getStr($elem{"angleOffset"}.getFloat(0f))
       capture pos, col, amount, offset, len, angleOffset:
-        procs.add(proc(u: Unit, v: Vec2) = patSpikes(evalVec2(pos), getColor(col), eval(amount).int, eval(offset), eval(len), eval(angleOffset)))
+        procs.add(proc() = patSpikes(evalVec2(pos), getColor(col), eval(amount).int, eval(offset), eval(len), eval(angleOffset)))
 
     of "DrawGradient":
       let
@@ -444,14 +443,14 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         col3 = elem{"col3"}.getStr($colorClear)
         col4 = elem{"col4"}.getStr($colorClear)
       capture col1, col2, col3, col4:
-        procs.add(proc(u: Unit, v: Vec2) = patGradient(getColor(col1), getColor(col2), getColor(col3), getColor(col4)))
+        procs.add(proc() = patGradient(getColor(col1), getColor(col2), getColor(col3), getColor(col4)))
 
     of "DrawVertGradient":
       let
         col1 = elem{"col1"}.getStr($colorClear)
         col2 = elem{"col2"}.getStr($colorClear)
       capture col1, col2:
-        procs.add(proc(u: Unit, v: Vec2) = patVertGradient(getColor(col1), getColor(col2)))
+        procs.add(proc() = patVertGradient(getColor(col1), getColor(col2)))
 
     of "DrawZoom":
       let
@@ -460,22 +459,22 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(10))
         sides = elem{"sides"}.getStr($elem{"sides"}.getInt(4))
       capture col, offset, amount, sides:
-        procs.add(proc(u: Unit, v: Vec2) = patZoom(getColor(col), eval(offset), eval(amount).int, eval(sides).int))
+        procs.add(proc() = patZoom(getColor(col), eval(offset), eval(amount).int, eval(sides).int))
 
     of "DrawFadeOut":
       let time = elem["time"].getStr($elem["time"].getFloat())
       capture time:
-        procs.add(proc(u: Unit, v: Vec2) = patFadeOut(eval(time)))
+        procs.add(proc() = patFadeOut(eval(time)))
     
     of "DrawFadeIn":
       let time = elem["time"].getStr($elem["time"].getFloat())
       capture time:
-        procs.add(proc(u: Unit, v: Vec2) = patFadeIn(eval(time)))
+        procs.add(proc() = patFadeIn(eval(time)))
 
     of "DrawSpace":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patSpace(getColor(col)))
+        procs.add(proc() = patSpace(getColor(col)))
 
     # Draw
     of "DrawFillPoly":
@@ -487,7 +486,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         color = elem{"color"}.getStr($colorWhite)
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture pos, sides, radius, rotation, color, z:
-        procs.add(proc(u: Unit, v: Vec2) = fillPoly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), getColor(color), eval(z)))
+        procs.add(proc() = fillPoly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), getColor(color), eval(z)))
     
     of "DrawPoly":
       let
@@ -499,7 +498,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         color = elem{"color"}.getStr($colorWhite)
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture pos, sides, radius, rotation, stroke, color, z:
-        procs.add(proc(u: Unit, v: Vec2) = poly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
+        procs.add(proc() = poly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
     
     of "DrawUnit":
       let
@@ -508,16 +507,16 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         color = elem{"color"}.getStr($colorWhite)
         part = elem{"part"}.getStr("")
       capture pos, scl, color, part:
-        procs.add(proc(u: Unit, v: Vec2) = u.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
+        procs.add(proc() = currentUnit.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
     
     # Bloom
     of "DrawBloom": # contains a body, so recurse
       let body = parseDrawStack(elem["body"])
       capture body:
-        procs.add(proc(u: Unit, v: Vec2) = # copied from main
+        procs.add(proc() = # copied from main
           drawBloom:
             for p in body:
-              p(u, v)
+              p()
         )
     
     else:
@@ -526,14 +525,20 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
 
 # Returns a proc for drawing a unit portrait
 proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
+
+  # Parse
   var procs = parseDrawStack(drawStack);
-  # procs.add(proc(u: Unit, v: Vec2) = echo "test")
+  
   capture procs:
-    return (proc(u: Unit, v: Vec2) =
-      # echo procs.len
-      updateDrawEvals(u, v)
+    return (proc(unit: Unit, basePos: Vec2) =
+      updateEvals()
+      # Additional updates to eval
+      currentUnit = unit
+      drawEval_x.addVar("basePos", basePos.x)
+      drawEval_y.addVar("basePos", basePos.y)
+
+      # execute
       for p in procs:
-        p(u, v)
-        # echo ""
+        p()
     )
   
