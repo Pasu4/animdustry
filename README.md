@@ -51,7 +51,9 @@ modfolder
 - **maps:** Contains the playable maps this mod adds (Not yet implemented).
 - **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
 - **units**: Contains unit scripts. The name of a file should match the name of the unit.
-- **unitSprites**: Contains
+- **unitSprites**: Contains in-game sprites for the units.
+
+An example of a mod can be found [here](https://github.com/Pasu4/animdustry-mod-template).
 
 ## mod.json
 
