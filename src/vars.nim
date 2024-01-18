@@ -157,4 +157,6 @@ let
     unobtainable: true
   )
 
-  allUnits* = [unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder]
+var
+  allUnits* = @[unitAlpha, unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei, unitBoulder]
+  unlockableUnits* = @[unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei]

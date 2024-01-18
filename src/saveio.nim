@@ -1,9 +1,8 @@
-import os, vars, types, strformat, core, fau/assets, tables, msgpack4nim, msgpack4nim/msgpack4collection
+import os, vars, types, strformat, core, fau/assets, tables, msgpack4nim, msgpack4nim/msgpack4collection, std/json
 
 let 
   dataDir = getSaveDir("animdustry")
   dataFile = dataDir / "data.bin"
-  #TODO
   settingsFile = dataDir / "settings.bin"
 
 proc packType*[ByteStream](s: ByteStream, unit: Unit) =
@@ -52,3 +51,9 @@ proc loadGame* =
       unpack(dataFile.readFile, save)
       echo "Loaded game state."
     except: echo &"Failed to load save state: {getCurrentExceptionMsg()}"
+
+#region Mods
+
+
+
+#endregion

@@ -41,7 +41,7 @@ type Unit* = ref object
   #called every move (optional)
   abilityProc*: proc(unit: EntityRef, moves: int)
   #draw the unit in the splash screen
-  draw*: proc(unit: Unit, pos: Vec2) {.nimcall.}
+  draw*: proc(unit: Unit, pos: Vec2) #{.nimcall.}
   #cached textures
   textures*: Table[string, Texture]
   #true for boulder
@@ -57,6 +57,12 @@ type Unit* = ref object
   jump*: float32
   jumping*: bool
   clickTime*: float32
+
+  # mod
+  isModded*: bool
+  modPath*: string
+  canAngery*: bool # only used for modded units!
+  canHappy*: bool # only used for modded units!
 
 type Gamemode* = enum
   #in game intro headphones screen

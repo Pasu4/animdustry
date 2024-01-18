@@ -2,6 +2,8 @@ import core, fau/presets/[basic, effects], fau/g2/[font, ui, bloom], fau/assets
 import std/[tables, sequtils, algorithm, macros, options, random, math, strformat, deques]
 import pkg/polymorph
 import types, vars, saveio, patterns, maps, sugar, units
+import std/os
+import mods, jsonapi
 
 include components
 include fx
@@ -153,13 +155,30 @@ proc clearTextures*(unit: Unit) = unit.textures.clear()
 proc getTexture*(unit: Unit, name: string = ""): Texture =
   ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
   if not unit.textures.hasKey(name):
-    let tex = loadTextureAsset("textures/" & unit.name & name & ".png")
+    let tex =
+      if not unit.isModded:
+        echo "Loading asset ", "textures/" & unit.name & name & ".png"
+        loadTextureAsset("textures/" & unit.name & name & ".png")
+      else:
+        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
     tex.filter = tfLinear
     unit.textures[name] = tex
     return tex
   return unit.textures[name]
 
+# For modded units because they don't use the atlas
+proc getGameTexture*(unit: Unit, name: string = ""): Texture =
+  let key = "__game" & name
+  if not unit.textures.hasKey(key):
+    let tex = loadTextureFile(unit.modPath / "unitSprites" / unit.name & name & ".png")
+    tex.filter = tfNearest
+    unit.textures[key] = tex
+    return tex
+  return unit.textures[key]
+
 proc rollUnit*(): Unit =
+  echo "test"
   #very low chance, as it is annoying
   if chance(1f / 100f):
     return unitNothing
@@ -169,7 +188,7 @@ proc rollUnit*(): Unit =
     return unitBoulder
 
   #not all units; alpha and boulder are excluded
-  return sample([unitMono, unitOct, unitCrawler, unitZenith, unitQuad, unitOxynoe, unitSei])
+  return sample(unlockableUnits)
 
 proc fading(): bool = fadeTarget != nil
 
@@ -264,11 +283,24 @@ makeSystem("core", []):
 
     createMaps()
     allMaps = @[map1, map2, map3, map4, map5]
-
     createUnits()
+
+    initJsonApi(
+      (proc() =
+        drawBuffer(sysDraw.bloom.buffer)
+      ),
+      (proc() =
+        drawBufferScreen()
+        sysDraw.bloom.blit(params = meshParams(blend = blendNormal))
+      )
+    )
+
+    loadMods()
 
     loadGame()
     loadSettings()
+    
+    save.copper = 1000
 
     setGlobalVolume(settings.globalVolume)
 
@@ -842,24 +874,34 @@ makeSystem("drawLaser", [Pos, DrawLaser, Scaled]):
 
 makeSystem("drawUnit", [Pos, UnitDraw, Input]):
   all:
-
     let unit = item.unitDraw.unit
     let suffix = 
       if item.unitDraw.hitTime > 0: "-hit"
-      elif item.unitDraw.failTime > 0 and (&"unit-{item.unitDraw.unit.name}-angery").patch.exists: "-angery"
+      elif item.unitDraw.failTime > 0 and ((&"unit-{unit.name}-angery").patch.exists or unit.canAngery): "-angery"
+      elif state.map.soundLength - state.secs < 1 and ((&"unit-{unit.name}-happy").patch.exists or unit.canHappy): "-happy"
       else: ""
     
     if item.unitDraw.shieldTime > 0.001f:
       draw("shield".patchConst, item.pos.vec, z = zlayer(item) - 1f, scl = vec2(item.unitDraw.shieldTime), mixColor = colorWhite.withA(item.unitDraw.hitTime.clamp))
-
-    draw(
-      (&"unit-{item.unitDraw.unit.name}{suffix}").patch,
-      item.pos.vec + vec2(0f, (item.unitDraw.walkTime.powout(2f).slope * 5f - 1f).px),
-      scl = vec2(-item.unitDraw.side.sign * (1f + (1f - item.unitDraw.scl)), item.unitDraw.scl - (item.unitDraw.beatScl) * 0.16f), 
-      align = daBot,
-      mixColor = colorWhite.withA(if item.unitDraw.shieldTime > 0.001f: 0f else: clamp(item.unitDraw.hitTime - 0.6f)).mix(colorAccent, item.unitDraw.switchTime.max(0f)),
-      z = zlayer(item)
-    )
+    
+    if not item.unitDraw.unit.isModded:
+      draw(
+        (&"unit-{item.unitDraw.unit.name}{suffix}").patch,
+        item.pos.vec + vec2(0f, (item.unitDraw.walkTime.powout(2f).slope * 5f - 1f).px),
+        scl = vec2(-item.unitDraw.side.sign * (1f + (1f - item.unitDraw.scl)), item.unitDraw.scl - (item.unitDraw.beatScl) * 0.16f), 
+        align = daBot,
+        mixColor = colorWhite.withA(if item.unitDraw.shieldTime > 0.001f: 0f else: clamp(item.unitDraw.hitTime - 0.6f)).mix(colorAccent, item.unitDraw.switchTime.max(0f)),
+        z = zlayer(item)
+      )
+    else:
+      draw(
+        unit.getGameTexture(suffix),
+        item.pos.vec + vec2(0f, (item.unitDraw.walkTime.powout(2f).slope * 5f - 1f).px),
+        scl = vec2(-item.unitDraw.side.sign * (1f + (1f - item.unitDraw.scl)), item.unitDraw.scl - (item.unitDraw.beatScl) * 0.16f), 
+        align = daBot,
+        mixColor = colorWhite.withA(if item.unitDraw.shieldTime > 0.001f: 0f else: clamp(item.unitDraw.hitTime - 0.6f)).mix(colorAccent, item.unitDraw.switchTime.max(0f)),
+        z = zlayer(item)
+      )
 
     if unit.abilityReload > 0:
       draw(fau.white, item.pos.vec - vec2(0f, 3f.px), size = vec2(unit.abilityReload.float32.px + 2f.px, 3f.px), color = colorBlack, z = 6000f)
