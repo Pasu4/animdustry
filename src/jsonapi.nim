@@ -385,8 +385,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         amount = elem{"amount"}.getStr($elem{"amount"}.getInt(50))
         seed = elem{"angle"}.getStr($elem{"angle"}.getInt(2))
       capture col, time, amount, seed:
-        procs.add(proc(u: Unit, v: Vec2) =
-          patSquares(getColor(col), eval(time), eval(amount).int, eval(seed).int))
+        procs.add(proc(u: Unit, v: Vec2) = patSquares(getColor(col), eval(time), eval(amount).int, eval(seed).int))
 
     of "DrawRoundLine":
       let
@@ -509,11 +508,7 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         color = elem{"color"}.getStr($colorWhite)
         part = elem{"part"}.getStr("")
       capture pos, scl, color, part:
-        # echo color, " -> ", getColor(color)
-        procs.add(proc(u: Unit, v: Vec2) =
-          # echo "raw: ", pos, ", ", scl, ", ", color
-          # echo "drawing: ", evalVec2(pos), ", ", vec2(drawEval_x.eval(scl), drawEval_y.eval(scl)), ", ", getColor(color)
-          u.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
+        procs.add(proc(u: Unit, v: Vec2) = u.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
     
     # Bloom
     of "DrawBloom": # contains a body, so recurse

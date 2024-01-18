@@ -26,14 +26,20 @@ music used:
 
 # Documentation
 
+## Folder structure
+
 ## Functions
 
-- **float** *px(val)*: Turns pixel units into world units.
-- **Vec2** *getScl(base)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears.
-- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically.
+Functions can be used inside math formulas.
+
+- **float** *px(val)*: Converts pixel units into world units.
+- **Vec2** *getScl(base)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit portrait drawing.
+- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit portrait drawing.
 - **Vec2** *vec2(x, y)*: Constructs a 2D vector from x and y components.
 
 ## Variables
+
+Variables beginning with "state_" are only available inside levels.
 
 - **float** *state_secs*: Smoothed position of the music track in seconds.
 - **float** *state_lastSecs*: Last "discrete" music track position, internally used.
@@ -41,17 +47,18 @@ music used:
 - **float** *state_rawBeat*: Raw beat calculated based on music position.
 - **float** *state_moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
 - **float** *state_hitTime*: Snaps to 1 when player is hit for health animation.
-- **float** *state_healTime*: Snaps to 1 when player is healed.
-- **float** *state_points*: Points awarded based on various events.
-- **float** *state_turn*: Beats that have passed total.
-- **float** *state_hits*: The number of times the player has been hit this map. (?)
-- **float** *state_totalHits*: Same as *state_hits*, probably.
-- **float** *state_misses*: The number of times the player has missed an input this map. (?)
-- **float** *fau_time*: The global time that is independent of the current beatmap.
+- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented echaninc in the base game.
+- **int** *state_points*: Points awarded based on various events.
+- **int** *state_turn*: Beats that have passed total.
+- **int** *state_hits*: The number of times the player has been hit this map. (?)
+- **int** *state_totalHits*: Same as *state_hits*, probably.
+- **int** *state_misses*: The number of times the player has missed an input this map. (?)
 
-- **Vec2** *basePos*: The base position of the unit portrait.
-- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value).
-- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value).
+- **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+
+- **Vec2** *basePos*: The base position of the unit portrait. Only usable in the context of unit portrait drawing.
+- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit portrait drawing.
+- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit portrait drawing.
 - **Vec2** *playerPos*: Last known player position.
 
 - **Color** *shadowColor*
@@ -100,7 +107,7 @@ Sets a color variable that is accessible from anywhere.
 
 ### DrawFft
 
-(TODO check source)
+I don't know what it does, and it is never used in the base game. (TODO do more testing)
 
 - **Vec2** *pos*:
 - **float** *radius*: (Default: *px(90)*)
@@ -109,24 +116,24 @@ Sets a color variable that is accessible from anywhere.
 
 ### DrawTiles
 
-Draws the playing field.
+Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
 ### DrawTilesFft
 
-Draws the playing field. (TODO check source)
+Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
 ### DrawTilesSquare
 
-Draws diagonal stripes. (TODO check source)
+Draws the playing field. Should only be used inside levels. (TODO coming soon)
 
 - **Color** *col1*: (Default: *colorWhite*)
 - **Color** *col2*: (Default: *colorBlue*)
 
 ### DrawBackground
 
-Why does everything draw stripes?? (TODO check source)
+Draws a single color background.
 
-- **Color** *col*: The color of the stripes.
+- **Color** *col*: The color of the background.
 
 ### DrawStripes
 
@@ -178,6 +185,8 @@ Draws a "fan" of triangles. (TODO better explanation)
 
 ### DrawSpinShape
 
+Only works inside levels. (TODO coming soon)
+
 - **Color** *col1*:
 - **Color** *col2*:
 - **int** *sides*: (Default: *4*)
@@ -191,33 +200,49 @@ Draws a "fan" of triangles. (TODO better explanation)
 
 ### DrawShapeBack
 
-- **Color** *col1*:
-- **Color** *col2*:
-- **int** *sides*: (Default: *4*)
-- **float** *spacing*: (Default: *2.5*)
-- **float** *angle*: (Default: *rad(90)*)
+Draws concentric polygons of alternating colors around the center.
+
+- **Color** *col1*: The first color.
+- **Color** *col2*: The second color.
+- **int** *sides*: How many sides the polygons have. (Default: *4*)
+- **float** *spacing*: The distance between each polygon "ring". (Default: *2.5*)
+- **float** *angle*: The angle of the polygon. (Default: *rad(90)*)
 
 ### DrawFadeShapes
+
+Only works inside levels. (TODO coming soon)
 
 - **Color** *col*:
 
 ### DrawRain
 
+Only works inside levels. (TODO coming soon)
+
 - **int** *amount*: (Default: *80*)
 
 ### DrawPetals
 
+Only works inside levels. (TODO coming soon)
+
 ### DrawSkats
 
+Only works inside levels. (TODO coming soon)
+
 ### DrawClouds
+
+Only works inside levels. (TODO coming soon)
 
 - **Color** *col*: (Default: *colorWhite*)
 
 ### DrawLongClouds
 
+Only works inside levels. (TODO coming soon)
+
 - **Color** *col*: (Default: *colorWhite*)
 
 ### DrawStars
+
+Only works inside levels. (TODO coming soon)
 
 - **Color** *col*: (Default: *colorWhite*)
 - **Color** *flash*: (Default: *colorWhite*)
@@ -226,12 +251,16 @@ Draws a "fan" of triangles. (TODO better explanation)
 
 ### DrawTris
 
+Only works inside levels. (TODO coming soon)
+
 - **Color** *col1*: (Default: *colorWhite*)
 - **Color** *col2*: (Default: *colorWhite*)
 - **int** *amount*: (Default: *50*)
 - **int** *seed*: (Default: *1*)
 
 ### DrawBounceSquares
+
+Only works inside levels. (TODO coming soon)
 
 - **Color** *col*: (Default: *colorWhite*)
 
