@@ -28,7 +28,14 @@ music used:
 
 ## Folder structure
 
-The folder structur of a mod is as follows:
+A mod is a folder containing files. This folder must be placed in the mods folder of the modloader. The location of this folder depends on your operation system:
+
+- Windows: `%APPDATA%\animdustry\mods`
+- Linux: `~/.config/animdustry/mods`
+
+If the folder does not exist, you can create it, otherwise it will be created automatically on first startup of the modloader.
+
+The folder structure of a mod is as follows:
 
 ```
 modfolder
