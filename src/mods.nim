@@ -1,6 +1,6 @@
 import os, vars, types, strformat, core, fau/assets, std/json, std/strutils
 import mathexpr
-import jsonapi
+import jsonapi, patterns
 
 let
   dataDir = getSaveDir("animdustry")
@@ -70,9 +70,21 @@ proc loadMods* =
               except KeyError:
                 echo &"Could not load unit: {getCurrentExceptionMsg()}"
               #endregion
+        
+        # Credits
+        if fileExists(modPath / "credits.txt"):
+          creditsText &= "\n" & readFile(modPath / "credits.txt") & "\n\n------\n"
+        else:
+          # Auto-generate credits
+          creditsText &= &"\n- {modName} -\n\nMade by: {modAuthor}\n\n(Auto-generated credits)\n\n------\n"
 
-        echo "Finished loading mods."
-        echo "Unit count: ", allUnits.len
-        echo "Unlockable: ", unlockableUnits.len
+
+    echo "Finished loading mods."
+    echo "Unit count: ", allUnits.len
+    echo "Unlockable: ", unlockableUnits.len
   else:
-    echo "Mod folder does not exist, skipping"
+    echo "Mod folder does not exist, creating"
+    createDir(modDir)
+
+  # Finish credits
+  creditsText &= "\n" & creditsTextEnd

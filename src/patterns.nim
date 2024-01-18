@@ -574,7 +574,7 @@ template patSpace*(col: Color) =
     power = 0f
     color = col
 
-const creditsText* = """
+var creditsText* = """
 - C R E D I T S - 
 
 Art: Anuke
@@ -613,9 +613,22 @@ This game was written entirely in the Nim programming language!
 
 Thank you @treeform and @rlipsc on Github for their excellent Nim libraries!
 
-
 ------
 
+- The Animdustry Modloader -
+
+Programming and documentation: Pasu4
+
+Special thanks to:
+
+@camelStyleUser, for making this work on Android.
+
+The Mindustry discord server, for giving me the idea for the modloader.
+
+------
+"""
+
+const creditsTextEnd* = """
 THANK YOU FOR PLAYING!
 
 

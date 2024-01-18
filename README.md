@@ -28,13 +28,88 @@ music used:
 
 ## Folder structure
 
+The folder structur of a mod is as follows:
+
+```
+modfolder
+├── mod.json
+├── credits.txt
+├── maps
+│   └── exampleMap.json
+├── unitSplashes
+│   └── exampleUnit.png
+├── units
+│   └── exampleUnit.json
+└── unitSprites
+    ├── exampleUnit-angery.png
+    ├── exampleUnit-hit.png
+    └── exampleUnit.png
+```
+
+- **mod.json:** Contains information about the mod.
+- **credits.txt:** Additional credits added to the credits of the game. Credits will be auto-generated if this file is missing.
+- **maps:** Contains the playable maps this mod adds (Not yet implemented).
+- **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
+- **units**: Contains unit scripts. The name of a file should match the name of the unit.
+- **unitSprites**: Contains
+
+## mod.json
+
+A `mod.json` file must be be placed in the root folder of the mod. It is what tells the modloader that this folder contains a mod. The content of the file is as follows:
+
+```json
+{
+    "name": "The name of your mod",
+    "author": "You",
+    "description": "Description of your mod"
+}
+```
+
+## Custom Maps
+
+Coming soon.
+
+## Custom Units
+
+Unit scripts describe how a unit is drawn and how it interacts with the game. To define a unit, first place a JSON file with the same name as your unit in the `units` folder. Its contents should look like this:
+
+```json
+{
+    "name": "exampleUnit",
+    "title": "-EXAMPLE-",
+    "subtitle": "lorem ipsum",
+    "abilityDesc": "dolor sit amet",
+    "abilityReload": 4,
+    "unmoving": false,
+    "draw": [
+        {"type": "SetVec2", "name": "pos", "value": "basePos - vec2(0, 0.5) + _hoverOffset * 0.5"},
+        {"type": "DrawUnit", "pos": "pos - shadowOffset", "scl": "getScl(0.165)", "color": "shadowColor"},
+        {"type": "DrawUnit", "pos": "pos", "scl": "getScl(0.165)"}
+    ],
+    "abilityProc": [
+
+    ]
+}
+```
+
+- **name:** The internal name of the unit. Used for loading files. Should be unique.
+- **title:** The title of the unit displayed at the top of the screen when it is rolled or clicked in the menu.
+- **subtitle:** The subtitle, displayed below the title in smaller letters. Usually used for a short description of the unit.
+- **abilityDesc:** A description of the unit's ability, displayed in the bottom right corner. May also be used for other descriptions.
+- **abilityReload:** How many turns it takes for the unit's ability to activate.
+- **unmoving:** If the unit can move. Only used by Boulder in the base game. May be omitted.
+- **draw:** An array of draw calls to execute each time the unit splash is drawn. More about draw calls in the chapter [API Calls](#api-calls).
+- **abilityProc:** An array of function calls to execute when the unit's ability is activated. Not implemented yet.
+
+To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
+
 ## Functions
 
 Functions can be used inside math formulas.
 
 - **float** *px(val)*: Converts pixel units into world units.
-- **Vec2** *getScl(base)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit portrait drawing.
-- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit portrait when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit portrait drawing.
+- **Vec2** *getScl(base)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
+- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
 - **Vec2** *vec2(x, y)*: Constructs a 2D vector from x and y components.
 
 ## Variables
@@ -56,33 +131,43 @@ Variables beginning with "state_" are only available inside levels.
 
 - **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
 
-- **Vec2** *basePos*: The base position of the unit portrait. Only usable in the context of unit portrait drawing.
-- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit portrait drawing.
-- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit portrait drawing.
+- **Vec2** *basePos*: The base position of the unit splash. Only usable in the context of unit splash drawing.
+- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit splash drawing.
+- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit splash drawing.
 - **Vec2** *playerPos*: Last known player position.
 
-- **Color** *shadowColor*
-- **Color** *colorAccent*
-- **Color** *colorUi*
-- **Color** *colorUiDark*
-- **Color** *colorHit*
-- **Color** *colorHeal*
-- **Color** *colorClear*
-- **Color** *colorWhite*
-- **Color** *colorBlack*
-- **Color** *colorGray*
-- **Color** *colorRoyal*
-- **Color** *colorCoral*
-- **Color** *colorOrange*
-- **Color** *colorRed*
-- **Color** *colorMagenta*
-- **Color** *colorPurple*
-- **Color** *colorGreen*
-- **Color** *colorBlue*
-- **Color** *colorPink*
-- **Color** *colorYellow*
+- **Color** *shadowColor*: #00000066
+- **Color** *colorAccent*: #ffd37f
+- **Color** *colorUi*: #bfecf3
+- **Color** *colorUiDark*: #57639a
+- **Color** *colorHit*: #ff584c
+- **Color** *colorHeal*: #84f490
+- **Color** *colorClear*: #00000000
+- **Color** *colorWhite*: #ffffff
+- **Color** *colorBlack*: #000000
+- **Color** *colorGray*: #7f7f7f
+- **Color** *colorRoyal*: #4169e1
+- **Color** *colorCoral*: #ff7f50
+- **Color** *colorOrange*: #ffa500
+- **Color** *colorRed*: #ff0000
+- **Color** *colorMagenta*: #ff00ff
+- **Color** *colorPurple*: #a020f0
+- **Color** *colorGreen*: #00ff00
+- **Color** *colorBlue*: #0000ff
+- **Color** *colorPink*: #ff69b4
+- **Color** *colorYellow*: #ffff00
 
-## Calls
+## API Calls
+
+API calls are JSON objects that are used to call a function within the game. What function is called is determined by its `type` field. Parameters are also passed as JSON fields. An example for an API call for drawing a spinning regular pentagon:
+
+```json
+{"type": "DrawPoly", "pos": "basePos", "sides": 5, "radius": 5.5, "stroke": 1.0, "color": "colorAccent", "rotation": "rad(fau_time * 90)"}
+```
+
+Parameters can either be constant or a formula. For example, the `rotation` field contains a formula for calculating the rotation based on game time, which is the standard way to animate shapes. What functions can be used inside formulas is defined in the chapter [Functions](#functions). Other usable math functions and operators can be found [here](https://yardanico.github.io/nim-mathexpr/mathexpr.html#what-is-supportedqmark). Formulas are usable for vectors, ints and floats. In the case of vectors, the formula is applied to each coordinate separately. Formulas cannot be used for colors, but colors can reference a predefined color by name. Otherwise, colors can only use hexadecimal notation (e.g. `#ff0000` for red). The alpha channel is added as two additional hexadecimal digits after the color (e.g. `#ff00007f` for half-transparent red), if not present the color is assumed to be fully opaque.
+
+Fields that have a default value can be omitted from the call.
 
 ### SetFloat
 
@@ -439,7 +524,7 @@ Draws a polygon outline.
 
 ### DrawUnit
 
-Draws a unit portrait.
+Draws the unit's splash image.
 
 - **Vec2** *pos*: Where to draw the unit.
 - **Vec2** *scl*: Scale of the unit.  (Default: *vec2(1, 1)*)

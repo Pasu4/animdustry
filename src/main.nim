@@ -160,8 +160,8 @@ proc getTexture*(unit: Unit, name: string = ""): Texture =
         echo "Loading asset ", "textures/" & unit.name & name & ".png"
         loadTextureAsset("textures/" & unit.name & name & ".png")
       else:
-        echo "Loading file ", unit.modPath / "unitPortraits" / unit.name & name & ".png"
-        loadTextureFile(unit.modPath / "unitPortraits" / unit.name & name & ".png")
+        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
     tex.filter = tfLinear
     unit.textures[name] = tex
     return tex
