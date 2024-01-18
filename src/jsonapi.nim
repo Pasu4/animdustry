@@ -199,12 +199,12 @@ proc parseDrawStack(drawStack: JsonNode): seq[proc(unit: Unit, basePos: Vec2)] =
         col1 = elem{"col1"}.getStr($colorWhite)
         col2 = elem{"col2"}.getStr($colorBlue)
       capture col1, col2:
-        procs.add(proc(u: Unit, v: Vec2) = patStripes(getColor(col1), getColor(col2)))
+        procs.add(proc(u: Unit, v: Vec2) = patTilesSquare(getColor(col1), getColor(col2)))
     
     of "DrawBackground":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc(u: Unit, v: Vec2) = patStripes(getColor(col)))
+        procs.add(proc(u: Unit, v: Vec2) = patBackground(getColor(col)))
     
     of "DrawStripes":
       let
