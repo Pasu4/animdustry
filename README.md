@@ -154,7 +154,7 @@ You can also call procedures from another mod. To do that, you have to qualify t
 
 The parameters of the called procedure are stored as global variables, which means they are accessible from outside the procedure. Since all variables are global, even those used internally can be accessed (this way you can make a return value).
 
-**Caution:** For technical reasons, colors passed as parameters to a procedure **must** be prefixed with the `#` character!
+**Caution:** For technical reasons, color literals passed as parameters to a procedure **must** be prefixed with the `#` character!
 
 A procedure can also call another procedure, even itself recursively. Keep in mind though that since all variables are global, this might overwrite other variables used in the procedure.
 

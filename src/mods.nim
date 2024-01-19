@@ -1,4 +1,4 @@
-import os, vars, types, strformat, core, fau/assets, std/json, std/strutils
+import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
 import mathexpr
 import jsonapi, patterns
 
@@ -16,13 +16,15 @@ proc loadMods* =
     for kind, modPath in walkDir(modDir):
       echo &"Found {kind} {modPath}"
       if kind == pcDir and fileExists(modPath / "mod.json"):
-        var modName, modAuthor, modNamespace: string
         # Remove try-except so the user actually gets an error message instead of the mod not loading
         # try: 
         let
           modNode = parseJson(readFile(modPath / "mod.json"))
-        modName = modNode["name"].getStr()
-        modAuthor = modNode["author"].getStr()
+          modName = modNode["name"].getStr()
+          modAuthor = modNode["author"].getStr()
+          modNamespace = modNode["namespace"].getStr()
+        currentNamespace = modNamespace
+        
         # TODO do something with description
         # except JsonParsingError:
         #   echo "Could not parse mod ", modPath
@@ -73,7 +75,7 @@ proc loadMods* =
               #   echo &"Could not load unit: {getCurrentExceptionMsg()}"
               #endregion
         if dirExists(procedurePath):
-          for fileType, filePath in walkDir(unitPath):
+          for fileType, filePath in walkDir(procedurePath):
             if fileType == pcFile and filePath.endsWith(".json"):
               #region Parse procedure
               let
@@ -81,16 +83,18 @@ proc loadMods* =
                 procName = modNamespace & "::" & procNode["name"].getStr()
                 paramNodes = procNode["parameters"].getElems()
                 procedure = Procedure(
-                  script: getScript(procNode["script"].getElems())
+                  script: getScript(procNode["script"], update = false)
                 )
               # Parse default parameters
-              var floats, colors: Table
-              for k, v in paramNodes:
-                let str = v{"default"}.getStr("")
-                if str.startsWith():
-                  colors[k] = str
-                elif not str.len == 0:
-                  floats[k] = str
+              var floats, colors: Table[string, string]
+              for pn in paramNodes:
+                let
+                  key = pn["name"].getStr()
+                  val = pn{"default"}.getStr("")
+                if val.startsWith('#'):
+                  colors[key] = val
+                elif not val.len == 0:
+                  floats[key] = val
               procedure.defaultFloats = floats
               procedure.defaultColors = colors
               procedures[procName] = procedure

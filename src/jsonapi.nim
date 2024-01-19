@@ -1,9 +1,9 @@
 import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar, pkg/polymorph, std/strutils, std/tables
 
 type Procedure* = ref object
-  script: proc()                                # The script of the procedure
-  defaultFloats: Table[string, string]          # The default values of float parameters
-  defaultColors: Table[string, string]          # The default values of color parameters
+  script*: proc()                                # The script of the procedure
+  defaultFloats*: Table[string, string]          # The default values of float parameters
+  defaultColors*: Table[string, string]          # The default values of color parameters
 
 var
   eval_x = newEvaluator()                       # General draw evaluator, holds x component of vectors
@@ -12,8 +12,9 @@ var
   drawBloomA, drawBloomB: proc()                # Draws bloom (it's unfortunate but what can you do)
   currentUnit: Unit                             # The current unit
   currentEntityRef: EntityRef                   # The current EntityRef (for abilityProc)
-  isBreaking, isReturning: bool                 # Flow control: break or return
-  currentNamespace: string                      # Current namespace for resolving procedures
+  isBreaking = false                            # Flow control: break
+  isReturning = false                           # Flow control: return
+  currentNamespace*: string                     # Current namespace for resolving procedures
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
 
 #region Procs copied to avoid circular dependency
@@ -25,8 +26,8 @@ proc getTexture(unit: Unit, name: string = ""): Texture =
         echo "Loading asset ", "textures/" & unit.name & name & ".png"
         loadTextureAsset("textures/" & unit.name & name & ".png")
       else:
-        echo "Loading file ", unit.modPath / "unitPortraits" / unit.name & name & ".png"
-        loadTextureFile(unit.modPath / "unitPortraits" / unit.name & name & ".png")
+        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
     tex.filter = tfLinear
     unit.textures[name] = tex
     return tex
@@ -609,13 +610,15 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         let str = val.getStr($val.getFloat(val.getBool().float))
 
         # Differentiate between color and float
-        if str.startsWith('#'):
+        if str.startsWith('#') or str in colorTable:
           colors[key] = str
         else:
           floats[key] = str
 
-      capture procName, colors, floats:
-      # capture procName:
+      # Cannot use capture because of generic table
+      # See https://forum.nim-lang.org/t/10887#72561 for more information
+      # capture procName, colors, floats:
+      (proc(procName: string, colors: Table[string, string], floats: Table[string, string]) =
         procs.add(proc() =
           if procName in procedures:
             let p = procedures[procName]
@@ -637,12 +640,12 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             # Execute script
             p.script()
         )
+      )(procName, colors, floats)
 
   return procs
 
-# Returns a proc for drawing a unit portrait
-proc getUnitDraw*(namespace: string, drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
-  currentNamespace = namespace
+# Returns a proc for drawing a unit splash
+proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
   var procs = parseScript(drawStack)
   
   capture procs:
@@ -654,22 +657,27 @@ proc getUnitDraw*(namespace: string, drawStack: JsonNode): (proc(unit: Unit, bas
       eval_y.addVar("basePos", basePos.y)
 
       # execute
-      isBreaking = false
-      isReturning = false
       for p in procs:
         p()
         if isBreaking or isReturning: break
+      isBreaking = false
+      isReturning = false
     )
 
 proc getUnitAbility*(script: JsonNode): (proc(entity: EntityRef, moves: int)) =
   var procs = parseScript(script)
 
   capture procs:
+    isBreaking = false
+    isReturning = false
     return (proc(entity: EntityRef, moves: int) =
       updateEvals()
       currentEntityRef = entity
       for p in procs:
         p()
+        if isBreaking or isReturning: break
+      isBreaking = false
+      isReturning = false
     )
 
 proc getScript*(script: JsonNode, update = true): (proc()) =
@@ -681,4 +689,7 @@ proc getScript*(script: JsonNode, update = true): (proc()) =
         updateEvals()
       for p in procs:
         p()
+        if isBreaking or isReturning: break
+      isBreaking = false
+      isReturning = false
     )
