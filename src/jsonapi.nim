@@ -1,13 +1,20 @@
-import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar, pkg/polymorph
+import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar, pkg/polymorph, std/strutils, std/tables
+
+type Procedure* = ref object
+  script: proc()                                # The script of the procedure
+  defaultFloats: Table[string, string]          # The default values of float parameters
+  defaultColors: Table[string, string]          # The default values of color parameters
 
 var
-  eval_x = newEvaluator()               # General draw evaluator, holds x component of vectors
-  eval_y = newEvaluator()               # Holds y component of vectors
-  colorTable = initTable[string, Color]()   # Holds color variables
-  drawBloomA, drawBloomB: proc()            # Draws bloom (it's unfortunate but what can you do)
-  currentUnit: Unit                         # The current unit
-  currentEntityRef: EntityRef               # The current EntityRef (for abilityProc)
-  isBreaking, isReturning: bool             # Flow control: break or return
+  eval_x = newEvaluator()                       # General draw evaluator, holds x component of vectors
+  eval_y = newEvaluator()                       # Holds y component of vectors
+  colorTable = initTable[string, Color]()       # Holds color variables
+  drawBloomA, drawBloomB: proc()                # Draws bloom (it's unfortunate but what can you do)
+  currentUnit: Unit                             # The current unit
+  currentEntityRef: EntityRef                   # The current EntityRef (for abilityProc)
+  isBreaking, isReturning: bool                 # Flow control: break or return
+  currentNamespace: string                      # Current namespace for resolving procedures
+  procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -157,8 +164,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
   
   var procs = newSeq[proc()]()
   for elem in drawStack.getElems():
-    echo elem["type"].getStr()
-    case elem["type"].getStr()
+    # echo elem["type"].getStr()
+    let calledFunction = elem["type"].getStr()
+    case calledFunction
     # Setters
     of "SetFloat", "SetVec2":
       let
@@ -581,13 +589,61 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     
     # Ability
     
+    # Possibly a procedure call
     else:
-      echo "!! Critical error !!"
+      let
+        procName: string = (
+          if "::" notin calledFunction: currentNamespace & "::" & calledFunction
+          else: calledFunction
+        )
+        fields = elem.getFields()
+
+      # convert [string, JsonNode] to [string, string]
+      var
+        floats: Table[string, string]
+        colors: Table[string, string]
+      for key, val in fields:
+        if key == "type": continue # ignore type
+
+        # Unknown data type, so try all of them
+        let str = val.getStr($val.getFloat(val.getBool().float))
+
+        # Differentiate between color and float
+        # if str.startsWith('#'):
+        #   colors[key] = str
+        # else:
+        #   floats[key] = str
+
+      capture procName, colors, floats:
+      # capture procName:
+        procs.add(proc() =
+          if procName in procedures:
+            let p = procedures[procName]
+
+            # Add float parameters
+            for k, v in p.defaultFloats:
+              eval_x.addVar(k, eval_x.eval(v))
+              eval_y.addVar(k, eval_y.eval(v))
+            # for k, v in floats:
+            #   eval_x.addVar(k, eval_x.eval(v))
+            #   eval_y.addVar(k, eval_y.eval(v))
+
+            # Add color parameters
+            for k, v in p.defaultColors:
+              colorTable[k] = getColor(v)
+            # for k, v in colors:
+            #   colorTable[k] = getColor(v)
+
+            # Execute script
+            p.script()
+        )
+
   return procs
 
 # Returns a proc for drawing a unit portrait
-proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
-  var procs = parseScript(drawStack);
+proc getUnitDraw*(namespace: string, drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
+  currentNamespace = namespace
+  var procs = parseScript(drawStack)
   
   capture procs:
     return (proc(unit: Unit, basePos: Vec2) =
@@ -612,6 +668,17 @@ proc getUnitAbility*(script: JsonNode): (proc(entity: EntityRef, moves: int)) =
     return (proc(entity: EntityRef, moves: int) =
       updateEvals()
       currentEntityRef = entity
+      for p in procs:
+        p()
+    )
+
+proc getScript*(script: JsonNode, update = true): (proc()) =
+  var procs = parseScript(script)
+
+  capture procs, update:
+    return (proc() =
+      if update:
+        updateEvals()
       for p in procs:
         p()
     )

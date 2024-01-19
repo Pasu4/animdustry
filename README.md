@@ -43,12 +43,15 @@ modfolder
 ├── credits.txt
 ├── maps
 │   └── exampleMap.json
+├── procedures
+│   └── exampleProc.json
 ├── unitSplashes
 │   └── exampleUnit.png
 ├── units
 │   └── exampleUnit.json
 └── unitSprites
     ├── exampleUnit-angery.png
+    ├── exampleUnit-happy.png
     ├── exampleUnit-hit.png
     └── exampleUnit.png
 ```
@@ -57,8 +60,9 @@ modfolder
 - **credits.txt:** Additional credits added to the credits of the game. Credits will be auto-generated if this file is missing.
 - **maps:** Contains the playable maps this mod adds (Not yet implemented).
 - **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
-- **units**: Contains unit scripts. The name of a file should match the name of the unit.
-- **unitSprites**: Contains in-game sprites for the units.
+- **procedures:** Contains user-defined procedures for use in scripts.
+- **units:** Contains unit scripts. The name of a file should match the name of the unit.
+- **unitSprites:** Contains in-game sprites for the units.
 
 An example of a mod can be found [here](https://github.com/Pasu4/animdustry-mod-template).
 
@@ -69,10 +73,16 @@ A `mod.json` file must be be placed in the root folder of the mod. It is what te
 ```json
 {
     "name": "The name of your mod",
+    "namespace": "example",
     "author": "You",
     "description": "Description of your mod"
 }
 ```
+
+- **name:** The name of your mod.
+- **namespace:** The namespace of your mod. Used to organize procedures.
+- **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
+- **description:** The description of your mod. Currently does absolutely nothing.
 
 ## Custom Maps
 
@@ -111,6 +121,48 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 - **abilityProc:** An array of function calls to execute when the unit's ability is activated. Not implemented yet.
 
 To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
+
+## Procedures
+
+Procedures are used the same way as [API calls](#api-calls). They are placed as JSON files in the *procedures* folder. They are called by putting the name of the procedure into the *type* field. Parameters are passed the same way as well. An example of a procedure:
+
+```json
+{
+    "name": "Example",
+    "parameters": [
+        {"name": "param1", "default": 1.0},
+        {"name": "param2"},
+        {"name": "col1", "default": "#ff0000"}
+    ],
+    "script": [
+        {"type": "Comment", "comment": "Useful function here."}
+    ]
+}
+```
+
+This procedure would be called from another script like so:
+
+```json
+{"type": "Example", "param1": 2.0, "param2": 42.0}
+```
+
+You can also call procedures from another mod. To do that, you have to qualify the procedure you want to call with the namespace of the mod it is from, like so:
+
+```json
+{"type": "utils::Example", "param1": 2.0, "param2": 42.0}
+```
+
+The parameters of the called procedure are stored as global variables, which means they are accessible from outside the procedure. Since all variables are global, even those used internally can be accessed (this way you can make a return value).
+
+**Caution:** For technical reasons, colors passed as parameters to a procedure **must** be prefixed with the `#` character!
+
+A procedure can also call another procedure, even itself recursively. Keep in mind though that since all variables are global, this might overwrite other variables used in the procedure.
+
+Procedures may have the same name as API calls, but the only way to call them then is by qualifying them with their namespace.
+
+The `Return` call always jumps to the end of the current procedure.
+
+# API Reference
 
 ## Functions
 
@@ -168,7 +220,7 @@ Variables beginning with "state_" are only available inside levels.
 
 ## API Calls
 
-API calls are JSON objects that are used to call a function within the game. What function is called is determined by its `type` field. Parameters are also passed as JSON fields. An example for an API call for drawing a spinning regular pentagon:
+API calls are JSON objects that are used to call a function within the game. What function is called is determined by its `type` field. If the type field contains a function that does not exist, it is ignored (e.g. `{"type": "Comment"}`). Parameters are also passed as JSON fields. An example for an API call for drawing a spinning regular pentagon:
 
 ```json
 {"type": "DrawPoly", "pos": "basePos", "sides": 5, "radius": 5.5, "stroke": 1.0, "color": "colorAccent", "rotation": "rad(fau_time * 90)"}

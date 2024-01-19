@@ -16,24 +16,26 @@ proc loadMods* =
     for kind, modPath in walkDir(modDir):
       echo &"Found {kind} {modPath}"
       if kind == pcDir and fileExists(modPath / "mod.json"):
-        var modName, modAuthor : string
-        try: 
-          let
-            modNode = parseJson(readFile(modPath / "mod.json"))
-          modName = modNode["name"].getStr()
-          modAuthor = modNode["author"].getStr()
-          # TODO do something with description
-        except JsonParsingError:
-          echo "Could not parse mod ", modPath
-          continue # Next mod
-        except KeyError:
-          echo &"Could not load mod: {getCurrentExceptionMsg()}"
-          continue # Next mod
+        var modName, modAuthor, modNamespace: string
+        # Remove try-except so the user actually gets an error message instead of the mod not loading
+        # try: 
+        let
+          modNode = parseJson(readFile(modPath / "mod.json"))
+        modName = modNode["name"].getStr()
+        modAuthor = modNode["author"].getStr()
+        # TODO do something with description
+        # except JsonParsingError:
+        #   echo "Could not parse mod ", modPath
+        #   continue # Next mod
+        # except KeyError:
+        #   echo &"Could not load mod: {getCurrentExceptionMsg()}"
+        #   continue # Next mod
         
         let
           unitPath = modPath / "units"
           mapPath = modPath / "maps"
           unitSpritePath = modPath / "unitSprites"
+          procedurePath = modPath / "procedures"
         
         echo &"Loading {modName} by {modAuthor}"
 
@@ -42,31 +44,56 @@ proc loadMods* =
           for fileType, filePath in walkDir(unitPath):
             if fileType == pcFile and filePath.endsWith(".json"):
               #region Parse unit
-              try:
-                let
-                  unitNode = parseJson(readFile(filePath))
-                  unitName = unitNode["name"].getStr()
-                  parsedUnit = Unit(
-                    name: unitName,
-                    title: unitNode{"title"}.getStr(&"-{unitName.toUpperAscii()}-"),
-                    subtitle: unitNode{"subtitle"}.getStr(),
-                    ability: unitNode{"abilityDesc"}.getStr(),
-                    abilityReload: unitNode{"abilityReload"}.getInt(0),
-                    unmoving: unitNode{"unmoving"}.getBool(false),
-                    isModded: true,
-                    modPath: modPath
-                  )
-                parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
-                parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
-                # TODO draw, abilityProc
-                parsedUnit.draw = getUnitDraw(unitNode["draw"])
+              # Remove try-except so the user actually gets an error message instead of the mod not loading
+              # try:
+              let
+                unitNode = parseJson(readFile(filePath))
+                unitName = unitNode["name"].getStr()
+                parsedUnit = Unit(
+                  name: unitName,
+                  title: unitNode{"title"}.getStr(&"-{unitName.toUpperAscii()}-"),
+                  subtitle: unitNode{"subtitle"}.getStr(),
+                  ability: unitNode{"abilityDesc"}.getStr(),
+                  abilityReload: unitNode{"abilityReload"}.getInt(0),
+                  unmoving: unitNode{"unmoving"}.getBool(false),
+                  isModded: true,
+                  modPath: modPath
+                )
+              parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
+              parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
 
-                allUnits.add(parsedUnit)
-                unlockableUnits.add(parsedUnit)
-              except JsonParsingError:
-                echo "Could not parse file ", filePath
-              except KeyError:
-                echo &"Could not load unit: {getCurrentExceptionMsg()}"
+              parsedUnit.draw = getUnitDraw(unitNode["draw"])
+              # TODO abilityProc
+
+              allUnits.add(parsedUnit)
+              unlockableUnits.add(parsedUnit)
+              # except JsonParsingError:
+              #   echo "Could not parse file ", filePath
+              # except KeyError:
+              #   echo &"Could not load unit: {getCurrentExceptionMsg()}"
+              #endregion
+        if dirExists(procedurePath):
+          for fileType, filePath in walkDir(unitPath):
+            if fileType == pcFile and filePath.endsWith(".json"):
+              #region Parse procedure
+              let
+                procNode = parseJson(readFile(filePath))
+                procName = modNamespace & "::" & procNode["name"].getStr()
+                paramNodes = procNode["parameters"].getElems()
+                procedure = Procedure(
+                  script: getScript(procNode["script"].getElems())
+                )
+              # Parse default parameters
+              var floats, colors: Table
+              for k, v in paramNodes:
+                let str = v{"default"}.getStr("")
+                if str.startsWith():
+                  colors[k] = str
+                elif not str.len == 0:
+                  floats[k] = str
+              procedure.defaultFloats = floats
+              procedure.defaultColors = colors
+              procedures[procName] = procedure
               #endregion
         
         # Credits
