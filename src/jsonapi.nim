@@ -609,10 +609,10 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         let str = val.getStr($val.getFloat(val.getBool().float))
 
         # Differentiate between color and float
-        # if str.startsWith('#'):
-        #   colors[key] = str
-        # else:
-        #   floats[key] = str
+        if str.startsWith('#'):
+          colors[key] = str
+        else:
+          floats[key] = str
 
       capture procName, colors, floats:
       # capture procName:
@@ -624,15 +624,15 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             for k, v in p.defaultFloats:
               eval_x.addVar(k, eval_x.eval(v))
               eval_y.addVar(k, eval_y.eval(v))
-            # for k, v in floats:
-            #   eval_x.addVar(k, eval_x.eval(v))
-            #   eval_y.addVar(k, eval_y.eval(v))
+            for k, v in floats:
+              eval_x.addVar(k, eval_x.eval(v))
+              eval_y.addVar(k, eval_y.eval(v))
 
             # Add color parameters
             for k, v in p.defaultColors:
               colorTable[k] = getColor(v)
-            # for k, v in colors:
-            #   colorTable[k] = getColor(v)
+            for k, v in colors:
+              colorTable[k] = getColor(v)
 
             # Execute script
             p.script()
