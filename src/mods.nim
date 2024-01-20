@@ -65,7 +65,7 @@ proc loadMods* =
               parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
 
               parsedUnit.draw = getUnitDraw(unitNode["draw"])
-              # TODO abilityProc
+              parsedUnit.abilityProc = getUnitAbility(unitNode["abilityProc"])
 
               allUnits.add(parsedUnit)
               unlockableUnits.add(parsedUnit)

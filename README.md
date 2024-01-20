@@ -6,6 +6,8 @@ A modloader for the anime gacha bullet hell rhythm game by Anuke.
 
 [Downloads for windows/linux/android are available on the releases page.](https://github.com/Pasu4/animdustry/releases)
 
+An example for a mod can be found [here](https://github.com/Pasu4/animdustry-mod-template).
+
 # Compiling
 
 For information on compiling, please refer to [the original repository](https://github.com/Anuken/animdustry/blob/master/README.md#compiling).
@@ -175,27 +177,9 @@ Functions can be used inside math formulas.
 
 ## Variables
 
-Variables beginning with "state_" are only available inside levels.
-
-- **float** *state_secs*: Smoothed position of the music track in seconds.
-- **float** *state_lastSecs*: Last "discrete" music track position, internally used.
-- **float** *state_time*: Smooth game time, may not necessarily match seconds. Visuals only!
-- **float** *state_rawBeat*: Raw beat calculated based on music position.
-- **float** *state_moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
-- **float** *state_hitTime*: Snaps to 1 when player is hit for health animation.
-- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented echaninc in the base game.
-- **int** *state_points*: Points awarded based on various events.
-- **int** *state_turn*: Beats that have passed total.
-- **int** *state_hits*: The number of times the player has been hit this map. (?)
-- **int** *state_totalHits*: Same as *state_hits*, probably.
-- **int** *state_misses*: The number of times the player has missed an input this map. (?)
+### Available anywhere
 
 - **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
-
-- **Vec2** *basePos*: The base position of the unit splash. Only usable in the context of unit splash drawing.
-- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit splash drawing.
-- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit splash drawing.
-- **Vec2** *playerPos*: Last known player position.
 
 - **Color** *shadowColor*: #00000066
 - **Color** *colorAccent*: #ffd37f
@@ -217,6 +201,34 @@ Variables beginning with "state_" are only available inside levels.
 - **Color** *colorBlue*: #0000ff
 - **Color** *colorPink*: #ff69b4
 - **Color** *colorYellow*: #ffff00
+
+### Only available available inside levels
+
+- **float** *state_secs*: Smoothed position of the music track in seconds.
+- **float** *state_lastSecs*: Last "discrete" music track position, internally used.
+- **float** *state_time*: Smooth game time, may not necessarily match seconds. Visuals only!
+- **float** *state_rawBeat*: Raw beat calculated based on music position.
+- **float** *state_moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+- **float** *state_hitTime*: Snaps to 1 when player is hit for health animation.
+- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented echaninc in the base game.
+- **int** *state_points*: Points awarded based on various events.
+- **int** *state_turn*: Beats that have passed total.
+- **int** *state_hits*: The number of times the player has been hit this map. (?)
+- **int** *state_totalHits*: Same as *state_hits*, probably.
+- **int** *state_misses*: The number of times the player has missed an input this map. (?)
+
+### Only available in unit splash drawing
+
+- **Vec2** *basePos*: The base position of the unit splash. Only usable in the context of unit splash drawing.
+- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit splash drawing.
+- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit splash drawing.
+- **Vec2** *playerPos*: Last known player position.
+
+### Only available in unit ability procs
+
+- **int** *moves*: The number of moves this unit has made.
+- **Vec2** *gridPosition*: The position where the unit is now.
+- **Vec2** *lastMove*: The last movement direction.
 
 ## API Calls
 
@@ -263,6 +275,8 @@ Defines a condition. If the condition is met, the *then* block is executed, othe
 - **Array** *then*: An array of calls to execute if the condition evaluates to *true*.
 - **Array** *else*: An array of calls to execute if the condition evaluates to *false*.
 
+Alias: **If**
+
 #### Iterate
 
 Iterates over a range with an iterator variable. The iterator is incremented by 1 each iteration until it reaches a maximum value.
@@ -272,12 +286,16 @@ Iterates over a range with an iterator variable. The iterator is incremented by 
 - **int** *endValue*: The value the iterator must reach to end the loop. Cannot be modified after entering the loop. The iterator will have this value during its last iteration.
 - **Array** *body*: An array of calls to execute each iteration.
 
+Alias: **For**
+
 #### Repeat
 
 Repeats an array of calls while a condition is met.
 
 - **bool** *condition*: The condition than must be met to execute the *body*.
 - **Array** *body*: An array of calls that will be executed repeatedly as long as the condition is met.
+
+Alias: **While**
 
 #### Break
 
@@ -286,6 +304,24 @@ Breaks out of the current loop. Stops execution if there is no current loop.
 #### Return
 
 Breaks out of all loops and stops execution.
+
+#### Formation
+
+Iterates over a list of 2D vectors with an iterator.
+
+- **string** *name*: The name of the formation.
+- **string** *iterator*: The 
+- **Array** *body*: An array of calls that will be executed repeatedly as long as the condition is met.
+
+Alias: **ForEach**
+
+Available formations:
+
+- *d4*: All four cardinal directions.
+- *d4mid*: All four cardinal directions plus the middle.
+- *d4edge*: All four diagonal directions.
+- *d8*: All diagonal and cardinal directions.
+- *d8mid*: All diagonal and cardinal directions plus the middle.
 
 ### Drawing
 
@@ -329,9 +365,13 @@ Draws construction-tape-like stripes.
 
 #### DrawBeatSquare
 
+Only works inside levels. (TODO coming soon)
+
 - **Color** *col*: (Default: *colorPink* with 70% *colorWhite*)
 
 #### DrawBeatAlt
+
+Only works inside levels. (TODO coming soon)
 
 - **Color** *col*:
 
@@ -635,3 +675,118 @@ Draws the unit's splash image.
 Draws one or more patterns with bloom enabled.
 
 - **Array** *body*: An array of draw calls to be drawn with bloom anabled.
+
+### Ability
+
+#### MakeWall
+
+Creates a wall that blocks bullets and conveyors.
+
+- **Vec2** *pos*: The tile where the wall will appear.
+- **string** *sprite*: The sprite to use for the wall. (Default: *"wall"*)
+- **int** *life*: The time in turns until the wall disappears. (Default: *10*)
+- **int** *health*: How many bullets the wall can block before it is destroyed. (Default: *3*)
+
+#### DamageBlocks
+
+Damages (usually destroys) bullets, conveyors, etc. on a target tile.
+
+- **Vec2** *target*: The tile to target.
+
+### Makers
+
+#### MakeDelay
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **int** *delay*: (Default: *0*)
+- **Array** *callback*:
+
+#### MakeBullet
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*: (Default: *"bullet"*)
+
+#### MakeTimedBullet
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*: (Default: *"bullet"*)
+- **int** *life*: (Default: *3*)
+
+#### MakeConveyor
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **int** *length*: (Default: *2*)
+- **string** *tex*: (Default: *"conveyor*)
+- **int** *gen*: (Default: *0*)
+
+#### MakeLaser
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+
+#### MakeRouter
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **int** *length*: (Default: *2*)
+- **int** *life*: (Default: *2*)
+- **bool** *diag*: (Default: *false*)
+- **string** *tex*: (Default: *"router"*)
+- **bool** *allDir*: (Default: *false*)
+
+#### MakeSorter
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *mdir*:
+- **int** *moveSpace*: (Default: *2*)
+- **int** *spawnSpace*: (Default: *2*)
+- **int** *length*: (Default: *1*)
+
+#### MakeTurret
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *face*:
+- **int** *reload*: (Default: *4*)
+- **int** *life*: (Default: *8*)
+- **string** *tex*: (Default: *"duo"*)
+
+#### MakeArc
+
+Should only be used in map update scripts. (TODO coming soon)
+
+- **Vec2** *pos*:
+- **Vec2** *face*:
+- **string** *tex*: (Default: *"arc"*)
+- **int** *bounces*: (Default: *1*)
+- **int** *life*: (Default: *3*)
+
+### Effects
+
+#### EffectExplode
+
+Creates an explosion effect on a tile.
+
+- **Vec2** *pos*: The position of the tile.
+
+#### EffectExplodeHeal
+
+Creates a green explosion effect on a tile.
+
+- **Vec2** *pos*: The position of the tile.

@@ -105,6 +105,7 @@ onEcsBuilt:
     scorePositive = amount >= 0
 
   proc damageBlocks(target: Vec2i) =
+    echo "inside damageBlocks with ", target
     let hitbox = rectCenter(target.vec2, vec2(0.99f))
     for item in sysDestructible.groups:
       if item.gridPos.vec == target or rectCenter(item.pos.vec, vec2(1f)).overlaps(hitbox):
@@ -285,6 +286,7 @@ makeSystem("core", []):
     allMaps = @[map1, map2, map3, map4, map5]
     createUnits()
 
+    exportProcs()
     initJsonApi(
       (proc() =
         drawBuffer(sysDraw.bloom.buffer)

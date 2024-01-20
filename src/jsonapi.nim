@@ -1,9 +1,19 @@
-import core, vars, std/json, std/tables, std/math, os, mathexpr, types, patterns, sugar, pkg/polymorph, std/strutils, std/tables
+import core, vars, os, mathexpr, types, patterns, sugar, pkg/polymorph, fau/fmath
+import std/[json, tables, math, strutils, sequtils]
 
 type Procedure* = ref object
   script*: proc()                                # The script of the procedure
   defaultFloats*: Table[string, string]          # The default values of float parameters
   defaultColors*: Table[string, string]          # The default values of color parameters
+
+let
+  formations = {
+    "d4": d4.toSeq(),
+    "d4mid": d4mid.toSeq(),
+    "d4edge": d4edge.toSeq(),
+    "d8": d8.toSeq(),
+    "d8mid": d8mid.toSeq()
+  }.toTable
 
 var
   eval_x = newEvaluator()                       # General draw evaluator, holds x component of vectors
@@ -16,6 +26,65 @@ var
   isReturning = false                           # Flow control: return
   currentNamespace*: string                     # Current namespace for resolving procedures
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
+  
+  # Procs from main
+  # I unfortunately see no better way to do this.
+  fetchGridPosition*: (proc(entity: EntityRef): Vec2i)
+  fetchLastMove*: (proc(entity: EntityRef): Vec2i)
+
+  apiMakeDelay*: proc(delay: int, callback: proc())
+  apiMakeBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet")
+  apiMakeTimedBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet", life = 3)
+  apiMakeConveyor*: proc(pos: Vec2i, dir: Vec2i, length = 2, tex = "conveyor", gen = 0)
+  apiMakeLaser*: proc(pos: Vec2i, dir: Vec2i)
+  apiMakeRouter*: proc(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false)
+  apiMakeSorter*: proc(pos: Vec2i, mdir: Vec2i, moveSpace = 2, spawnSpace = 2, length = 1)
+  apiMakeTurret*: proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")
+  apiMakeArc*: proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)
+  apiMakeWall*: proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)
+
+  apiAddPoints*: proc(amount = 1)
+  apiDamageBlocks*: proc(target: Vec2i)
+
+  #apiEffectExplode*: proc(pos: Vec2, rotation = 0.0'f32, color = colorWhite, life = 0.4'f32, size = 0.0'f32, parent = NO_ENTITY_REF)
+  apiEffectExplode*: proc(pos: Vec2)
+  apiEffectExplodeHeal*: proc(pos: Vec2)
+
+# Export main's procs to the API
+template exportProcs* =
+  # Fetch
+  jsonapi.fetchGridPosition = proc(entity: EntityRef): Vec2i = entity.fetch(GridPos).vec
+  jsonapi.fetchLastMove = proc(entity: EntityRef): Vec2i = entity.fetch(Input).lastMove
+
+  # Makers
+  # jsonapi.makeDelay       = proc(delay: int, callback: proc())                                                      = makeDelay(delay, callback)
+  # jsonapi.makeBullet      = proc(pos: Vec2i, dir: Vec2i, tex = "bullet")                                            = makeBullet(pos, dir, tex)
+  # jsonapi.makeTimedBullet = proc(pos: Vec2i, dir: Vec2i, tex = "bullet", life = 3)                                  = makeTimedBullet(pos, dir, tex, life)
+  # jsonapi.makeConveyor    = proc(pos: Vec2i, dir: Vec2i, length = 2, tex = "conveyor", gen = 0)                     = makeConveyor(pos, dir, length, tex, gen)
+  # jsonapi.makeLaser       = proc(pos: Vec2i, dir: Vec2i)                                                            = makeLaser(pos, dir)
+  # jsonapi.makeRouter      = proc(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false) = makeRouter(pos, length, life, diag, sprite, alldir)
+  # jsonapi.makeSorter      = proc(pos: Vec2i, mdir: Vec2i, moveSpace = 2, spawnSpace = 2, length = 1)                = makeSorter(pos, mdir, moveSpace, spawnSpace, length)
+  # jsonapi.makeTurret      = proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")                        = makeTurret(pos, face, reload, life, tex)
+  # jsonapi.makeArc         = proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)                        = makeArc(pos, dir, tex, bounces, life)
+  # jsonapi.makeWall        = proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)                                = makeWall(pos, sprite, life, health)
+  jsonapi.apiMakeDelay        = makeDelay
+  jsonapi.apiMakeBullet       = makeBullet
+  jsonapi.apiMakeTimedBullet  = makeTimedBullet
+  jsonapi.apiMakeConveyor     = makeConveyor
+  jsonapi.apiMakeLaser        = makeLaser
+  jsonapi.apiMakeRouter       = makeRouter
+  jsonapi.apiMakeSorter       = makeSorter
+  jsonapi.apiMakeTurret       = makeTurret
+  jsonapi.apiMakeArc          = makeArc
+  jsonapi.apiMakeWall         = makeWall
+
+  # Other
+  jsonapi.apiAddPoints = addPoints
+  jsonapi.apiDamageBlocks = damageBlocks
+
+  # Effects (evil post-compile-time signature apparently)
+  jsonapi.apiEffectExplode = proc(pos: Vec2) = effectExplode(pos)
+  jsonapi.apiEffectExplodeHeal = proc(pos: Vec2) = effectExplodeHeal(pos)
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -161,11 +230,11 @@ proc updateEvals() =
 proc parseScript(drawStack: JsonNode): seq[proc()] =
   # Shortcuts
   template evalVec2(str: string): Vec2 = vec2(eval_x.eval(str), eval_y.eval(str))
+  template evalVec2i(str: string): Vec2i = vec2i(eval_x.eval(str).int, eval_y.eval(str).int)
   template eval(str: string): float = eval_x.eval(str)
   
   var procs = newSeq[proc()]()
   for elem in drawStack.getElems():
-    # echo elem["type"].getStr()
     let calledFunction = elem["type"].getStr()
     case calledFunction
     # Setters
@@ -186,7 +255,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         procs.add(proc() = colorTable[name] = getColor(value))
 
     # Flow control
-    of "Condition": # if statement
+    of "Condition", "If": # if statement
       let
         condition = elem["condition"].getStr($elem["condition"].getFloat(elem["condition"].getBool().float))
         thenBody = parseScript(elem["then"])
@@ -203,7 +272,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
               if isBreaking or isReturning: return
         )
     
-    of "Iterate": # For loop
+    of "Iterate", "For": # For loop
       let
         iteratorName = elem["iterator"].getStr()
         startValue = elem["startValue"].getStr($elem["startValue"].getInt())
@@ -226,7 +295,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
           isBreaking = false
         )
     
-    of "Repeat": # While loop
+    of "Repeat", "While": # While loop
       let
         condition = elem["condition"].getStr($elem["condition"].getFloat(elem["condition"].getBool().float))
         body = parseScript(elem["body"])
@@ -245,6 +314,23 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     
     of "Return":
       procs.add(proc() = isReturning = true)
+
+    of "Formation", "ForEach":
+      let
+        formation = formations[elem["name"].getStr()]
+        iter = elem["iterator"].getStr()
+        body = parseScript(elem["body"])
+      capture formation, iter, body:
+        procs.add(proc() =
+          block exitLoop:
+            for v in formation:
+              eval_x.addVar(iter, v.x.float)
+              eval_y.addVar(iter, v.y.float)
+              for p in body:
+                p()
+                if isBreaking or isReturning: break exitLoop
+          isBreaking = false
+        )
 
     # Patterns
     of "DrawFft":
@@ -589,7 +675,120 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         )
     
     # Ability
+    of "MakeWall":
+      let
+        pos = elem["pos"].getStr()
+        sprite = elem{"sprite"}.getStr("wall")
+        life = elem{"life"}.getStr($elem{"life"}.getInt(10))
+        health = elem{"health"}.getStr($elem{"health"}.getInt(3))
+      capture pos, sprite, life, health:
+        procs.add(proc() = apiMakeWall(evalVec2i(pos), sprite, eval(life).int, eval(health).int))
+
+    of "DamageBlocks":
+      let target = elem["target"].getStr()
+      capture target:
+        procs.add(proc() =
+          apiDamageBlocks(evalVec2i(target))
+        )
     
+    # Makers
+    of "MakeDelay":
+      let
+        delay = elem{"life"}.getStr($elem{"life"}.getInt(0))
+        callback = parseScript(elem["callback"])
+      capture delay, callback:
+        procs.add(proc() = apiMakeDelay(eval(delay).int, proc() =
+          for p in callback:
+            p()
+            if isBreaking or isReturning: break
+          isBreaking = false))
+    
+    of "MakeBullet":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        tex = elem{"tex"}.getStr("bullet")
+      capture pos, dir, tex:
+        procs.add(proc() = apiMakeBullet(evalVec2i(pos), evalVec2i(dir), tex))
+    
+    of "MakeTimedBullet":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        tex = elem{"tex"}.getStr("bullet")
+        life = elem{"life"}.getStr($elem{"life"}.getInt(3))
+      capture pos, dir, tex, life:
+        procs.add(proc() = apiMakeTimedBullet(evalVec2i(pos), evalVec2i(dir), tex, eval(life).int))
+    
+    of "MakeConveyor":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        length = elem{"length"}.getStr($elem{"length"}.getInt(2))
+        tex = elem{"tex"}.getStr("conveyor")
+        gen = elem{"gen"}.getStr($elem{"gen"}.getInt(0))
+      capture pos, dir, tex:
+        procs.add(proc() = apiMakeConveyor(evalVec2i(pos), evalVec2i(dir), eval(length).int, tex, eval(gen).int))
+    
+    of "MakeLaser":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+      capture pos, dir:
+        procs.add(proc() = apiMakeLaser(evalVec2i(pos), evalVec2i(dir)))
+
+    of "MakeRouter":
+      let
+        pos = elem["pos"].getStr()
+        length = elem{"length"}.getStr($elem{"length"}.getInt(2))
+        life = elem{"life"}.getStr($elem{"life"}.getInt(2))
+        diag = elem{"diag"}.getStr($elem{"diag"}.getFloat(elem{"diag"}.getBool(false).float))
+        tex = elem{"tex"}.getStr("router")
+        allDir = elem{"allDir"}.getStr($elem{"allDir"}.getFloat(elem{"allDir"}.getBool(false).float))
+      capture pos, length, life, diag, tex, allDir:
+        procs.add(proc() = apiMakeRouter(evalVec2i(pos), eval(length).int, eval(life).int, eval(diag) != 0, tex, eval(allDir) != 0))
+
+    of "MakeSorter":
+      let
+        pos = elem["pos"].getStr()
+        mdir = elem["mdir"].getStr()
+        moveSpace = elem{"moveSpace"}.getStr($elem{"moveSpace"}.getInt(2))
+        spawnSpace = elem{"spawnSpace"}.getStr($elem{"spawnSpace"}.getInt(2))
+        length = elem{"length"}.getStr($elem{"length"}.getInt(1))
+      capture pos, mdir, moveSpace, spawnSpace, length:
+        procs.add(proc() = apiMakeSorter(evalVec2i(pos), evalVec2i(mdir), eval(moveSpace).int, eval(spawnSpace).int, eval(length).int))
+
+    of "MakeTurret":
+      let
+        pos = elem["pos"].getStr()
+        face = elem["face"].getStr()
+        reload = elem{"reload"}.getStr($elem{"reload"}.getInt(4))
+        life = elem{"life"}.getStr($elem{"life"}.getInt(8))
+        tex = elem{"tex"}.getStr("duo")
+      capture pos, face, reload, life, tex:
+        procs.add(proc() = apiMakeTurret(evalVec2i(pos), evalVec2i(face), eval(reload).int, eval(life).int, tex))
+
+    of "MakeArc":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        tex = elem{"tex"}.getStr("arc")
+        bounces = elem{"bounces"}.getStr($elem{"bounces"}.getInt(1))
+        life = elem{"life"}.getStr($elem{"life"}.getInt(3))
+      capture pos, dir, tex, bounces, life:
+         procs.add(proc() = apiMakeArc(evalVec2i(pos), evalVec2i(dir), tex, eval(bounces).int, eval(life).int))
+
+    # Effects
+    of "EffectExplode":
+      let pos = elem["pos"].getStr()
+      capture pos:
+        procs.add(proc() = apiEffectExplode(evalVec2(pos)))
+
+    of "EffectExplodeHeal":
+      let pos = elem["pos"].getStr()
+      capture pos:
+        procs.add(proc() = apiEffectExplodeHeal(evalVec2(pos)))
+
     # Possibly a procedure call
     else:
       let
@@ -651,6 +850,7 @@ proc getUnitDraw*(drawStack: JsonNode): (proc(unit: Unit, basePos: Vec2)) =
   capture procs:
     return (proc(unit: Unit, basePos: Vec2) =
       updateEvals()
+
       # Additional updates to eval
       currentUnit = unit
       eval_x.addVar("basePos", basePos.x)
@@ -672,7 +872,19 @@ proc getUnitAbility*(script: JsonNode): (proc(entity: EntityRef, moves: int)) =
     isReturning = false
     return (proc(entity: EntityRef, moves: int) =
       updateEvals()
+
+      # Additional updates to eval
+      let
+        gridPosition = fetchGridPosition(entity)
+        lastMove = fetchLastMove(entity)
       currentEntityRef = entity
+      eval_x.addVar("moves", moves.float)
+      eval_y.addVar("moves", moves.float)
+      eval_x.addVar("gridPosition", gridPosition.x.float)
+      eval_y.addVar("gridPosition", gridPosition.y.float)
+      eval_x.addVar("lastMove", lastMove.x.float)
+      eval_y.addVar("lastMove", lastMove.y.float)
+
       for p in procs:
         p()
         if isBreaking or isReturning: break
