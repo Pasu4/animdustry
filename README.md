@@ -86,10 +86,6 @@ A `mod.json` file must be be placed in the root folder of the mod. It is what te
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
 
-## Custom Maps
-
-Coming soon.
-
 ## Custom Units
 
 Unit scripts describe how a unit is drawn and how it interacts with the game. To define a unit, first place a JSON file with the same name as your unit in the `units` folder. Its contents should look like this:
