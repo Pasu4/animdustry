@@ -57,16 +57,6 @@ template exportProcs* =
   jsonapi.fetchLastMove = proc(entity: EntityRef): Vec2i = entity.fetch(Input).lastMove
 
   # Makers
-  # jsonapi.makeDelay       = proc(delay: int, callback: proc())                                                      = makeDelay(delay, callback)
-  # jsonapi.makeBullet      = proc(pos: Vec2i, dir: Vec2i, tex = "bullet")                                            = makeBullet(pos, dir, tex)
-  # jsonapi.makeTimedBullet = proc(pos: Vec2i, dir: Vec2i, tex = "bullet", life = 3)                                  = makeTimedBullet(pos, dir, tex, life)
-  # jsonapi.makeConveyor    = proc(pos: Vec2i, dir: Vec2i, length = 2, tex = "conveyor", gen = 0)                     = makeConveyor(pos, dir, length, tex, gen)
-  # jsonapi.makeLaser       = proc(pos: Vec2i, dir: Vec2i)                                                            = makeLaser(pos, dir)
-  # jsonapi.makeRouter      = proc(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false) = makeRouter(pos, length, life, diag, sprite, alldir)
-  # jsonapi.makeSorter      = proc(pos: Vec2i, mdir: Vec2i, moveSpace = 2, spawnSpace = 2, length = 1)                = makeSorter(pos, mdir, moveSpace, spawnSpace, length)
-  # jsonapi.makeTurret      = proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")                        = makeTurret(pos, face, reload, life, tex)
-  # jsonapi.makeArc         = proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)                        = makeArc(pos, dir, tex, bounces, life)
-  # jsonapi.makeWall        = proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)                                = makeWall(pos, sprite, life, health)
   jsonapi.apiMakeDelay        = makeDelay
   jsonapi.apiMakeBullet       = makeBullet
   jsonapi.apiMakeTimedBullet  = makeTimedBullet
@@ -166,6 +156,7 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
     eval.addFunc("px", apiPx, 1)
     # Constants
     eval.addVar("shadowOffset", 0.3f)
+    eval.addVar("mapSize", mapSize)
 
   # Vector functions
   eval_x.addFunc("getScl", apiGetScl, 1)
@@ -223,6 +214,7 @@ proc updateEvals() =
   eval_y.addVar("_getScl", apiGetScl_0())
   eval_x.addVar("_hoverOffset", apiHoverOffset_x_0())
   eval_y.addVar("_hoverOffset", apiHoverOffset_y_0())
+  
   eval_x.addVar("playerPos", state.playerPos.x.float)
   eval_y.addVar("playerPos", state.playerPos.y.float)
 
@@ -237,7 +229,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
   for elem in drawStack.getElems():
     let calledFunction = elem["type"].getStr()
     case calledFunction
-    # Setters
+    #region Setters
     of "SetFloat", "SetVec2":
       let
         name = elem["name"].getStr()
@@ -253,8 +245,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         value = elem["value"].getStr()
       capture name, value:
         procs.add(proc() = colorTable[name] = getColor(value))
+    #endregion
 
-    # Flow control
+    #region Flow control
     of "Condition", "If": # if statement
       let
         condition = elem["condition"].getStr($elem["condition"].getFloat(elem["condition"].getBool().float))
@@ -332,7 +325,23 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
           isBreaking = false
         )
 
-    # Patterns
+    of "Turns":
+      let
+        fromTurn = elem["fromTurn"].getStr($elem["fromTurn"].getInt())
+        toTurn = elem["toTurn"].getStr($elem["toTurn"].getInt())
+        interval = elem{"interval"}.getStr($elem{"interval"}.getInt(1))
+        body = parseScript(elem["body"])
+      capture fromTurn, toTurn, interval, body:
+        procs.add(proc() =
+          let ft = eval(fromTurn)
+          if state.turn in ft..eval(toTurn) and (state.turn - ft) mod eval(interval) == 0:
+            for p in body:
+              p()
+              if isBreaking or isReturning: break
+        )
+    #endregion
+
+    #region Patterns
     of "DrawFft":
       let
         pos = elem["pos"].getStr()
@@ -631,7 +640,93 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       capture col:
         procs.add(proc() = patSpace(getColor(col)))
 
-    # Draw
+    of "DrawUnit":
+      let
+        pos = elem["pos"].getStr()
+        scl = elem{"scl"}.getStr("1") # Same as "vec2(1, 1)" in this case
+        color = elem{"color"}.getStr($colorWhite)
+        part = elem{"part"}.getStr("")
+      capture pos, scl, color, part:
+        procs.add(proc() = currentUnit.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
+    #endregion
+
+    #region Draw
+    of "DrawFillQuadGradient":
+      let
+        v1 = elem["v1"].getStr()
+        v2 = elem["v2"].getStr()
+        v3 = elem["v3"].getStr()
+        v4 = elem["v4"].getStr()
+        c1 = elem["c1"].getStr()
+        c2 = elem["c2"].getStr()
+        c3 = elem["c3"].getStr()
+        c4 = elem["c4"].getStr()
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture v1, v2, v3, v4, c1, c2, c3, c4, z:
+        procs.add(proc() = fillQuad(evalVec2(v1), getColor(c1), evalVec2(v2), getColor(c2), evalVec2(v3), getColor(c3), evalVec2(v4), getColor(c4), eval(z)))
+    
+    of "DrawFillQuad":
+      let 
+        v1 = elem["v1"].getStr()
+        v2 = elem["v2"].getStr()
+        v3 = elem["v3"].getStr()
+        v4 = elem["v4"].getStr()
+        color = elem["color"].getStr()
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture v1, v2, v3, v4, color, z:
+        procs.add(proc() = fillQuad(evalVec2(v1), evalVec2(v2), evalVec2(v3), evalVec2(v4), getColor(color), eval(z)))
+    
+    of "DrawFillRect":
+      let 
+        x = elem["x"].getStr($elem["x"].getFloat())
+        y = elem["y"].getStr($elem["y"].getFloat())
+        w = elem["w"].getStr($elem["w"].getFloat())
+        h = elem["h"].getStr($elem["h"].getFloat())
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture x, y, w, h, color, z:
+        procs.add(proc() = fillRect(eval(x), eval(y), eval(w), eval(h), getColor(color), eval(z)))
+    
+    of "DrawFillSquare":
+      let 
+        pos = elem["pos"].getStr()
+        radius = elem["radius"].getStr($elem["radius"].getFloat())
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, radius, color, z:
+        procs.add(proc() = fillSquare(evalVec2(pos), eval(radius), getColor(color), eval(z)))
+    
+    of "DrawFillTri":
+      let
+        v1 = elem["v1"].getStr()
+        v2 = elem["v2"].getStr()
+        v3 = elem["v3"].getStr()
+        color = elem["color"].getStr()
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture v1, v2, v3, color, z:
+        procs.add(proc() = fillTri(evalVec2(v1), evalVec2(v2), evalVec2(v3), getColor(color), eval(z)))
+    
+    of "DrawFillTriGradient":
+      let
+        v1 = elem["v1"].getStr()
+        v2 = elem["v2"].getStr()
+        v3 = elem["v3"].getStr()
+        c1 = elem["c1"].getStr()
+        c2 = elem["c2"].getStr()
+        c3 = elem["c3"].getStr()
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture v1, v2, v3, c1, c2, c3, z:
+        procs.add(proc() = fillTri(evalVec2(v1), evalVec2(v2), evalVec2(v3), getColor(c1), getColor(c2), getColor(c3), eval(z)))
+
+    of "DrawFillCircle":
+      let
+        pos = elem["pos"].getStr()
+        rad = elem["rad"].getStr($elem["rad"].getFloat())
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, rad, color, z:
+        procs.add(proc() = fillCircle(evalVec2(pos), eval(rad), getColor(color), eval(z)))
+
     of "DrawFillPoly":
       let
         pos = elem["pos"].getStr()
@@ -642,6 +737,86 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture pos, sides, radius, rotation, color, z:
         procs.add(proc() = fillPoly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), getColor(color), eval(z)))
+
+    of "DrawFillLight":
+      let
+        pos = elem["pos"].getStr()
+        radius = elem["radius"].getStr($elem["radius"].getFloat())
+        sides = elem{"sides"}.getStr($elem{"sides"}.getInt(20))
+        centerColor = elem{"centerColor"}.getStr($colorWhite)
+        edgeColor = elem{"edgeColor"}.getStr($colorClear)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, radius, sides, centerColor, edgeColor, z:
+        procs.add(proc() = fillLight(evalVec2(pos), eval(radius), eval(sides).int, getColor(centerColor), getColor(edgeColor), eval(z)))
+
+    of "DrawLine":
+      let
+        p1 = elem["p1"].getStr()
+        p2 = elem["p2"].getStr()
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture p1, p2, stroke, color, square, z:
+        procs.add(proc() = line(evalVec2(p1), evalVec2(p2), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
+    
+    of "DrawLineAngle":
+      let
+        p = elem["p"].getStr()
+        angle = elem["angle"].getStr($elem["angle"].getFloat())
+        len = elem["len"].getStr($elem["len"].getFloat())
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture p, angle, len, stroke, color, square, z:
+        procs.add(proc() = lineAngle(evalVec2(p), eval(angle), eval(len), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
+    
+    of "DrawLineAngleCenter":
+      let
+        p = elem["p"].getStr()
+        angle = elem["angle"].getStr($elem["angle"].getFloat())
+        len = elem["len"].getStr($elem["len"].getFloat())
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture p, angle, len, stroke, color, square, z:
+        procs.add(proc() = lineAngleCenter(evalVec2(p), eval(angle), eval(len), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
+
+    of "DrawLineRect":
+      let
+        pos = elem["pos"].getStr()
+        size = elem["size"].getStr()
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+        margin = elem{"margin"}.getStr($elem{"margin"}.getFloat(0f))
+      capture pos, size, stroke, color, z, margin:
+        procs.add(proc() = lineRect(evalVec2(pos), evalVec2(size), eval(stroke), getColor(color), eval(z), eval(margin)))
+    
+    of "DrawLineSquare":
+      let 
+        pos = elem["pos"].getStr()
+        rad = elem["rad"].getStr($elem["rad"].getFloat())
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, rad, stroke, color, z:
+        procs.add(proc() = lineSquare(evalVec2(pos), eval(rad), eval(stroke), getColor(color), eval(z)))
+
+    of "DrawStar": # name conflict with patSpikes
+      let
+        pos = elem["pos"].getStr()
+        sides = elem["sides"].getStr($elem["sides"].getInt())
+        radius = elem["radius"].getStr($elem["radius"].getFloat())
+        len = elem["len"].getStr($elem["len"].getFloat())
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, sides, radius, len, stroke, rotation, color, z:
+        procs.add(proc() = spikes(evalVec2(pos), eval(sides).int, eval(radius), eval(len), eval(stroke), eval(rotation), getColor(color), eval(z)))
     
     of "DrawPoly":
       let
@@ -654,17 +829,49 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture pos, sides, radius, rotation, stroke, color, z:
         procs.add(proc() = poly(evalVec2(pos), eval(sides).int, eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
-    
-    of "DrawUnit":
+
+    of "DrawArcRadius":
       let
         pos = elem["pos"].getStr()
-        scl = elem{"scl"}.getStr("1") # Same as "vec2(1, 1)" in this case
+        sides = elem["sides"].getStr($elem["sides"].getInt())
+        angleFrom = elem["angleFrom"].getStr($elem["angleFrom"].getFloat())
+        angleTo = elem["angleTo"].getStr($elem["angleTo"].getFloat())
+        radiusFrom = elem["radiusFrom"].getStr($elem["radiusFrom"].getFloat())
+        radiusTo = elem["radiusTo"].getStr($elem["radiusTo"].getFloat())
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
         color = elem{"color"}.getStr($colorWhite)
-        part = elem{"part"}.getStr("")
-      capture pos, scl, color, part:
-        procs.add(proc() = currentUnit.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, sides, angleFrom, angleTo, radiusFrom, radiusTo, rotation, color, z:
+        procs.add(proc() = arcRadius(evalVec2(pos), eval(sides).int, eval(angleFrom), eval(angleTo), eval(radiusFrom), eval(radiusTo), eval(rotation), getColor(color), eval(z)))
+
+    of "DrawArc":
+      let
+        pos = elem["pos"].getStr()
+        sides = elem["sides"].getStr($elem["sides"].getInt())
+        angleFrom = elem["angleFrom"].getStr($elem["angleFrom"].getFloat())
+        angleTo = elem["angleTo"].getStr($elem["angleTo"].getFloat())
+        radius = elem["radius"].getStr($elem["radius"].getFloat())
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, sides, angleFrom, angleTo, radius, rotation, stroke, color, z:
+        procs.add(proc() = arc(evalVec2(pos), eval(sides).int, eval(angleFrom), eval(angleTo), eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
     
-    # Bloom
+    of "DrawCrescent":
+      let
+        pos = elem["pos"].getStr()
+        sides = elem["sides"].getStr($elem["sides"].getInt())
+        angleFrom = elem["angleFrom"].getStr($elem["angleFrom"].getFloat())
+        angleTo = elem["angleTo"].getStr($elem["angleTo"].getFloat())
+        radius = elem["radius"].getStr($elem["radius"].getFloat())
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture pos, sides, angleFrom, angleTo, radius, rotation, stroke, color, z:
+        procs.add(proc() = crescent(evalVec2(pos), eval(sides).int, eval(angleFrom), eval(angleTo), eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
+    
     of "DrawBloom": # contains a body, so recurse
       let body = parseScript(elem["body"])
       capture body:
@@ -673,8 +880,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             for p in body:
               p()
         )
+    #endregion
     
-    # Ability
+    #region Ability
     of "MakeWall":
       let
         pos = elem["pos"].getStr()
@@ -690,8 +898,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         procs.add(proc() =
           apiDamageBlocks(evalVec2i(target))
         )
-    
-    # Makers
+    #endregion
+
+    #region Makers
     of "MakeDelay":
       let
         delay = elem{"life"}.getStr($elem{"life"}.getInt(0))
@@ -777,8 +986,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         life = elem{"life"}.getStr($elem{"life"}.getInt(3))
       capture pos, dir, tex, bounces, life:
          procs.add(proc() = apiMakeArc(evalVec2i(pos), evalVec2i(dir), tex, eval(bounces).int, eval(life).int))
+    #endregion
 
-    # Effects
+    #region Effects
     of "EffectExplode":
       let pos = elem["pos"].getStr()
       capture pos:
@@ -788,8 +998,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       let pos = elem["pos"].getStr()
       capture pos:
         procs.add(proc() = apiEffectExplodeHeal(evalVec2(pos)))
+    #endregion
 
-    # Possibly a procedure call
+    #region Custom procedures
     else:
       let
         procName: string = (
@@ -840,6 +1051,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             p.script()
         )
       )(procName, colors, floats)
+    #endregion
 
   return procs
 

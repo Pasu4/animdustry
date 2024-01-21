@@ -124,6 +124,12 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 
 To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
 
+## Custom Maps
+
+Map scripts describe a playable level in the game. To add a custom map to the game, place a JSON file into the `maps` folder. The contents of the file should look like this:
+
+
+
 ## Procedures
 
 Procedures are used the same way as [API calls](#api-calls). They are placed as JSON files in the *procedures* folder. They are called by putting the name of the procedure into the *type* field. Parameters are passed the same way as well. An example of a procedure:
@@ -202,7 +208,7 @@ Functions can be used inside math formulas.
 - **Color** *colorPink*: #ff69b4
 - **Color** *colorYellow*: #ffff00
 
-### Only available available inside levels
+### Only available inside levels
 
 - **float** *state_secs*: Smoothed position of the music track in seconds.
 - **float** *state_lastSecs*: Last "discrete" music track position, internally used.
@@ -216,18 +222,18 @@ Functions can be used inside math formulas.
 - **int** *state_hits*: The number of times the player has been hit this map. (?)
 - **int** *state_totalHits*: Same as *state_hits*, probably.
 - **int** *state_misses*: The number of times the player has missed an input this map. (?)
+- **Vec2** *playerPos*: Last known player position.
 
 ### Only available in unit splash drawing
 
-- **Vec2** *basePos*: The base position of the unit splash. Only usable in the context of unit splash drawing.
-- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value). Only usable in the context of unit splash drawing.
-- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value). Only usable in the context of unit splash drawing.
-- **Vec2** *playerPos*: Last known player position.
+- **Vec2** *basePos*: The base position of the unit splash.
+- **Vec2** *_getScl*: Calls *getScl(0.175)* (default value).
+- **Vec2** *_hoverOffset*: Calls *hoverOffset(0.65, 0)* (default value).
 
 ### Only available in unit ability procs
 
 - **int** *moves*: The number of moves this unit has made.
-- **Vec2** *gridPosition*: The position where the unit is now.
+- **Vec2** *gridPosition*: The position where the unit is now. **Must not be used for map scripts!** Use *playerPos* for that instead.
 - **Vec2** *lastMove*: The last movement direction.
 
 ## API Calls
@@ -323,7 +329,16 @@ Available formations:
 - *d8*: All diagonal and cardinal directions.
 - *d8mid*: All diagonal and cardinal directions plus the middle.
 
-### Drawing
+#### Turns
+
+Executes an array of calls only on specific turns. Only works inside levels.
+
+- **int** *fromTurn*: The turn on which to execute the calls the first time.
+- **int** *toTurn*: The turn on which to execute the calls the last time.
+- **int** *interval*: The interval between the turns.
+- **Array** *body*: An array of calls that will be executed on the specified turns.
+
+### Pattern Drawing
 
 #### DrawFft
 
@@ -638,6 +653,79 @@ Draws many stripes pointing towards the center. (TODO check later, this probably
 
 - **Color** *col*: The color of the stripes.
 
+#### DrawUnit
+
+Draws the current unit's splash image. Should only be used in unit splash drawing.
+
+- **Vec2** *pos*: Where to draw the unit.
+- **Vec2** *scl*: Scale of the unit.  (Default: *vec2(1, 1)*)
+- **Color** *color*: Color of the unit. (Default: *colorWhite*)
+- **string** *part*: Suffix of the texture file to draw (e.g. *"-glow"* to draw *"mono-glow.png"*). (Default: *""*)
+
+### Basic Drawing
+
+#### DrawFillQuadGradient
+
+- **Vec2** *v1*:
+- **Vec2** *v2*:
+- **Vec2** *v3*:
+- **Vec2** *v4*:
+- **Color** *c1*:
+- **Color** *c2*:
+- **Color** *c3*:
+- **Color** *c4*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillQuad
+
+- **Vec2** *v1*:
+- **Vec2** *v2*:
+- **Vec2** *v3*:
+- **Vec2** *v4*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillRect
+
+- **float** *x*:
+- **float** *y*:
+- **float** *w*:
+- **float** *h*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillSquare
+
+- **Vec2** *pos*:
+- **float** *radius*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillTri
+
+- **Vec2** *v1*:
+- **Vec2** *v2*:
+- **Vec2** *v3*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillTriGradient
+
+- **Vec2** *v1*:
+- **Vec2** *v2*:
+- **Vec2** *v3*:
+- **Color** *c1*:
+- **Color** *c2*:
+- **Color** *c3*:
+- **float** *z*: (Default: *0*)
+
+#### DrawFillCircle
+
+- **Vec2** *pos*:
+- **float** *rad*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
 #### DrawFillPoly
 
 Draws a filled polygon.
@@ -649,9 +737,74 @@ Draws a filled polygon.
 - **Color** *color*: The color of the polygon. (Default: *colorWhite*)
 - **float** *z*: The z layer of the polygon. (Default: *0*)
 
+#### DrawFillLight
+
+- **Vec2** *pos*:
+- **float** *radius*:
+- **int** *sides*:
+- **Color** *centerColor*:
+- **Color** *edgeColor*:
+- **float** *z*: (Default: *0*)
+
+#### DrawLine
+
+- **Vec2** *p1*:
+- **Vec2** *p2*:
+- **float** *stroke*:
+- **Color** *color*:
+- **bool** *square*:
+- **float** *z*: (Default: *0*)
+
+#### DrawLineAngle
+
+- **Vec2** *p*:
+- **float** *angle*:
+- **float** *len*:
+- **float** *stroke*:
+- **Color** *color*:
+- **bool** *square*:
+- **float** *z*: (Default: *0*)
+
+#### DrawLineAngleCenter
+
+- **Vec2** *p*:
+- **float** *angle*:
+- **float** *len*:
+- **float** *stroke*:
+- **Color** *color*:
+- **bool** *square*:
+- **float** *z*: (Default: *0*)
+
+#### DrawLineRect
+
+- **Vec2** *pos*:
+- **Vec2** *size*:
+- **float** *stroke*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawLineSquare
+
+- **Vec2** *pos*:
+- **float** *rad*:
+- **float** *stroke*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### Draw
+
+- **Vec2** *pos*:
+- **int** *sides*:
+- **float** *radius*:
+- **float** *len*:
+- **float** *stroke*:
+- **float** *rotation*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
 #### DrawPoly
 
-Draws a polygon outline.
+Draws a regular polygon outline.
 
 - **Vec2** *pos*: The position of the center of the polygon.
 - **int** *sides*: The number of sides the polygon has.
@@ -661,14 +814,41 @@ Draws a polygon outline.
 - **Color** *color*: The color of the polygon. (Default: *colorWhite*)
 - **float** *z*: The z layer of the polygon. (Default: *0*)
 
-#### DrawUnit
+#### DrawArcRadius
 
-Draws the unit's splash image.
+- **Vec2** *pos*:
+- **int** *sides*:
+- **float** *angleFrom*:
+- **float** *angleTo*:
+- **float** *radiusFrom*:
+- **float** *radiusTo*:
+- **float** *rotation*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
 
-- **Vec2** *pos*: Where to draw the unit.
-- **Vec2** *scl*: Scale of the unit.  (Default: *vec2(1, 1)*)
-- **Color** *color*: Color of the unit. (Default: *colorWhite*)
-- **string** *part*: Suffix of the texture file to draw (e.g. *"-glow"* to draw *"mono-glow.png"*). (Default: *""*)
+#### DrawArc
+
+- **Vec2** *pos*:
+- **int** *sides*:
+- **float** *angleFrom*:
+- **float** *angleTo*:
+- **float** *radius*:
+- **float** *rotation*:
+- **float** *stroke*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
+
+#### DrawCrescent
+
+- **Vec2** *pos*:
+- **int** *sides*:
+- **float** *angleFrom*:
+- **float** *angleTo*:
+- **float** *radius*:
+- **float** *rotation*:
+- **float** *stroke*:
+- **Color** *color*:
+- **float** *z*: (Default: *0*)
 
 #### DrawBloom
 

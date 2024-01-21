@@ -46,8 +46,7 @@ proc loadMods* =
           for fileType, filePath in walkDir(unitPath):
             if fileType == pcFile and filePath.endsWith(".json"):
               #region Parse unit
-              # Remove try-except so the user actually gets an error message instead of the mod not loading
-              # try:
+              # No try-except so the user actually gets an error message instead of the mod not loading
               let
                 unitNode = parseJson(readFile(filePath))
                 unitName = unitNode["name"].getStr()
@@ -69,11 +68,35 @@ proc loadMods* =
 
               allUnits.add(parsedUnit)
               unlockableUnits.add(parsedUnit)
-              # except JsonParsingError:
-              #   echo "Could not parse file ", filePath
-              # except KeyError:
-              #   echo &"Could not load unit: {getCurrentExceptionMsg()}"
               #endregion
+        # Maps
+        if dirExists(mapPath):
+          for fileType, filePath in walkDir(mapPath):
+            if fileType == pcFile and filePath.endsWith(".json"):
+              #region Parse map
+              let
+                mapNode = parseJson(readFile(filePath))
+                songName = mapNode["songName"].getStr()
+                parsedMap = Beatmap(
+                  songName: songName,
+                  music: mapNode["music"].getStr(),
+                  bpm: mapNode["bpm"].getFloat(),
+                  beatOffset: mapNode["beatOffset"].getFloat(),
+                  maxHits: mapNode["maxHits"].getInt(),
+                  copperAmount: mapNode["copperAmount"].getInt(),
+                  fadeColor: parseColor(mapNode["fadeColor"].getStr()), # Fau color
+
+                  isModded: true,
+                  modPath: modPath
+                )
+
+              parsedMap.drawPixel = getScript(mapNode["drawPixel"])
+              parsedMap.draw = getScript(mapNode["draw"])
+              parsedMap.update = getScript(mapNode["update"])
+
+              allMaps.add(parsedMap)
+              #endregion
+        # Procedures
         if dirExists(procedurePath):
           for fileType, filePath in walkDir(procedurePath):
             if fileType == pcFile and filePath.endsWith(".json"):

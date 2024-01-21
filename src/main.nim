@@ -77,7 +77,11 @@ onEcsBuilt:
     if map.loadedSound.isSome:
       return map.loadedSound.get
     else:
-      result = loadMusicAsset("maps/" & map.music & ".ogg")
+      result =
+        if not map.isModded:
+          loadMusicAsset("maps/" & map.music & ".ogg")
+        else:
+          loadMusicFile(map.modPath / "music/" & map.music & ".ogg")
       map.soundLength = result.length
       map.loadedSound = result.some
   

@@ -30,6 +30,10 @@ type Beatmap* = ref object
   #amount of copper that you get on completing this map with perfect score (0 = default)
   copperAmount*: int
 
+  # mod
+  isModded*: bool
+  modPath*: string
+
 type Unit* = ref object
   name*: string
   title*: string
