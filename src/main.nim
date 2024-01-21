@@ -305,8 +305,6 @@ makeSystem("core", []):
 
     loadGame()
     loadSettings()
-    
-    save.copper = 1000
 
     setGlobalVolume(settings.globalVolume)
 

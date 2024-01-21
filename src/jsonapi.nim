@@ -36,12 +36,17 @@ var
   apiMakeBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet")
   apiMakeTimedBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet", life = 3)
   apiMakeConveyor*: proc(pos: Vec2i, dir: Vec2i, length = 2, tex = "conveyor", gen = 0)
-  apiMakeLaser*: proc(pos: Vec2i, dir: Vec2i)
+  apiMakeLaserSegment*: proc(pos: Vec2i, dir: Vec2i)
   apiMakeRouter*: proc(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false)
   apiMakeSorter*: proc(pos: Vec2i, mdir: Vec2i, moveSpace = 2, spawnSpace = 2, length = 1)
   apiMakeTurret*: proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")
   apiMakeArc*: proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)
   apiMakeWall*: proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)
+
+  apiMakeDelayBullet*: proc(pos, dir: Vec2i, tex = "")
+  apiMakeDelayBulletWarn*: proc(pos, dir: Vec2i, tex = "")
+  apiMakeBulletCircle*: proc(pos: Vec2i, tex = "")
+  apiMakeLaser*: proc(pos, dir: Vec2i)
 
   apiAddPoints*: proc(amount = 1)
   apiDamageBlocks*: proc(target: Vec2i)
@@ -49,6 +54,8 @@ var
   #apiEffectExplode*: proc(pos: Vec2, rotation = 0.0'f32, color = colorWhite, life = 0.4'f32, size = 0.0'f32, parent = NO_ENTITY_REF)
   apiEffectExplode*: proc(pos: Vec2)
   apiEffectExplodeHeal*: proc(pos: Vec2)
+  apiEffectStrikeWave*: proc(pos: Vec2, rotation: float32)
+  apiEffectLaserShoot*: proc()
 
 # Export main's procs to the API
 template exportProcs* =
@@ -61,12 +68,17 @@ template exportProcs* =
   jsonapi.apiMakeBullet       = makeBullet
   jsonapi.apiMakeTimedBullet  = makeTimedBullet
   jsonapi.apiMakeConveyor     = makeConveyor
-  jsonapi.apiMakeLaser        = makeLaser
+  jsonapi.apiMakeLaserSegment = makeLaser
   jsonapi.apiMakeRouter       = makeRouter
   jsonapi.apiMakeSorter       = makeSorter
   jsonapi.apiMakeTurret       = makeTurret
   jsonapi.apiMakeArc          = makeArc
   jsonapi.apiMakeWall         = makeWall
+
+  jsonapi.apiMakeDelayBullet      = proc(pos, dir: Vec2i, tex = "") = delayBullet(pos, dir, tex)
+  jsonapi.apiMakeDelayBulletWarn  = proc(pos, dir: Vec2i, tex = "") = delayBulletWarn(pos, dir, tex)
+  jsonapi.apiMakeBulletCircle     = proc(pos: Vec2i,      tex = "") = bulletCircle(pos, tex)
+  jsonapi.apiMakeLaser            = proc(pos, dir: Vec2i)           = laser(pos, dir)
 
   # Other
   jsonapi.apiAddPoints = addPoints
@@ -939,12 +951,12 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       capture pos, dir, tex:
         procs.add(proc() = apiMakeConveyor(evalVec2i(pos), evalVec2i(dir), eval(length).int, tex, eval(gen).int))
     
-    of "MakeLaser":
+    of "MakeLaserSegment":
       let
         pos = elem["pos"].getStr()
         dir = elem["dir"].getStr()
       capture pos, dir:
-        procs.add(proc() = apiMakeLaser(evalVec2i(pos), evalVec2i(dir)))
+        procs.add(proc() = apiMakeLaserSegment(evalVec2i(pos), evalVec2i(dir)))
 
     of "MakeRouter":
       let
@@ -986,6 +998,36 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         life = elem{"life"}.getStr($elem{"life"}.getInt(3))
       capture pos, dir, tex, bounces, life:
          procs.add(proc() = apiMakeArc(evalVec2i(pos), evalVec2i(dir), tex, eval(bounces).int, eval(life).int))
+
+    of "MakeDelayBullet":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        tex = elem{"tex"}.getStr()
+      capture pos, dir, tex:
+        procs.add(proc() = apiMakeDelayBullet(evalVec2i(pos), evalVec2i(dir), tex))
+
+    of "MakeDelayBulletWarn":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+        tex = elem{"tex"}.getStr()
+      capture pos, dir, tex:
+        procs.add(proc() = apiMakeDelayBulletWarn(evalVec2i(pos), evalVec2i(dir), tex))
+
+    of "MakeBulletCircle":
+      let
+        pos = elem["pos"].getStr()
+        tex = elem{"tex"}.getStr()
+      capture pos, tex:
+        procs.add(proc() = apiMakeBulletCircle(evalVec2i(pos), tex))
+
+    of "MakeLaser":
+      let
+        pos = elem["pos"].getStr()
+        dir = elem["dir"].getStr()
+      capture pos, dir:
+        procs.add(proc() = apiMakeLaser(evalVec2i(pos), evalVec2i(dir)))
     #endregion
 
     #region Effects

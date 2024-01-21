@@ -53,7 +53,7 @@ proc patStripes*(col1 = colorPink, col2 = colorPink.mix(colorWhite, 0.2f), angle
       draw(fau.white, pos, size = vec2(swidth, sheight), rotation = angle, color = col2)
 
 proc patBeatSquare*(col = colorPink.mix(colorWhite, 0.7f)) =
-  poly(vec2(), 4, (45f + 15f * (state.turn mod 4).float32).px, 0f.rad, stroke = 10f.px, color = colorPink.mix(colorWhite, 0.7f).withA(state.moveBeat))
+  poly(vec2(), 4, (45f + 15f * (state.turn mod 4).float32).px, 0f.rad, stroke = 10f.px, color = col.withA(state.moveBeat))
 
 proc patBeatAlt*(col: Color) =
   poly(vec2(), 4, (45f + 15f * (1 + state.turn mod 2).float32).px, 0f.rad, stroke = 10f.px, color = col.withA(state.moveBeat))

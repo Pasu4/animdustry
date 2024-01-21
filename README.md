@@ -128,7 +128,44 @@ To add a splash image to your unit, place an image file with the same name as yo
 
 Map scripts describe a playable level in the game. To add a custom map to the game, place a JSON file into the `maps` folder. The contents of the file should look like this:
 
+```json
+{
+    "songName": "Anuke - Boss 1",
+    "music": "boss1",
+    "bpm": 100.0,
+    "beatOffset": 0.0,
+    "maxHits": 10,
+    "copperAmount": 8,
+    "fadeColor": "fa874c",
+    "drawPixel": [
+        {"type": "DrawStripes", "col1": "#19191c", "col2": "#ab8711"},
+        {"type": "DrawBeatSquare", "col": "#f25555"}
+    ],
+    "draw": [
+        {"type": "DrawTiles"}
+    ],
+    "update": [
+        {"type": "Condition", "condition": "state_newTurn", "then": [
+            {"type": "Turns", "fromTurn": 7, "toTurn": 23, "interval": 4, "body": [
+                {"type": "Formation", "name": "d4edge", "iterator": "v", "body": [
+                    {"type": "MakeDelayBulletWarn", "pos": "playerPos + v * 2", "dir": "-v"}
+                ]}
+            ]}
+        ]}
+    ]
+}
+```
 
+- **songName:** The name of the song that is displayed in the menu.
+- **music:** The name of the music file without the file extension.
+- **bpm:** The BPM (beats per minute) of the song.
+- **beatOffset:** The music offset in beats. Used if the start of the music is misaligned with the beats.
+- **maxHits:** How often the player needs to be hit to fail the map.
+- **copperAmount:** The amount of copper the player will receive upon beating the level. How much copper the player actually gets is determined by how well they did in the level and if they have beaten the level before.
+- **fadeColor:** (TODO test)
+- **drawPixel:** Script that draws the background.
+- **draw:** Script that draws the playing field.
+- **update:** Script that spawns enemies, obstacles, etc.
 
 ## Procedures
 
@@ -186,6 +223,7 @@ Functions can be used inside math formulas.
 ### Available anywhere
 
 - **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+- **int** *mapSize*: The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
 
 - **Color** *shadowColor*: #00000066
 - **Color** *colorAccent*: #ffd37f
@@ -372,7 +410,7 @@ Draws a single color background.
 
 #### DrawStripes
 
-Draws construction-tape-like stripes.
+Draws construction-tape-like stripes. If used inside a level, scrolls from right to left with the beat.
 
 - **Color** *col1*: Background color. (Default: *colorPink*)
 - **Color** *col2*: Stripe color. (Default: *colorPink* with 20% *colorWhite*)
@@ -909,7 +947,7 @@ Should only be used in map update scripts. (TODO coming soon)
 - **string** *tex*: (Default: *"conveyor*)
 - **int** *gen*: (Default: *0*)
 
-#### MakeLaser
+#### MakeLaserSegment
 
 Should only be used in map update scripts. (TODO coming soon)
 
@@ -956,6 +994,30 @@ Should only be used in map update scripts. (TODO coming soon)
 - **string** *tex*: (Default: *"arc"*)
 - **int** *bounces*: (Default: *1*)
 - **int** *life*: (Default: *3*)
+
+#### MakeDelayBullet
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*:
+
+#### MakeDelayBulletWarn
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*:
+
+#### MakeBulletCircle
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*:
+
+#### MakeLaser
+
+- **Vec2** *pos*:
+- **Vec2** *dir*:
+- **string** *tex*:
 
 ### Effects
 
