@@ -473,7 +473,7 @@ Draws a central layered regular polygon surrounded by smaller "sattelite" polygo
 - **int** *radsides*: The number of sides of the sattelite polygons. (Default: *4*)
 - **float** *radOff*: How far away the sattelite shapes orbit. (Default: *7*)
 - **float** *radrad*: The radius of the sattelite shapes. (Default: *1.3*)
-- **float** *radrotscl*: By how much the sattelite shapes will orbit relative to the central shape's rotation. (Default: *0.25*)
+- **float** *radrotscl*: By how much the sattelite shapes will orbit relative to the central shape's rotation. The sattelites orbit in the opposite direction as the central shape spins. (Default: *0.25*)
 
 #### DrawShapeBack
 
@@ -487,59 +487,59 @@ Draws concentric polygons of alternating colors around the center.
 
 #### DrawFadeShapes
 
-Only works inside levels. (TODO coming soon)
+Draws repeating rotated squares that move towards the center with the beat. Only works inside levels.
 
-- **Color** *col*:
+- **Color** *col*: The color of the squares.
 
 #### DrawRain
 
-Only works inside levels. (TODO coming soon)
+Draws pinkish squares with trails that move down-left with the beat. Only works inside levels.
 
-- **int** *amount*: (Default: *80*)
+- **int** *amount*: The number of shapes to draw. (Default: *80*)
 
 #### DrawPetals
 
-Only works inside levels. (TODO coming soon)
+Draws cherry petals that fall down-left. Only works inside levels.
 
 #### DrawSkats
 
-Only works inside levels. (TODO coming soon)
+Draws "skats". Used for the credits. Behaves strangely in levels.
 
 #### DrawClouds
 
-Only works inside levels. (TODO coming soon)
+Draws clouds in the upper half of the screen. Only works inside levels.
 
-- **Color** *col*: (Default: *colorWhite*)
+- **Color** *col*: The color of the clouds. (Default: *colorWhite*)
 
 #### DrawLongClouds
 
-Only works inside levels. (TODO coming soon)
+Draws clouds in the upper half of the screen. Only works inside levels.
 
-- **Color** *col*: (Default: *colorWhite*)
+- **Color** *col*: The color of the clouds. (Default: *colorWhite*)
 
 #### DrawStars
 
-Only works inside levels. (TODO coming soon)
+Draws stars in different shapes and sizes that flash with the beat. Only works inside levels.
 
-- **Color** *col*: (Default: *colorWhite*)
-- **Color** *flash*: (Default: *colorWhite*)
-- **int** *amount*: (Default: *40*)
-- **int** *seed*: (Default: *1*)
+- **Color** *col*: The normal color of the stars. (Default: *colorWhite*)
+- **Color** *flash*: The flash color of the stars. (Default: *colorWhite*)
+- **int** *amount*: The number of stars to draw. (Default: *40*)
+- **int** *seed*: The random seed. (Default: *1*)
 
 #### DrawTris
 
-Only works inside levels. (TODO coming soon)
+Draws triangles that flash with the beat and move down-left. Only works inside levels.
 
-- **Color** *col1*: (Default: *colorWhite*)
-- **Color** *col2*: (Default: *colorWhite*)
-- **int** *amount*: (Default: *50*)
-- **int** *seed*: (Default: *1*)
+- **Color** *col1*: The normal color of the triangles. (Default: *colorWhite*)
+- **Color** *col2*: The flash color of the triangles. (Default: *colorWhite*)
+- **int** *amount*: The number of triangles to draw. (Default: *50*)
+- **int** *seed*: The random seed. (Default: *1*)
 
 #### DrawBounceSquares
 
-Only works inside levels. (TODO coming soon)
+Draws a lattice of squares with alternating sizes. The sizes of the squares swap with the beat. Only works inside levels.
 
-- **Color** *col*: (Default: *colorWhite*)
+- **Color** *col*: The color of the squares. (Default: *colorWhite*)
 
 #### DrawCircles
 
@@ -617,7 +617,7 @@ Draws rounded lines that move around slightly (looks a bit like rays of light).
 - **int** *amount*: The number of lines to draw. (Default: *30*)
 - **float** *angle*: The angle at which to draw the lines. (Default: *rad(45)*)
 
-#### DrawRadLines
+#### DrawRadLinesRound
 
 Draws rounded lines pointing at the center of the screen that move around slightly.
 
@@ -687,7 +687,7 @@ A light blue screen disappears into the bottom right corner. This effect is used
 
 #### DrawSpace
 
-Draws many stripes pointing towards the center. (TODO check later, this probably does needs state_time)
+Draws many stripes pointing towards the center. Only works inside levels.
 
 - **Color** *col*: The color of the stripes.
 
@@ -704,65 +704,77 @@ Draws the current unit's splash image. Should only be used in unit splash drawin
 
 #### DrawFillQuadGradient
 
-- **Vec2** *v1*:
-- **Vec2** *v2*:
-- **Vec2** *v3*:
-- **Vec2** *v4*:
-- **Color** *c1*:
-- **Color** *c2*:
-- **Color** *c3*:
-- **Color** *c4*:
-- **float** *z*: (Default: *0*)
+Draws a filled quad with a gradient.
+
+- **Vec2** *v1*: A vertex of the quad.
+- **Vec2** *v2*: A vertex of the quad.
+- **Vec2** *v3*: A vertex of the quad.
+- **Vec2** *v4*: A vertex of the quad.
+- **Color** *c1*: The color of the quad at *v1*.
+- **Color** *c2*: The color of the quad at *v2*.
+- **Color** *c3*: The color of the quad at *v3*.
+- **Color** *c4*: The color of the quad at *v4*.
+- **float** *z*: The z layer of the quad. (Default: *0*)
 
 #### DrawFillQuad
 
-- **Vec2** *v1*:
-- **Vec2** *v2*:
-- **Vec2** *v3*:
-- **Vec2** *v4*:
-- **Color** *color*:
-- **float** *z*: (Default: *0*)
+Draws a filled quad with a single color.
+
+- **Vec2** *v1*: A vertex of the quad.
+- **Vec2** *v2*: A vertex of the quad.
+- **Vec2** *v3*: A vertex of the quad.
+- **Vec2** *v4*: A vertex of the quad.
+- **Color** *color*: The color of the quad.
+- **float** *z*: The z layer of the quad. (Default: *0*)
 
 #### DrawFillRect
 
-- **float** *x*:
-- **float** *y*:
-- **float** *w*:
-- **float** *h*:
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a filled rectangle.
+
+- **float** *x*: The x coordinate of the bottom left corner.
+- **float** *y*: The y coordinate of the bottom left corner.
+- **float** *w*: The width of the rectangle.
+- **float** *h*: The height of the rectangle.
+- **Color** *color*: The color of the rectangle. (Default: *colorWhite*)
+- **float** *z*: The z layer of the rectangle. (Default: *0*)
 
 #### DrawFillSquare
 
-- **Vec2** *pos*:
-- **float** *radius*:
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+- **Vec2** *pos*: The position of the midpoint of the square.
+- **float** *radius*: The radius of the square (half the side length).
+- **Color** *color*: The color of the square. (Default: *colorWhite*)
+- **float** *z*: The z layer of the square. (Default: *0*)
 
 #### DrawFillTri
 
-- **Vec2** *v1*:
-- **Vec2** *v2*:
-- **Vec2** *v3*:
-- **Color** *color*:
-- **float** *z*: (Default: *0*)
+Draws a filled triangle with a single color.
+
+- **Vec2** *v1*: A vertex of the triangle.
+- **Vec2** *v2*: A vertex of the triangle.
+- **Vec2** *v3*: A vertex of the triangle.
+- **Color** *color*: The color of the triangle.
+- **float** *z*: The z layer of the. (Default: *0*)
 
 #### DrawFillTriGradient
 
-- **Vec2** *v1*:
-- **Vec2** *v2*:
-- **Vec2** *v3*:
-- **Color** *c1*:
-- **Color** *c2*:
-- **Color** *c3*:
-- **float** *z*: (Default: *0*)
+Draws a filled triangle with a gradient.
+
+- **Vec2** *v1*: A vertex of the triangle.
+- **Vec2** *v2*: A vertex of the triangle.
+- **Vec2** *v3*: A vertex of the triangle.
+- **Color** *c1*: The color of the triangle at *v1*.
+- **Color** *c2*: The color of the triangle at *v2*.
+- **Color** *c3*: The color of the triangle at *v3*.
+- **float** *z*: The z layer of the triangle. (Default: *0*)
 
 #### DrawFillCircle
 
-- **Vec2** *pos*:
-- **float** *rad*:
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a filled circle.
+
+- **Vec2** *pos*: The position of the midpoint of the circle.
+- **float** *rad*: The radius of the circle.
+- **Color** *color*: The color of the circle. (Default: *colorWhite*)
+- **float** *z*: The z layer of the circle. (Default: *0*)
 
 #### DrawFillPoly
 
@@ -777,69 +789,81 @@ Draws a filled polygon.
 
 #### DrawFillLight
 
-- **Vec2** *pos*:
-- **float** *radius*:
-- **int** *sides*: (Default: *20*)
-- **Color** *centerColor*: (Default: *colorWhite*)
-- **Color** *edgeColor*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a regular polygon with a gradient to the middle.
+
+- **Vec2** *pos*: The position of the shape.
+- **float** *radius*: The radius of the shape.
+- **int** *sides*: The number of sides the polygon has. With the default value of 20, it looks close to a circle. (Default: *20*)
+- **Color** *centerColor*: The color of the shape at the center. (Default: *colorWhite*)
+- **Color** *edgeColor*: The color of the shape at the edge. (Default: *colorWhite*)
+- **float** *z*: The z layer of the shape. (Default: *0*)
 
 #### DrawLine
 
-- **Vec2** *p1*:
-- **Vec2** *p2*:
-- **float** *stroke*:
-- **Color** *color*:
-- **bool** *square*:
-- **float** *z*: (Default: *0*)
+Draws a line between two points.
+
+- **Vec2** *p1*: The position of the start point.
+- **Vec2** *p2*: The position of the end point.
+- **float** *stroke*: The thickness of the line. (Default: *px(1)*)
+- **Color** *color*: The color of the line. (Default: *colorWhite*)
+- **bool** *square*: ??? (Default: *true*)
+- **float** *z*: The z layer of the line. (Default: *0*)
 
 #### DrawLineAngle
 
-- **Vec2** *p*:
-- **float** *angle*:
-- **float** *len*:
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **bool** *square*: (Default: *true*)
-- **float** *z*: (Default: *0*)
+Draws a line from a point at an angle.
+
+- **Vec2** *p*: The position of the start point.
+- **float** *angle*: The angle of the line.
+- **float** *len*: The length of the line.
+- **float** *stroke*: The thickness of the line. (Default: *px(1)*)
+- **Color** *color*: The color of the line. (Default: *colorWhite*)
+- **bool** *square*: ??? (Default: *true*)
+- **float** *z*: The z layer of the line. (Default: *0*)
 
 #### DrawLineAngleCenter
 
-- **Vec2** *p*:
-- **float** *angle*:
-- **float** *len*:
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **bool** *square*: (Default: *true*)
-- **float** *z*: (Default: *0*)
+- **Vec2** *p*: The position of the midpoint.
+- **float** *angle*: The angle of the line.
+- **float** *len*: The length of the line.
+- **float** *stroke*: The thickness of the line. (Default: *px(1)*)
+- **Color** *color*: The color of the line. (Default: *colorWhite*)
+- **bool** *square*: ??? (Default: *true*)
+- **float** *z*: The z layer of the line. (Default: *0*)
 
 #### DrawLineRect
 
-- **Vec2** *pos*:
-- **Vec2** *size*:
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
-- **float** *margin*: (Default: *0*)
+Draws a rectangle outline.
+
+- **Vec2** *pos*: The position of the bottom left corner of the rectangle.
+- **Vec2** *size*: The size of the rectangle as a vector of *(width, height)*.
+- **float** *stroke*: The thickness of the outline. (Default: *px(1)*)
+- **Color** *color*: The color of the outline. (Default: *colorWhite*)
+- **float** *z*: The z layer of the rectangle. (Default: *0*)
+- **float** *margin*: Seems to make the rectangle smaller. (Default: *0*)
 
 #### DrawLineSquare
 
-- **Vec2** *pos*:
-- **float** *rad*:
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a square outline.
 
-#### DrawStar
+- **Vec2** *pos*: The position of the midpoint.
+- **float** *rad*: The radius of the square.
+- **float** *stroke*: The thickness of the outline. (Default: *px(1)*)
+- **Color** *color*: The color of the outline. (Default: *colorWhite*)
+- **float** *z*: The z layer of the square. (Default: *0*)
 
-- **Vec2** *pos*: 
-- **int** *sides*:
-- **float** *radius*:
-- **float** *len*:
-- **float** *stroke*: (Default: *px(1)*)
+#### DrawRadLines
+
+Draws lines pointing at a target position.
+
+- **Vec2** *pos*: The target position.
+- **int** *sides*: The number of lines to draw.
+- **float** *radius*: The distance from the target point to the start points of the lines.
+- **float** *len*: The length of the lines.
+- **float** *stroke*: The thickness of the outline. (Default: *px(1)*)
 - **float** *rotation*: (Default: *0*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+- **Color** *color*: The color of the lines. (Default: *colorWhite*)
+- **float** *z*: The z layer of the lines. (Default: *0*)
 
 #### DrawPoly
 
@@ -855,43 +879,49 @@ Draws a regular polygon outline.
 
 #### DrawArcRadius
 
-- **Vec2** *pos*:
-- **int** *sides*:
-- **float** *angleFrom*:
-- **float** *angleTo*:
-- **float** *radiusFrom*:
-- **float** *radiusTo*:
-- **float** *rotation*: (Default: *0*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a polygonal ring sector.
+
+- **Vec2** *pos*: The midpoint of the ring.
+- **int** *sides*: The number of sides of the ring sector.
+- **float** *angleFrom*: The angle where the sector starts.
+- **float** *angleTo*: The angle where the sector ends.
+- **float** *radiusFrom*: The inner radius of the ring.
+- **float** *radiusTo*: The outer radius of the ring.
+- **float** *rotation*: The rotation of the sector. (Default: *0*)
+- **Color** *color*: The color of the ring. (Default: *colorWhite*)
+- **float** *z*: The z layer of the ring. (Default: *0*)
 
 #### DrawArc
 
-- **Vec2** *pos*:
-- **int** *sides*:
-- **float** *angleFrom*:
-- **float** *angleTo*:
-- **float** *radius*:
-- **float** *rotation*: (Default: *0*)
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a polygonal arc.
+
+- **Vec2** *pos*: The position of the arc.
+- **int** *sides*: The number of sides of the arc.
+- **float** *angleFrom*: The angle where the arc starts.
+- **float** *angleTo*: The angle where the arc ends.
+- **float** *radius*: The radius of the arc.
+- **float** *rotation*: The rotation of the arc. (Default: *0*)
+- **float** *stroke*: The thickness of the outline. (Default: *px(1)*)
+- **Color** *color*: The color of the outline. (Default: *colorWhite*)
+- **float** *z*: The z layer of the polygon. (Default: *0*)
 
 #### DrawCrescent
 
-- **Vec2** *pos*:
-- **int** *sides*:
-- **float** *angleFrom*:
-- **float** *angleTo*:
-- **float** *radius*:
-- **float** *rotation*: (Default: *0*)
-- **float** *stroke*: (Default: *px(1)*)
-- **Color** *color*: (Default: *colorWhite*)
-- **float** *z*: (Default: *0*)
+Draws a polygonal crescent shape.
+
+- **Vec2** *pos*: The midpoint of the shape.
+- **int** *sides*: The number of sides of the shape.
+- **float** *angleFrom*: The angle where the crescent starts.
+- **float** *angleTo*: The angle where the crescent ends.
+- **float** *radius*: The radius of the shape.
+- **float** *rotation*: The rotation of the shape. (Default: *0*)
+- **float** *stroke*: The width of the thickest part of the crescent. (Default: *px(1)*)
+- **Color** *color*: The color of the outline. (Default: *colorWhite*)
+- **float** *z*: The z layer of the shape. (Default: *0*)
 
 #### DrawBloom
 
-Draws one or more patterns with bloom enabled.
+Draws one or more patterns with bloom enabled. Only works in unit splash drawing.
 
 - **Array** *body*: An array of draw calls to be drawn with bloom anabled.
 
@@ -916,109 +946,115 @@ Damages (usually destroys) bullets, conveyors, etc. on a target tile.
 
 #### MakeDelay
 
-Should only be used in map update scripts. (TODO coming soon)
+Delays an action by a number of turns. Appears to be slightly bugged. Should only be used in map update scripts.
 
-- **int** *delay*: (Default: *0*)
-- **Array** *callback*:
+- **int** *delay*: The number of turns until the callback is executed minus one. (Default: *0*)
+- **Array** *callback*: An array of calls that is executed after the delay.
 
 #### MakeBullet
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a bullet on the playing field. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*: (Default: *"bullet"*)
+- **Vec2** *pos*: The position of the bullet.
+- **Vec2** *dir*: The distance the bullet moves per turn. The bullet *can* move multiple squares in a direction at once (e.g. with *vec2(1, -2)*).
+- **string** *tex*: The texture of the bullet. (Default: *"bullet"*) (TODO list of values)
 
 #### MakeTimedBullet
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a bullet on the playing field that disappears after a set amount of turns. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*: (Default: *"bullet"*)
-- **int** *life*: (Default: *3*)
+- **Vec2** *pos*: The position of the bullet.
+- **Vec2** *dir*: The distance the bullet moves per turn.
+- **string** *tex*: The texture of the bullet. (Default: *"bullet"*)
+- **int** *life*: The number of turns after which the bullet disappears. (Default: *3*)
 
 #### MakeConveyor
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a conveyor on the playing field. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **int** *length*: (Default: *2*)
-- **string** *tex*: (Default: *"conveyor*)
+- **Vec2** *pos*: The position of the conveyor.
+- **Vec2** *dir*: The distance the conveyor moves per turn.
+- **int** *length*: The number of conveyor belts in a row. Only 1 and 2 work. (Default: *2*) (TODO Check if that is a bug)
+- **string** *tex*: The texture of the conveyor. (Default: *"conveyor*)
 - **int** *gen*: (Default: *0*)
 
 #### MakeLaserSegment
 
-Should only be used in map update scripts. (TODO coming soon)
+Makes a one tile long laser segment. You should probably use `MakeLaser` instead. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
+- **Vec2** *pos*: The position of the laser segment.
+- **Vec2** *dir*: The direction in which the laser points.
 
 #### MakeRouter
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a router that shoots conveyors. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **int** *length*: (Default: *2*)
-- **int** *life*: (Default: *2*)
-- **bool** *diag*: (Default: *false*)
-- **string** *tex*: (Default: *"router"*)
-- **bool** *allDir*: (Default: *false*)
+- **Vec2** *pos*: The position of the router.
+- **int** *length*: The number of conveyors the router creates. Only 1 and 2 work. (Default: *2*)
+- **int** *life*: The number of turns until the router disappears. (Default: *2*)
+- **bool** *diag*: Whether the conveyors are shot diagonally. (Default: *false*)
+- **string** *tex*: The texture of the router. (Default: *"router"*)
+- **bool** *allDir*: Whether the conveyors are in all eight directions. (Default: *false*)
 
 #### MakeSorter
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a sorter on the playing field that shoots conveyors and moves. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *mdir*:
-- **int** *moveSpace*: (Default: *2*)
-- **int** *spawnSpace*: (Default: *2*)
-- **int** *length*: (Default: *1*)
+- **Vec2** *pos*: The position of the sorter.
+- **Vec2** *mdir*: The movement direction of the sorter.
+- **int** *moveSpace*: The number of turns it takes for the sorter to move one tile. (Default: *2*)
+- **int** *spawnSpace*: The delay between conveyor spawns. (Default: *2*)
+- **int** *length*: The number of conveyors spawned. Only 1 and 2 work. (Default: *1*)
 
 #### MakeTurret
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates a turret on the playing field that moves and shoots bullets at the player. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *face*:
-- **int** *reload*: (Default: *4*)
-- **int** *life*: (Default: *8*)
-- **string** *tex*: (Default: *"duo"*)
+- **Vec2** *pos*: The position of the turret.
+- **Vec2** *face*: The direction the turret is facing. Also the movement vector of the bullets spawned by the turret.
+- **int** *reload*: The number of turns it takes to reload times two. (Default: *4*) (TODO check source)
+- **int** *life*: The number of turns until the turret disappears. (Default: *8*)
+- **string** *tex*: The texture of the turret. (Default: *"duo"*)
 
 #### MakeArc
 
-Should only be used in map update scripts. (TODO coming soon)
+Creates an Arc turret on the playing field that moves across the screen, bounces from walls and leaves a trail of stationary bullets. Should only be used in map update scripts.
 
-- **Vec2** *pos*:
-- **Vec2** *face*:
-- **string** *tex*: (Default: *"arc"*)
-- **int** *bounces*: (Default: *1*)
-- **int** *life*: (Default: *3*)
+- **Vec2** *pos*: The position of the Arc.
+- **Vec2** *dir*: The movement vector of the Arc.
+- **string** *tex*: The texture of the Arc. (Default: *"arc"*)
+- **int** *bounces*: The maximum number of times the Arc can bounce off of the wall. (Default: *1*)
+- **int** *life*: The number of turns until the trail of bullets disappears. (Default: *3*)
 
 #### MakeDelayBullet
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*:
+Creates a bullet delayed by one turn.
+
+- **Vec2** *pos*: The position of the bullet.
+- **Vec2** *dir*: The distance the bullet moves per turn. 
+- **string** *tex*: The texture of the bullet. (Default: *""*)
 
 #### MakeDelayBulletWarn
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*:
+Creates a bullet delayed by one turn with an indicator at the position the bullet will appear.
+
+- **Vec2** *pos*: The position of the bullet.
+- **Vec2** *dir*: The distance the bullet moves per turn.
+- **string** *tex*: The texture of the bullet. (Default: *""*)
 
 #### MakeBulletCircle
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*:
+Shoots 8 bullets from a position in all 8 directions.
+
+- **Vec2** *pos*: The position to shoot the bullets from.
+- **string** *tex*: The texture of the bullets. (Default: *""*)
 
 #### MakeLaser
 
-- **Vec2** *pos*:
-- **Vec2** *dir*:
-- **string** *tex*:
+Creates a Lancer turret on the playing field that shoots a laser across the playing field two turns later.
+
+- **Vec2** *pos*: The position where the turret appears.
+- **Vec2** *dir*: The direction the turret is pointing in. Only cardinal directions with a magnitude of one work (no diagonal lasers).
 
 ### Effects
 
@@ -1036,19 +1072,26 @@ Creates a green explosion effect on a tile.
 
 #### EffectWarn
 
+Creates a warning effect (white square) on a tile.
+
 - **Vec2** *pos*: The position of the tile where the effect will appear.
-- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
 
 #### EffectWarnBullet
 
+Creates a warning effect (white bullet) on a tile.
+
 - **Vec2** *pos*: The position of the tile where the effect will appear.
-- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
+ **float** *rotation*: The rotation of the effect.
 
 #### EffectStrikeWave
 
+Creates a warning effect (large square) around a tile.
+
 - **Vec2** *pos*: The position of the tile where the effect will appear.
-- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
-- **float** *rotation*: The rotation of the effect.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
+- **float** *rotation*: The size of the effect. Don't ask. (Default: *0*)
 
 ### Other
 

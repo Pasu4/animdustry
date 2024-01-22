@@ -56,7 +56,7 @@ var
   apiEffectExplodeHeal*: proc(pos: Vec2)
   # apiEffectLaserShoot*: proc()
   apiEffectWarn*: proc(pos: Vec2, life: float32)
-  apiEffectWarnBullet*: proc(pos: Vec2, life: float32)
+  apiEffectWarnBullet*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
   apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
 
 # Export main's procs to the API
@@ -90,7 +90,7 @@ template exportProcs* =
   jsonapi.apiEffectExplode = proc(pos: Vec2) = effectExplode(pos)
   jsonapi.apiEffectExplodeHeal = proc(pos: Vec2) = effectExplodeHeal(pos)
   jsonapi.apiEffectWarn = proc(pos: Vec2, life: float32) = effectWarn(pos, life = life)
-  jsonapi.apiEffectWarnBullet = proc(pos: Vec2, life: float32) = effectWarnBullet(pos, life = life)
+  jsonapi.apiEffectWarnBullet = proc(pos: Vec2, life: float32, rotation: float32) = effectWarnBullet(pos, life = life, rotation = rotation)
   jsonapi.apiEffectStrikeWave = proc(pos: Vec2, life: float32, rotation: float32) = effectStrikeWave(pos, life = life, rotation = rotation)
 
 #region Procs copied to avoid circular dependency
@@ -590,7 +590,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       capture col, seed, amount, angle:
         procs.add(proc() = patLines(getColor(col), eval(seed).int, eval(amount).int, eval(angle)))
 
-    of "DrawRadLines":
+    of "DrawRadLinesRound":
       let
         col = elem{"col"}.getStr($colorWhite)
         seed = elem{"seed"}.getStr($elem{"seed"}.getInt(6))
@@ -776,7 +776,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         p2 = elem["p2"].getStr()
         stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
         color = elem{"color"}.getStr($colorWhite)
-        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        square = elem{"square"}.getStr($elem{"square"}.getFloat(elem{"square"}.getBool(true).float))
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture p1, p2, stroke, color, square, z:
         procs.add(proc() = line(evalVec2(p1), evalVec2(p2), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
@@ -788,7 +788,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         len = elem["len"].getStr($elem["len"].getFloat())
         stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
         color = elem{"color"}.getStr($colorWhite)
-        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        square = elem{"square"}.getStr($elem{"square"}.getFloat(elem{"square"}.getBool(true).float))
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture p, angle, len, stroke, color, square, z:
         procs.add(proc() = lineAngle(evalVec2(p), eval(angle), eval(len), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
@@ -800,7 +800,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         len = elem["len"].getStr($elem["len"].getFloat())
         stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
         color = elem{"color"}.getStr($colorWhite)
-        square = elem{"color"}.getStr($elem{"color"}.getFloat(elem{"color"}.getBool(true).float))
+        square = elem{"square"}.getStr($elem{"square"}.getFloat(elem{"square"}.getBool(true).float))
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture p, angle, len, stroke, color, square, z:
         procs.add(proc() = lineAngleCenter(evalVec2(p), eval(angle), eval(len), eval(stroke), getColor(color), eval(square) != 0, eval(z)))
@@ -826,7 +826,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       capture pos, rad, stroke, color, z:
         procs.add(proc() = lineSquare(evalVec2(pos), eval(rad), eval(stroke), getColor(color), eval(z)))
 
-    of "DrawStar": # name conflict with patSpikes
+    of "DrawRadLines":
       let
         pos = elem["pos"].getStr()
         sides = elem["sides"].getStr($elem["sides"].getInt())
@@ -924,7 +924,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     #region Makers
     of "MakeDelay":
       let
-        delay = elem{"life"}.getStr($elem{"life"}.getInt(0))
+        delay = elem{"delay"}.getStr($elem{"delay"}.getInt(0))
         callback = parseScript(elem["callback"])
       capture delay, callback:
         procs.add(proc() = apiMakeDelay(eval(delay).int, proc() =
@@ -1085,8 +1085,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       let
         pos = elem["pos"].getStr()
         life = elem["life"].getStr($elem["life"].getFloat())
-      capture pos, life:
-        procs.add(proc() = apiEffectWarnBullet(evalVec2(pos), eval(life)))
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
+      capture pos, life, rotation:
+        procs.add(proc() = apiEffectWarnBullet(evalVec2(pos), eval(life), eval(rotation)))
 
     of "EffectStrikeWave":
       let
