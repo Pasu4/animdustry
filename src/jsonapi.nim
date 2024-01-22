@@ -54,8 +54,10 @@ var
   #apiEffectExplode*: proc(pos: Vec2, rotation = 0.0'f32, color = colorWhite, life = 0.4'f32, size = 0.0'f32, parent = NO_ENTITY_REF)
   apiEffectExplode*: proc(pos: Vec2)
   apiEffectExplodeHeal*: proc(pos: Vec2)
-  apiEffectStrikeWave*: proc(pos: Vec2, rotation: float32)
-  apiEffectLaserShoot*: proc()
+  # apiEffectLaserShoot*: proc()
+  apiEffectWarn*: proc(pos: Vec2, life: float32)
+  apiEffectWarnBullet*: proc(pos: Vec2, life: float32)
+  apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
 
 # Export main's procs to the API
 template exportProcs* =
@@ -87,6 +89,9 @@ template exportProcs* =
   # Effects (evil post-compile-time signature apparently)
   jsonapi.apiEffectExplode = proc(pos: Vec2) = effectExplode(pos)
   jsonapi.apiEffectExplodeHeal = proc(pos: Vec2) = effectExplodeHeal(pos)
+  jsonapi.apiEffectWarn = proc(pos: Vec2, life: float32) = effectWarn(pos, life = life)
+  jsonapi.apiEffectWarnBullet = proc(pos: Vec2, life: float32) = effectWarnBullet(pos, life = life)
+  jsonapi.apiEffectStrikeWave = proc(pos: Vec2, life: float32, rotation: float32) = effectStrikeWave(pos, life = life, rotation = rotation)
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -204,22 +209,26 @@ proc initJsonApi*(bloomA, bloomB: proc()) =
 
 # Update variables that can be used in formulas
 proc updateEvals() =
-  for eval in [eval_x, eval_y]:
-    eval.addVar("state_secs", state.secs)
-    eval.addVar("state_lastSecs", state.lastSecs)
-    eval.addVar("state_time", state.time)
-    eval.addVar("state_rawBeat", state.rawBeat)
-    eval.addVar("state_moveBeat", state.moveBeat)
-    eval.addVar("state_newTurn", state.newTurn.float)
-    eval.addVar("state_hitTime", state.hitTime)
-    eval.addVar("state_healTime", state.healTime)
-    eval.addVar("state_points", state.points.float)
-    eval.addVar("state_turn", state.turn.float)
-    eval.addVar("state_hits", state.hits.float)
-    eval.addVar("state_totalHits", state.totalHits.float)
-    eval.addVar("state_misses", state.misses.float)
+  for e in [eval_x, eval_y]:
+    e.addVar("state_secs", state.secs)
+    e.addVar("state_lastSecs", state.lastSecs)
+    e.addVar("state_time", state.time)
+    e.addVar("state_rawBeat", state.rawBeat)
+    e.addVar("state_moveBeat", state.moveBeat)
+    e.addVar("state_newTurn", state.newTurn.float)
+    e.addVar("state_hitTime", state.hitTime)
+    e.addVar("state_healTime", state.healTime)
+    e.addVar("state_points", state.points.float)
+    e.addVar("state_turn", state.turn.float)
+    e.addVar("state_hits", state.hits.float)
+    e.addVar("state_totalHits", state.totalHits.float)
+    e.addVar("state_misses", state.misses.float)
+    e.addVar("state_currentBpm", state.currentBpm)
 
-    eval.addVar("fau_time", fau.time)
+    e.addVar("fau_time", fau.time)
+
+    if not state.map.isNil():
+      e.addVar("beatSpacing", 1.0 / (state.currentBpm / 60.0))
 
   # Vector
   eval_x.addVar("_getScl", apigetScl_0())
@@ -1030,6 +1039,30 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         procs.add(proc() = apiMakeLaser(evalVec2i(pos), evalVec2i(dir)))
     #endregion
 
+    #region Other
+    of "MixColor":
+      let
+        name = elem["name"].getStr()
+        col1 = elem["col1"].getStr()
+        col2 = elem["col2"].getStr()
+        factor = elem{"factor"}.getStr($elem{"factor"}.getFloat(0.5))
+      capture name, col1, col2, factor:
+        procs.add(proc() = colorTable[name] = getColor(col1).mix(getColor(col2), eval(factor)))
+
+    of "ChangeBPM":
+      let bpm = elem["bpm"].getStr($elem["bpm"].getFloat())
+      capture bpm:
+        procs.add(proc() =
+          state.currentBpm = eval(bpm)
+          let
+            baseTime = 60.0 / state.map.bpm
+            curTime = 60.0 / state.currentBpm
+            baseTurn = state.secs / baseTime
+          state.turnOffset = (baseTime - curTime) * baseTurn / curTime + baseTurn - state.turn
+        )
+
+    #endregion
+
     #region Effects
     of "EffectExplode":
       let pos = elem["pos"].getStr()
@@ -1040,6 +1073,28 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
       let pos = elem["pos"].getStr()
       capture pos:
         procs.add(proc() = apiEffectExplodeHeal(evalVec2(pos)))
+
+    of "EffectWarn":
+      let
+        pos = elem["pos"].getStr()
+        life = elem["life"].getStr($elem["life"].getFloat())
+      capture pos, life:
+        procs.add(proc() = apiEffectWarn(evalVec2(pos), eval(life)))
+
+    of "EffectWarnBullet":
+      let
+        pos = elem["pos"].getStr()
+        life = elem["life"].getStr($elem["life"].getFloat())
+      capture pos, life:
+        procs.add(proc() = apiEffectWarnBullet(evalVec2(pos), eval(life)))
+
+    of "EffectStrikeWave":
+      let
+        pos = elem["pos"].getStr()
+        life = elem["life"].getStr($elem["life"].getFloat())
+        rotation = elem{"rotation"}.getStr($elem{"rotation"}.getFloat(0f))
+      capture pos, life, rotation:
+        procs.add(proc() = apiEffectStrikeWave(evalVec2(pos), eval(life), eval(rotation)))
     #endregion
 
     #region Custom procedures

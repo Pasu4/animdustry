@@ -96,6 +96,10 @@ onEcsBuilt:
     #makeUnit(vec2i(2, 0), unitOct)
 
     state.map = next
+
+    state.currentBpm = state.map.bpm
+    state.turnOffset = 0
+
     state.voice = state.map.getSound.play()
     if offset > 0.0:
       state.voice.seek(offset)
@@ -109,7 +113,6 @@ onEcsBuilt:
     scorePositive = amount >= 0
 
   proc damageBlocks(target: Vec2i) =
-    echo "inside damageBlocks with ", target
     let hitbox = rectCenter(target.vec2, vec2(0.99f))
     for item in sysDestructible.groups:
       if item.gridPos.vec == target or rectCenter(item.pos.vec, vec2(1f)).overlaps(hitbox):
@@ -183,7 +186,6 @@ proc getGameTexture*(unit: Unit, name: string = ""): Texture =
   return unit.textures[key]
 
 proc rollUnit*(): Unit =
-  echo "test"
   #very low chance, as it is annoying
   if chance(1f / 100f):
     return unitNothing
@@ -197,7 +199,7 @@ proc rollUnit*(): Unit =
 
 proc fading(): bool = fadeTarget != nil
 
-proc beatSpacing(): float = 1.0 / (state.map.bpm / 60.0)
+proc beatSpacing(): float = 1.0 / (state.currentBpm / 60.0)
 
 proc musicTime(): float = state.secs
 
@@ -221,7 +223,7 @@ proc `highScore=`(map: Beatmap, value: int) =
 
 proc unlocked(map: Beatmap): bool =
   let index = allMaps.find(map)
-  return index <= 0 or save.scores[index - 1] > 0 or save.scores[index] > 0
+  return map.alwaysUnlocked or index <= 0 or save.scores[index - 1] > 0 or save.scores[index] > 0
 
 proc health(): int = 
   if state.map.isNil: 1 else: state.map.maxHits.max(1) - state.hits
@@ -389,11 +391,11 @@ makeSystem("updateMusic", []):
       state.secs = nextSecs
     state.lastSecs = nextSecs
 
-    let nextBeat = max(int(state.secs / beatSpace), state.turn)
+    let nextBeat = max(int(state.secs / beatSpace - state.turnOffset), state.turn)
 
     state.newTurn = nextBeat != state.turn
     state.turn = nextBeat
-    state.rawBeat = (1.0 - ((state.secs mod beatSpace) / beatSpace)).float32
+    state.rawBeat = (1.0 - (floorMod(state.secs - state.turnOffset * beatSpace, beatSpace) / beatSpace)).float32
 
     let fft = getFft()
 
@@ -434,7 +436,7 @@ makeSystem("input", [GridPos, Input, UnitDraw, Pos]):
     axis2 = axisTap2(keyLeft, keyRight, keyDown, keyUp)
 
   all:
-    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0]
+    const switchKeys = [key1, key2, key3, key4, key5, key6, key7, key8, key9, key0, keyT, keyY, keyU, keyI, keyO, keyP, keyF, keyG, keyH, keyJ, keyK, keyL, keyZ, keyX, keyC, keyV, keyB, keyN, keyM]
 
     if item.input.lastSwitchTime == 0f or musicTime() >= item.input.lastSwitchTime + switchDelay:
       for i, unit in save.units:

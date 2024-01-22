@@ -133,6 +133,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
     "maxHits": 10,
     "copperAmount": 8,
     "fadeColor": "fa874c",
+    "alwaysUnlocked": true,
     "drawPixel": [
         {"type": "DrawStripes", "col1": "#19191c", "col2": "#ab8711"},
         {"type": "DrawBeatSquare", "col": "#f25555"}
@@ -159,6 +160,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 - **maxHits:** How often the player needs to be hit to fail the map.
 - **copperAmount:** The amount of copper the player will receive upon beating the level. How much copper the player actually gets is determined by how well they did in the level and if they have beaten the level before.
 - **fadeColor:** (TODO test)
+- **alwaysUnlocked:** If true, the map can be played without unlocking all previous maps. Optional.
 - **drawPixel:** Script that draws the background.
 - **draw:** Script that draws the playing field.
 - **update:** Script that spawns enemies, obstacles, etc.
@@ -250,13 +252,15 @@ Functions can be used inside math formulas.
 - **float** *state_rawBeat*: Raw beat calculated based on music position.
 - **float** *state_moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
 - **float** *state_hitTime*: Snaps to 1 when player is hit for health animation.
-- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented echaninc in the base game.
+- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
 - **int** *state_points*: Points awarded based on various events.
 - **int** *state_turn*: Beats that have passed total.
 - **int** *state_hits*: The number of times the player has been hit this map. (?)
 - **int** *state_totalHits*: Same as *state_hits*, probably.
 - **int** *state_misses*: The number of times the player has missed an input this map. (?)
+- **float** *state_currentBpm*: The current BPM (beats per minute).
 - **Vec2** *playerPos*: Last known player position.
+- **float** *beatSpacing*: The time between two beats.
 
 ### Only available in unit splash drawing
 
@@ -376,27 +380,27 @@ Executes an array of calls only on specific turns. Only works inside levels.
 
 #### DrawFft
 
-I don't know what it does, and it is never used in the base game. (TODO do more testing)
+Draws a circular audio spectrum. Never used in the base game.
 
-- **Vec2** *pos*:
-- **float** *radius*: (Default: *px(90)*)
-- **float** *length*: (Default: *8*)
-- **Color** *color*: (Default: *colorWhite*)
+- **Vec2** *pos*: The position of the spectrum.
+- **float** *radius*: The inner radius of the spectrum. (Default: *px(90)*)
+- **float** *length*: The length of the spectrum bars. (Default: *8*)
+- **Color** *color*: The color of the spectrum. (Default: *colorWhite*)
 
 #### DrawTiles
 
-Draws the playing field. Should only be used inside levels. (TODO coming soon)
+Draws the playing field with diagonal highlighted tiles that move with the beat. Should only be used inside levels.
 
 #### DrawTilesFft
 
-Draws the playing field. Should only be used inside levels. (TODO coming soon)
+Draws the playing field with an audio spectrum. Never used in the base game. Should only be used inside levels.
 
 #### DrawTilesSquare
 
-Draws the playing field. Should only be used inside levels. (TODO coming soon)
+Draws the playing field with tiles highlighted in a repeating square pattern. Should only be used inside levels.
 
-- **Color** *col1*: (Default: *colorWhite*)
-- **Color** *col2*: (Default: *colorBlue*)
+- **Color** *col1*: The color of the normal tiles. (Default: *colorWhite*)
+- **Color** *col2*: The color of the highlighted tiles. (Default: *colorBlue*)
 
 #### DrawBackground
 
@@ -414,15 +418,15 @@ Draws construction-tape-like stripes. If used inside a level, scrolls from right
 
 #### DrawBeatSquare
 
-Only works inside levels. (TODO coming soon)
+Draws a square that flashes and changes size with the beat. Only works inside levels.
 
-- **Color** *col*: (Default: *colorPink* with 70% *colorWhite*)
+- **Color** *col*: The color of the square. (Default: *colorPink* with 70% *colorWhite*)
 
 #### DrawBeatAlt
 
-Only works inside levels. (TODO coming soon)
+Same as `DrawBeatSquare`, but flashes in a different pattern. Only works inside levels.
 
-- **Color** *col*:
+- **Color** *col*: The color of the square.
 
 #### DrawTriSquare
 
@@ -458,18 +462,18 @@ Draws a "fan" of triangles. (TODO better explanation)
 
 #### DrawSpinShape
 
-Only works inside levels. (TODO coming soon)
+Draws a central layered regular polygon surrounded by smaller "sattelite" polygons. Flashes and rotates with the beat. Only works inside levels.
 
-- **Color** *col1*:
-- **Color** *col2*:
-- **int** *sides*: (Default: *4*)
-- **float** *rad*: (Default: *2.5*)
-- **float** *turnSpeed*: (Default: *rad(19)*)
-- **int** *rads*: (Default: *6*)
-- **int** *radsides*: (Default: *4*)
-- **float** *radOff*: (Default: *7*)
-- **float** *radrad*: (Default: *1.3*)
-- **float** *radrotscl*: (Default: *0.25*)
+- **Color** *col1*: The normal color.
+- **Color** *col2*: The flash color.
+- **int** *sides*: The number of sides of the central polygon. (Default: *4*)
+- **float** *rad*: The radius of the central shape. (Default: *2.5*)
+- **float** *turnSpeed*: By how much the central shape rotates every beat. (Default: *rad(19)*)
+- **int** *rads*: The number of sattelite shapes. (Default: *6*)
+- **int** *radsides*: The number of sides of the sattelite polygons. (Default: *4*)
+- **float** *radOff*: How far away the sattelite shapes orbit. (Default: *7*)
+- **float** *radrad*: The radius of the sattelite shapes. (Default: *1.3*)
+- **float** *radrotscl*: By how much the sattelite shapes will orbit relative to the central shape's rotation. (Default: *0.25*)
 
 #### DrawShapeBack
 
@@ -725,14 +729,14 @@ Draws the current unit's splash image. Should only be used in unit splash drawin
 - **float** *y*:
 - **float** *w*:
 - **float** *h*:
-- **Color** *color*:
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawFillSquare
 
 - **Vec2** *pos*:
 - **float** *radius*:
-- **Color** *color*:
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawFillTri
@@ -757,7 +761,7 @@ Draws the current unit's splash image. Should only be used in unit splash drawin
 
 - **Vec2** *pos*:
 - **float** *rad*:
-- **Color** *color*:
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawFillPoly
@@ -775,9 +779,9 @@ Draws a filled polygon.
 
 - **Vec2** *pos*:
 - **float** *radius*:
-- **int** *sides*:
-- **Color** *centerColor*:
-- **Color** *edgeColor*:
+- **int** *sides*: (Default: *20*)
+- **Color** *centerColor*: (Default: *colorWhite*)
+- **Color** *edgeColor*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawLine
@@ -794,9 +798,9 @@ Draws a filled polygon.
 - **Vec2** *p*:
 - **float** *angle*:
 - **float** *len*:
-- **float** *stroke*:
-- **Color** *color*:
-- **bool** *square*:
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
+- **bool** *square*: (Default: *true*)
 - **float** *z*: (Default: *0*)
 
 #### DrawLineAngleCenter
@@ -804,36 +808,37 @@ Draws a filled polygon.
 - **Vec2** *p*:
 - **float** *angle*:
 - **float** *len*:
-- **float** *stroke*:
-- **Color** *color*:
-- **bool** *square*:
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
+- **bool** *square*: (Default: *true*)
 - **float** *z*: (Default: *0*)
 
 #### DrawLineRect
 
 - **Vec2** *pos*:
 - **Vec2** *size*:
-- **float** *stroke*:
-- **Color** *color*:
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
+- **float** *margin*: (Default: *0*)
 
 #### DrawLineSquare
 
 - **Vec2** *pos*:
 - **float** *rad*:
-- **float** *stroke*:
-- **Color** *color*:
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
-#### Draw
+#### DrawStar
 
-- **Vec2** *pos*:
+- **Vec2** *pos*: 
 - **int** *sides*:
 - **float** *radius*:
 - **float** *len*:
-- **float** *stroke*:
-- **float** *rotation*:
-- **Color** *color*:
+- **float** *stroke*: (Default: *px(1)*)
+- **float** *rotation*: (Default: *0*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawPoly
@@ -856,8 +861,8 @@ Draws a regular polygon outline.
 - **float** *angleTo*:
 - **float** *radiusFrom*:
 - **float** *radiusTo*:
-- **float** *rotation*:
-- **Color** *color*:
+- **float** *rotation*: (Default: *0*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawArc
@@ -867,9 +872,9 @@ Draws a regular polygon outline.
 - **float** *angleFrom*:
 - **float** *angleTo*:
 - **float** *radius*:
-- **float** *rotation*:
-- **float** *stroke*:
-- **Color** *color*:
+- **float** *rotation*: (Default: *0*)
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawCrescent
@@ -879,9 +884,9 @@ Draws a regular polygon outline.
 - **float** *angleFrom*:
 - **float** *angleTo*:
 - **float** *radius*:
-- **float** *rotation*:
-- **float** *stroke*:
-- **Color** *color*:
+- **float** *rotation*: (Default: *0*)
+- **float** *stroke*: (Default: *px(1)*)
+- **Color** *color*: (Default: *colorWhite*)
 - **float** *z*: (Default: *0*)
 
 #### DrawBloom
@@ -1021,10 +1026,43 @@ Should only be used in map update scripts. (TODO coming soon)
 
 Creates an explosion effect on a tile.
 
-- **Vec2** *pos*: The position of the tile.
+- **Vec2** *pos*: The position of the tile where the effect will appear.
 
 #### EffectExplodeHeal
 
 Creates a green explosion effect on a tile.
 
-- **Vec2** *pos*: The position of the tile.
+- **Vec2** *pos*: The position of the tile where the effect will appear.
+
+#### EffectWarn
+
+- **Vec2** *pos*: The position of the tile where the effect will appear.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
+
+#### EffectWarnBullet
+
+- **Vec2** *pos*: The position of the tile where the effect will appear.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
+
+#### EffectStrikeWave
+
+- **Vec2** *pos*: The position of the tile where the effect will appear.
+- **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpace*.
+- **float** *rotation*: The rotation of the effect.
+
+### Other
+
+#### MixColor
+
+Mixes two colors into a new color.
+
+- **string** *name*: The name of the new color.
+- **Color** *col1*: The first color.
+- **Color** *col2*: The second color
+- **float** *factor*: How much of each color is in the end result, between 0 and 1. The higher the factor, the more of *col2* is in the result. (Default: *0.5*)
+
+#### ChangeBPM
+
+Changes the BPM of the current map.
+
+- **float** *bpm*: The new bpm the map should have.

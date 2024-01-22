@@ -147,7 +147,7 @@ makeSystem("drawUI", []):
     scoreTime = scoreTime.max(0f)
 
     if isDesktop:
-      defaultFont.draw(&"[ {state.points:04} ]", fau.cam.view.grow(vec2(-4f.px, 0f)), align = daTopLeft, color = colorWhite.mix(if scorePositive: colorAccent else: colorHit, scoreTime.pow(3f)))
+      defaultFont.draw(&"[ {state.points:04} ]\nBPM: {state.currentBpm:0}", fau.cam.view.grow(vec2(-4f.px, 0f)), align = daTopLeft, color = colorWhite.mix(if scorePositive: colorAccent else: colorHit, scoreTime.pow(3f)))
     elif mode != gmDead and mode != gmFinished:
       let buttonSize = 1.5f
       if button(rectCenter(screen.topLeft - vec2(-buttonSize/2f, buttonSize/2f), vec2(buttonSize)), icon = patch(if mode == gmPlaying: "pause" else: "play")):
@@ -177,12 +177,13 @@ makeSystem("drawUI", []):
           pos = screen.xy + vec2(i.float32 * 0.8f, bottomMargin)
           current = player.unitDraw.unit == unit
           bounds = rect(pos, vec2(23f.px, 32f.px))
+        const unitKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "T", "Y", "U", "I", "O", "P", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"]
 
         if not unit.isModded:
           draw(patch(&"unit-{unit.name}"), pos, align = daBotLeft, mixColor = if current: rgb(0.1f).withA(0.8f) else: colorClear, scl = vec2(0.75f))
         else:
           draw(unit.getGameTexture(), pos, align = daBotLeft, mixColor = if current: rgb(0.1f).withA(0.8f) else: colorClear, scl = vec2(0.75f))
-        defaultFont.draw($(i + 1), rect(pos + vec2(4f.px, -2f.px), 1f.vec2), align = daBotLeft, color = if current: colorGray else: colorWhite)
+        defaultFont.draw(unitKeys[i], rect(pos + vec2(4f.px, -2f.px), 1f.vec2), align = daBotLeft, color = if current: colorGray else: colorWhite)
 
         if keyMouseLeft.tapped and bounds.contains(mouseWorld):
           mobileUnitSwitch = i

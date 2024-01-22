@@ -33,6 +33,7 @@ type Beatmap* = ref object
   # mod
   isModded*: bool
   modPath*: string
+  alwaysUnlocked*: bool
 
 type Unit* = ref object
   name*: string
@@ -118,6 +119,10 @@ type GameState* = object
   totalHits*: int
   misses*: int
   beatStats*: string
+
+  # mod
+  currentBpm*: float
+  turnOffset*: float
 
 #Persistent user data.
 type SaveState* = object

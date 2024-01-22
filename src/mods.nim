@@ -87,7 +87,8 @@ proc loadMods* =
                   fadeColor: parseColor(mapNode["fadeColor"].getStr()), # Fau color
 
                   isModded: true,
-                  modPath: modPath
+                  modPath: modPath,
+                  alwaysUnlocked: mapNode{"alwaysUnlocked"}.getBool()
                 )
 
               parsedMap.drawPixel = getScript(mapNode["drawPixel"])
