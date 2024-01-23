@@ -1,14 +1,13 @@
 import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
-import mathexpr
 import jsonapi, patterns
 
 let
   dataDir = getSaveDir("animdustry")
-  modDir = dataDir / "mods/"
-
-var
-  drawEval = newEvaluator()
-  mapEval = newEvaluator()
+  modDir = 
+    when defined(Android):
+      "/storage/emulated/0/Android/data/io.anuke.animdustry/files/mods/"
+    else:
+      dataDir / "mods/"
 
 proc loadMods* =
   echo "Loading mods from ", modDir
@@ -36,7 +35,6 @@ proc loadMods* =
         let
           unitPath = modPath / "units"
           mapPath = modPath / "maps"
-          unitSpritePath = modPath / "unitSprites"
           procedurePath = modPath / "procedures"
         
         echo &"Loading {modName} by {modAuthor}"
@@ -140,4 +138,5 @@ proc loadMods* =
     createDir(modDir)
 
   # Finish credits
+  creditsText = &"Your mod folder: {modDir}\n\n" & creditsText
   creditsText &= "\n" & creditsTextEnd
