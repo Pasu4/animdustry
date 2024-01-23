@@ -1,5 +1,5 @@
 import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
-import jsonapi, patterns
+import jsonapi, patterns, hjson
 
 let
   dataDir = getSaveDir("animdustry")
@@ -14,11 +14,16 @@ proc loadMods* =
   if dirExists(modDir):
     for kind, modPath in walkDir(modDir):
       echo &"Found {kind} {modPath}"
-      if kind == pcDir and fileExists(modPath / "mod.json"):
+      let isHjson = fileExists(modPath / "mod.hjson")
+      if kind == pcDir and isHjson or fileExists(modPath / "mod.json"):
         # Remove try-except so the user actually gets an error message instead of the mod not loading
-        # try: 
+        # try:
+        let modJson =
+          if isHjson: hjson2json(readFile(modPath / "mod.hjson"))
+          else: readFile(modPath / "mod.json")
+        echo modJson
         let
-          modNode = parseJson(readFile(modPath / "mod.json"))
+          modNode = parseJson(modJson)
           modName = modNode["name"].getStr()
           modAuthor = modNode["author"].getStr()
           modNamespace = modNode["namespace"].getStr()
@@ -42,11 +47,16 @@ proc loadMods* =
         # Units
         if dirExists(unitPath):
           for fileType, filePath in walkDir(unitPath):
-            if fileType == pcFile and filePath.endsWith(".json"):
+            if fileType == pcFile and (filePath.endsWith(".json") or filePath.endsWith(".hjson")):
               #region Parse unit
               # No try-except so the user actually gets an error message instead of the mod not loading
+              let unitJson =
+                if filePath.endsWith(".hjson"):
+                  hjson2json(readFile(filePath))
+                else:
+                  readFile(filePath)
               let
-                unitNode = parseJson(readFile(filePath))
+                unitNode = parseJson(unitJson)
                 unitName = unitNode["name"].getStr()
                 parsedUnit = Unit(
                   name: unitName,
@@ -70,10 +80,15 @@ proc loadMods* =
         # Maps
         if dirExists(mapPath):
           for fileType, filePath in walkDir(mapPath):
-            if fileType == pcFile and filePath.endsWith(".json"):
+            if fileType == pcFile and (filePath.endsWith(".json") or filePath.endsWith(".hjson")):
               #region Parse map
+              let mapJson =
+                if filePath.endsWith(".hjson"):
+                  hjson2json(readFile(filePath))
+                else:
+                  readFile(filePath)
               let
-                mapNode = parseJson(readFile(filePath))
+                mapNode = parseJson(mapJson)
                 songName = mapNode["songName"].getStr()
                 parsedMap = Beatmap(
                   songName: songName,
@@ -98,10 +113,15 @@ proc loadMods* =
         # Procedures
         if dirExists(procedurePath):
           for fileType, filePath in walkDir(procedurePath):
-            if fileType == pcFile and filePath.endsWith(".json"):
+            if fileType == pcFile and (filePath.endsWith(".json") or filePath.endsWith(".hjson")):
               #region Parse procedure
+              let procJson =
+                if filePath.endsWith(".hjson"):
+                  hjson2json(readFile(filePath))
+                else:
+                  readFile(filePath)
               let
-                procNode = parseJson(readFile(filePath))
+                procNode = parseJson(procJson)
                 procName = modNamespace & "::" & procNode["name"].getStr()
                 paramNodes = procNode["parameters"].getElems()
                 procedure = Procedure(
