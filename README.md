@@ -34,6 +34,7 @@ A mod is a folder containing files. This folder must be placed in the mods folde
 
 - Windows: `%APPDATA%\animdustry\mods`
 - Linux: `~/.config/animdustry/mods`
+- Android: `/storage/emulated/0/Android/data/io.anuke.animdustry/files/mods`
 
 If the folder does not exist, you can create it, otherwise it will be created automatically on first startup of the modloader.
 
