@@ -21,7 +21,6 @@ proc loadMods* =
         let modJson =
           if isHjson: hjson2json(readFile(modPath / "mod.hjson"))
           else: readFile(modPath / "mod.json")
-        echo modJson
         let
           modNode = parseJson(modJson)
           modName = modNode["name"].getStr()

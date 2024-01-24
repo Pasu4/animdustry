@@ -10,7 +10,7 @@ requires("nim >= 2.0.0")
 requires("https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEAD").replace("\n", "").replace("\r", ""))
 requires("msgpack4nim == 0.4.4")
 requires("mathexpr >= 1.3.2")
-requires("https://github.com/Pasu4/hjson-nim >= 1.0.0")
+requires("https://github.com/Pasu4/hjson-nim >= 1.0.1")
 
 import strformat, os, json, sequtils
 
