@@ -46,6 +46,8 @@ modfolder
 ├── credits.txt
 ├── maps
 │   └── exampleMap.json
+├── music
+│   └── exampleMusic.ogg
 ├── procedures
 │   └── exampleProc.json
 ├── unitSplashes
@@ -61,7 +63,8 @@ modfolder
 
 - **mod.json:** Contains information about the mod.
 - **credits.txt:** Additional credits added to the credits of the game. Credits will be auto-generated if this file is missing.
-- **maps:** Contains the playable maps this mod adds (Not yet implemented).
+- **maps:** Contains the playable maps this mod adds.
+- **maps:** Contains the music for the maps.
 - **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
 - **procedures:** Contains user-defined procedures for use in scripts.
 - **units:** Contains unit scripts. The name of a file should match the name of the unit.
@@ -71,7 +74,7 @@ An example of a mod can be found [here](https://github.com/Pasu4/animdustry-mod-
 
 ## mod.json
 
-A `mod.json` file must be be placed in the root folder of the mod. It is what tells the modloader that this folder contains a mod. The content of the file is as follows:
+A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod. It is what tells the modloader that this folder contains a mod. The content of the file is as follows:
 
 ```json
 {
@@ -89,7 +92,7 @@ A `mod.json` file must be be placed in the root folder of the mod. It is what te
 
 ## Custom Units
 
-Unit scripts describe how a unit is drawn and how it interacts with the game. To define a unit, first place a JSON file with the same name as your unit in the `units` folder. Its contents should look like this:
+Unit scripts describe how a unit is drawn and how it interacts with the game. To define a unit, first place a JSON or Hjson file with the same name as your unit in the `units` folder. Its contents should look like this:
 
 ```json
 {
@@ -117,13 +120,13 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 - **abilityReload:** How many turns it takes for the unit's ability to activate.
 - **unmoving:** If the unit can move. Only used by Boulder in the base game. May be omitted.
 - **draw:** An array of draw calls to execute each time the unit splash is drawn. More about draw calls in the chapter [API Calls](#api-calls).
-- **abilityProc:** An array of function calls to execute when the unit's ability is activated. Not implemented yet.
+- **abilityProc:** An array of function calls to execute when the unit's ability is activated.
 
 To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
 
 ## Custom Maps
 
-Map scripts describe a playable level in the game. To add a custom map to the game, place a JSON file into the `maps` folder. The contents of the file should look like this:
+Map scripts describe a playable level in the game. To add a custom map to the game, place a JSON or Hjson file into the `maps` folder. The contents of the file should look like this:
 
 ```json
 {
@@ -168,7 +171,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 
 ## Procedures
 
-Procedures are used the same way as [API calls](#api-calls). They are placed as JSON files in the *procedures* folder. They are called by putting the name of the procedure into the *type* field. Parameters are passed the same way as well. An example of a procedure:
+Procedures are used the same way as [API calls](#api-calls). They are placed as JSON or Hjson files in the *procedures* folder. They are called by putting the name of the procedure into the *type* field. Parameters are passed the same way as well. An example of a procedure:
 
 ```json
 {
@@ -198,7 +201,8 @@ You can also call procedures from another mod. To do that, you have to qualify t
 
 The parameters of the called procedure are stored as global variables, which means they are accessible from outside the procedure. Since all variables are global, even those used internally can be accessed (this way you can make a return value).
 
-**Caution:** For technical reasons, color literals passed as parameters to a procedure **must** be prefixed with the `#` character!
+> [!IMPORTANT]
+> For technical reasons, color literals passed as parameters to a procedure **must** be prefixed with the `#` character!
 
 A procedure can also call another procedure, even itself recursively. Keep in mind though that since all variables are global, this might overwrite other variables used in the procedure.
 
@@ -277,7 +281,7 @@ Functions can be used inside math formulas.
 
 ## API Calls
 
-API calls are JSON objects that are used to call a function within the game. What function is called is determined by its `type` field. If the type field contains a function that does not exist, it is ignored (e.g. `{"type": "Comment"}`). Parameters are also passed as JSON fields. An example for an API call for drawing a spinning regular pentagon:
+API calls are JSON or Hjson objects that are used to call a function within the game. What function is called is determined by its `type` field. If the type field contains a function that does not exist, it is ignored. Parameters are also passed as JSON fields. An example for an API call for drawing a spinning regular pentagon:
 
 ```json
 {"type": "DrawPoly", "pos": "basePos", "sides": 5, "radius": 5.5, "stroke": 1.0, "color": "colorAccent", "rotation": "rad(fau_time * 90)"}
