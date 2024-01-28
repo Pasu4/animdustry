@@ -2,9 +2,10 @@ import core, vars, os, mathexpr, types, patterns, sugar, pkg/polymorph, fau/fmat
 import std/[json, tables, math, strutils, sequtils], system
 
 type Procedure* = ref object
-  script*: proc()                                # The script of the procedure
-  defaultFloats*: Table[string, string]          # The default values of float parameters
-  defaultColors*: Table[string, string]          # The default values of color parameters
+  script*: proc()                                 # The script of the procedure
+  defaultValues*: Table[string, string]           # The default values of parameters
+  # defaultFloats*: Table[string, string]          # The default values of float parameters
+  # defaultColors*: Table[string, string]          # The default values of color parameters
 
 let
   formations = {
@@ -245,6 +246,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
   template evalVec2(str: string): Vec2 = vec2(eval_x.eval(str), eval_y.eval(str))
   template evalVec2i(str: string): Vec2i = vec2i(eval_x.eval(str).int, eval_y.eval(str).int)
   template eval(str: string): float = eval_x.eval(str)
+  template addEvalVar(name: string, val: string) =
+    eval_x.addVar(name, eval_x.eval(val))
+    eval_y.addVar(name, eval_y.eval(val))
   
   var procs = newSeq[proc()]()
   for elem in drawStack.getElems():
@@ -1192,46 +1196,55 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
 
       # convert [string, JsonNode] to [string, string]
       var
-        floats: Table[string, string]
-        colors: Table[string, string]
+        parameters: Table[string, string]
+        # floats: Table[string, string]
+        # colors: Table[string, string]
       for key, val in fields:
+      # for key, val in fields:
         if key == "type": continue # ignore type
 
         # Unknown data type, so try all of them
         let str = val.getStr($val.getFloat(val.getBool().float))
 
-        # Differentiate between color and float
-        if str.startsWith('#') or str in colorTable:
-          colors[key] = str
-        else:
-          floats[key] = str
+        parameters[key] = str
+        # # Differentiate between color and float
+        # if str.startsWith('#') or str in colorTable:
+        #   echo str, " in colorTable"
+        #   colors[key] = str
+        # else:
+        #   echo str, " not in colorTable"
+        #   floats[key] = str
 
       # Cannot use capture because of generic table
       # See https://forum.nim-lang.org/t/10887#72561 for more information
       # capture procName, colors, floats:
-      (proc(procName: string, colors: Table[string, string], floats: Table[string, string]) =
+      (proc(procName: string, parameters: Table[string, string]) =
         procs.add(proc() =
           if procName in procedures:
             let p = procedures[procName]
 
-            # Add float parameters
-            for k, v in p.defaultFloats:
-              eval_x.addVar(k, eval_x.eval(v))
-              eval_y.addVar(k, eval_y.eval(v))
-            for k, v in floats:
-              eval_x.addVar(k, eval_x.eval(v))
-              eval_y.addVar(k, eval_y.eval(v))
+            # Add parameters
+            for k, v in p.defaultValues:
+              if v.startsWith('#') or v in colorTable:
+                colorTable[k] = getColor(v)
+              else:
+                addEvalVar(k, v)
+            for k, v in parameters:
+              if v.startsWith('#') or v in colorTable:
+                colorTable[k] = getColor(v)
+              else:
+                addEvalVar(k, v)
 
             # Add color parameters
-            for k, v in p.defaultColors:
-              colorTable[k] = getColor(v)
-            for k, v in colors:
-              colorTable[k] = getColor(v)
+            # for k, v in p.defaultColors:
+            #   colorTable[k] = getColor(v)
+            # for k, v in colors:
+            #   colorTable[k] = getColor(v)
 
             # Execute script
             p.script()
         )
-      )(procName, colors, floats)
+      )(procName, parameters)
     #endregion
 
   return procs

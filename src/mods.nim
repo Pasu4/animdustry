@@ -130,17 +130,14 @@ proc loadMods* =
                   script: getScript(procNode["script"], update = false)
                 )
               # Parse default parameters
-              var floats, colors: Table[string, string]
+              var parameters: Table[string, string]
               for pn in paramNodes:
                 let
                   key = pn["name"].getStr()
                   val = pn{"default"}.getStr("")
-                if val.startsWith('#'):
-                  colors[key] = val
-                elif not val.len == 0:
-                  floats[key] = val
-              procedure.defaultFloats = floats
-              procedure.defaultColors = colors
+                if not val.len == 0:
+                  parameters[key] = val
+              procedure.defaultValues = parameters
               procedures[procName] = procedure
               #endregion
         
