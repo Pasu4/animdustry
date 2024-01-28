@@ -1,5 +1,5 @@
 import core, vars, os, mathexpr, types, patterns, sugar, pkg/polymorph, fau/fmath
-import std/[json, tables, math, strutils, sequtils]
+import std/[json, tables, math, strutils, sequtils], system
 
 type Procedure* = ref object
   script*: proc()                                # The script of the procedure
@@ -348,14 +348,19 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
 
     of "Turns":
       let
-        fromTurn = elem["fromTurn"].getStr($elem["fromTurn"].getInt())
-        toTurn = elem["toTurn"].getStr($elem["toTurn"].getInt())
+        fromTurn = elem{"fromTurn"}.getStr($elem{"fromTurn"}.getInt(0))
+        toTurn = elem{"toTurn"}.getStr($elem{"toTurn"}.getInt(high(int)))
         interval = elem{"interval"}.getStr($elem{"interval"}.getInt(1))
+        progress = elem{"progress"}.getStr("")
         body = parseScript(elem["body"])
-      capture fromTurn, toTurn, interval, body:
+      capture fromTurn, toTurn, interval, progress, body:
         procs.add(proc() =
-          let ft = eval(fromTurn)
-          if state.turn in ft..eval(toTurn) and (state.turn - ft) mod eval(interval) == 0:
+          let
+            ft = eval(fromTurn)
+            tt = eval(toTurn)
+          if state.turn in ft..tt and (state.turn - ft) mod eval(interval) == 0:
+            if progress != "":
+              eval_x.addVar(progress, (state.turn + 1 - state.moveBeat - ft) / (tt + 1 - ft))
             for p in body:
               p()
               if isBreaking or isReturning: break
@@ -892,6 +897,20 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
       capture pos, sides, angleFrom, angleTo, radius, rotation, stroke, color, z:
         procs.add(proc() = crescent(evalVec2(pos), eval(sides).int, eval(angleFrom), eval(angleTo), eval(radius), eval(rotation), eval(stroke), getColor(color), eval(z)))
+
+    of "DrawShape":
+      let
+        points = elem["points"].getElems().map(proc(x: JsonNode): string = x.getStr())
+        wrap = elem{"wrap"}.getStr($elem{"wrap"}.getFloat(elem{"wrap"}.getBool(false).float))
+        stroke = elem{"stroke"}.getStr($elem{"stroke"}.getFloat(1f.px))
+        color = elem{"color"}.getStr($colorWhite)
+        z = elem{"z"}.getStr($elem{"z"}.getFloat(0f))
+      capture points, wrap, stroke, color, z:
+        procs.add(proc() =
+          var vecs = points.map(proc(x: string): Vec2 = evalVec2(x))
+          poly(vecs, eval(wrap) != 0, eval(stroke), getColor(color), eval(z))
+        )
+
     
     of "DrawBloom": # contains a body, so recurse
       let body = parseScript(elem["body"])
@@ -1043,11 +1062,76 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     of "MixColor":
       let
         name = elem["name"].getStr()
+        mode = elem{"mode"}.getStr("mix")
         col1 = elem["col1"].getStr()
-        col2 = elem["col2"].getStr()
-        factor = elem{"factor"}.getStr($elem{"factor"}.getFloat(0.5))
-      capture name, col1, col2, factor:
-        procs.add(proc() = colorTable[name] = getColor(col1).mix(getColor(col2), eval(factor)))
+        col2 = elem{"col2"}.getStr($colorClear)
+        factor = elem{"factor"}.getStr($elem{"factor"}.getFloat(1))
+      capture name, mode, col1, col2, factor:
+        case mode
+        of "add":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            colorTable[name] = c1.mix(c1 + getColor(col2), eval(factor))
+          )
+        of "sub":
+          procs.add(proc() =
+            let
+              c1 = getColor(col1)
+              c2 = getColor(col2)
+            colorTable[name] = c1.mix(rgba(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b, c1.a - c2.a), eval(factor))
+          )
+        of "mul":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            colorTable[name] = c1.mix(c1 * getColor(col2), eval(factor))
+          )
+        of "div":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            colorTable[name] = c1.mix(c1 / getColor(col2), eval(factor))
+          )
+        of "and":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            var c2 = getColor(col2)
+            c2.rv = c1.rv and c2.rv
+            c2.gv = c1.gv and c2.gv
+            c2.bv = c1.bv and c2.bv
+            c2.av = c1.av and c2.av
+            colorTable[name] = c1.mix(c2, eval(factor))
+          )
+        of "or":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            var c2 = getColor(col2)
+            c2.rv = c1.rv or c2.rv
+            c2.gv = c1.gv or c2.gv
+            c2.bv = c1.bv or c2.bv
+            c2.av = c1.av or c2.av
+            colorTable[name] = c1.mix(c2, eval(factor))
+          )
+        of "xor":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            var c2 = getColor(col2)
+            c2.rv = c1.rv xor c2.rv
+            c2.gv = c1.gv xor c2.gv
+            c2.bv = c1.bv xor c2.bv
+            c2.av = c1.av xor c2.av
+            colorTable[name] = c1.mix(c2, eval(factor))
+          )
+        of "not":
+          procs.add(proc() =
+            let c1 = getColor(col1)
+            var c2 = c1
+            c2.rv = not c2.rv
+            c2.gv = not c2.gv
+            c2.bv = not c2.bv
+            c2.av = not c2.av
+            colorTable[name] = c1.mix(c2, eval(factor))
+          )
+        else: # If not valid then mix
+          procs.add(proc() = colorTable[name] = getColor(col1).mix(getColor(col2), eval(factor)))
 
     of "ChangeBPM":
       let bpm = elem["bpm"].getStr($elem["bpm"].getFloat())
@@ -1060,7 +1144,6 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             baseTurn = state.secs / baseTime
           state.turnOffset = (baseTime - curTime) * baseTurn / curTime + baseTurn - state.turn
         )
-
     #endregion
 
     #region Effects

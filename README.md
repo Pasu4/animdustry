@@ -50,10 +50,12 @@ modfolder
 │   └── exampleMusic.ogg
 ├── procedures
 │   └── exampleProc.json
-├── unitSplashes
-│   └── exampleUnit.png
+├── sprites
+│   └── exampleSprite.png
 ├── units
 │   └── exampleUnit.json
+├── unitSplashes
+│   └── exampleUnit.png
 └── unitSprites
     ├── exampleUnit-angery.png
     ├── exampleUnit-happy.png
@@ -64,10 +66,11 @@ modfolder
 - **mod.json:** Contains information about the mod.
 - **credits.txt:** Additional credits added to the credits of the game. Credits will be auto-generated if this file is missing.
 - **maps:** Contains the playable maps this mod adds.
-- **maps:** Contains the music for the maps.
-- **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
+- **music:** Contains the music for the maps. All music files must be OGG files.
 - **procedures:** Contains user-defined procedures for use in scripts.
+- **sprites:** Contains sprites for bullets and enemies.
 - **units:** Contains unit scripts. The name of a file should match the name of the unit.
+- **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
 - **unitSprites:** Contains in-game sprites for the units.
 
 An example of a mod can be found [here](https://github.com/Pasu4/animdustry-mod-template).
@@ -81,7 +84,8 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
     "name": "The name of your mod",
     "namespace": "example",
     "author": "You",
-    "description": "Description of your mod"
+    "description": "Description of your mod",
+    "enabled": true
 }
 ```
 
@@ -89,6 +93,7 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
 - **namespace:** The namespace of your mod. Used to organize procedures.
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
+- **enabled:** Whether the mod should be loaded. Can be omitted (assumed true).
 
 ## Custom Units
 
@@ -359,7 +364,7 @@ Breaks out of all loops and stops execution.
 Iterates over a list of 2D vectors with an iterator.
 
 - **string** *name*: The name of the formation.
-- **string** *iterator*: The 
+- **string** *iterator*: The name of the variable holding the iterator value.
 - **Array** *body*: An array of calls that will be executed repeatedly as long as the condition is met.
 
 Alias: **ForEach**
@@ -376,9 +381,10 @@ Available formations:
 
 Executes an array of calls only on specific turns. Only works inside levels.
 
-- **int** *fromTurn*: The turn on which to execute the calls the first time.
-- **int** *toTurn*: The turn on which to execute the calls the last time.
+- **int** *fromTurn*: The turn on which to execute the calls the first time. (Default: *0*)
+- **int** *toTurn*: The turn on which to execute the calls the last time. (Default: *9223372036854775807*)
 - **int** *interval*: The interval between the turns.
+- **string** *progress*: The variable to store the progress in. The progress is the position between the beginning of *fromTurn* to the end of *toTurn* mapped to a range between 0 and 1. If not specified, the progress value will not be stored. (Default: *""*)
 - **Array** *body*: An array of calls that will be executed on the specified turns.
 
 ### Pattern Drawing
@@ -674,7 +680,7 @@ Draws a vertical gradient.
 Draws concentric polygons around the center of the screen that increase in thickness further out.
 
 - **Color** *col*: The color of the polygons. (Default: *colorWhite*)
-- **float** *offset*: The offset of the first square from the center. Periodic. (TODO explain that better) (Default: *0*)
+- **float** *offset*: The offset of the first polygon from the center. Periodic. (TODO explain that better) (Default: *0*)
 - **int** *amount*: The number of polygons to draw. (Default: *10*)
 - **int** *sides*: The number of sides the polygon will have. (Default: *4*)
 
@@ -924,6 +930,16 @@ Draws a polygonal crescent shape.
 - **Color** *color*: The color of the outline. (Default: *colorWhite*)
 - **float** *z*: The z layer of the shape. (Default: *0*)
 
+#### DrawShape
+
+Draws a polygon outline.
+
+- **Array** *points*: An array of points to connect into a shape.
+- **bool** *wrap*: Whether the last point should connect to the first point. (Default: *false*)
+- **float** *stroke*: The width of the outline. (Default: *px(1)*)
+- **Color** *color*: The color of the shape. (Default: *colorWhite*)
+- **float** *z*: The z layer of the shape. (Default: *0*)
+
 #### DrawBloom
 
 Draws one or more patterns with bloom enabled. Only works in unit splash drawing.
@@ -1105,9 +1121,22 @@ Creates a warning effect (large square) around a tile.
 Mixes two colors into a new color.
 
 - **string** *name*: The name of the new color.
+- **string** *mode*: The blending mode. (Default: *"mix"*)
 - **Color** *col1*: The first color.
-- **Color** *col2*: The second color
-- **float** *factor*: How much of each color is in the end result, between 0 and 1. The higher the factor, the more of *col2* is in the result. (Default: *0.5*)
+- **Color** *col2*: The second color. (Default: *colorClear*)
+- **float** *factor*: How much of each color is in the end result, between 0 and 1. The higher the factor, the more of *col2* is in the result. (Default: *1.0*)
+
+Blending modes:
+
+- *mix*: Interpolate between the colors.
+- *add*: Add the two colors.
+- *sub*: Subtract *col2* from *col1*.
+- *mul*: Multiply the two colors.
+- *div*: Divide *col1* by *col2*.
+- *and*: Bitwise AND.
+- *or*: Bitwise OR.
+- *xor*: Bitwise XOR.
+- *not*: Bitwise NOT on *col1*.
 
 #### ChangeBPM
 

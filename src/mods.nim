@@ -17,6 +17,7 @@ proc loadMods* =
       let isHjson = fileExists(modPath / "mod.hjson")
       if kind == pcDir and isHjson or fileExists(modPath / "mod.json"):
         # Remove try-except so the user actually gets an error message instead of the mod not loading
+        # Apparently not a good idea on android
         # try:
         let modJson =
           if isHjson: hjson2json(readFile(modPath / "mod.hjson"))
@@ -26,6 +27,8 @@ proc loadMods* =
           modName = modNode["name"].getStr()
           modAuthor = modNode["author"].getStr()
           modNamespace = modNode["namespace"].getStr()
+          modEnabled = modNode{"enabled"}.getBool(true)
+        if not modEnabled: continue
         currentNamespace = modNamespace
         
         # TODO do something with description
