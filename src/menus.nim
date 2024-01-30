@@ -1,3 +1,5 @@
+import mods
+
 makeSystem("drawUI", []):
   fields:
     #epic hardcoded array size (it really doesn't get any better than this)
@@ -132,6 +134,24 @@ makeSystem("drawUI", []):
       showSplashUnit(unitAlpha)
 
     draw(fau.white, vec2(), size = fau.cam.size, color = colorBlack.withA(1f - introTime))
+  elif mode == gmModError:
+    drawPixel:
+      patStripes(%"60616b", %"cf8d58", 135f.rad)
+      patVertGradient(%"000000bf", colorClear)
+      patVertGradient(colorClear, %"000000bf")
+    
+    introTime += fau.delta * 0.5f
+    introTime = introTime.clamp
+    draw("warn".patchConst, vec2())
+
+    titleFont.draw("MOD ERROR", vec2(0f, 3.5f))
+    defaultFont.draw(when isMobile: "[ tap to continue ]" else: "[ SPACE or ESC to continue ]", vec2(0f, -3.5f), color = colorUi.withA(fau.time.absin(0.5f, 1f)))
+    defaultFont.draw(modErrorLog, vec2(0f, -4f), align = daTop)
+
+    if (keySpace.tapped or keyEscape.tapped) or (isMobile and keyMouseLeft.tapped):
+      safeTransition:
+        mode = gmMenu
+
   elif mode in ingameModes:
     #draw debug text
     when defined(debug):

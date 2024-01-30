@@ -85,7 +85,9 @@ type Gamemode* = enum
   #ran out of health
   gmDead,
   #finished track, diisplaying stats
-  gmFinished
+  gmFinished,
+  #error message when mods fail to load
+  gmModError
 
 type GameState* = object
   #may be nil, TODO make optional?
