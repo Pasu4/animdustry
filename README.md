@@ -85,7 +85,8 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
     "namespace": "example",
     "author": "You",
     "description": "Description of your mod",
-    "enabled": true
+    "enabled": true,
+    "debug": false
 }
 ```
 
@@ -94,6 +95,7 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
 - **enabled:** Whether the mod should be loaded. Can be omitted (assumed true).
+- **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Can be omitted (assumed false).
 
 ## Custom Units
 
@@ -380,6 +382,8 @@ Available formations:
 #### Turns
 
 Executes an array of calls only on specific turns. Only works inside levels.
+
+If debug mode is enabled, the *state_turns* variable is evaluated instead of the actual turn count.
 
 - **int** *fromTurn*: The turn on which to execute the calls the first time. (Default: *0*)
 - **int** *toTurn*: The turn on which to execute the calls the last time. (Default: *9223372036854775807*)

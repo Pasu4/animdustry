@@ -27,6 +27,7 @@ var
   isReturning = false                           # Flow control: return
   currentNamespace*: string                     # Current namespace for resolving procedures
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
+  debugMode* = false                            # Whether the mod is in debug mode
   
   # Procs from main
   # I unfortunately see no better way to do this.
@@ -357,14 +358,16 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         interval = elem{"interval"}.getStr($elem{"interval"}.getInt(1))
         progress = elem{"progress"}.getStr("")
         body = parseScript(elem["body"])
-      capture fromTurn, toTurn, interval, progress, body:
+      capture fromTurn, toTurn, interval, progress, body, debugMode:
         procs.add(proc() =
           let
             ft = eval(fromTurn)
             tt = eval(toTurn)
-          if state.turn in ft..tt and (state.turn - ft) mod eval(interval) == 0:
+            turn = (if debugMode: eval("state_turn").int else: state.turn)
+            beat = (if debugMode: eval("state_moveBeat") else: state.moveBeat)
+          if turn in ft..tt and (turn - ft) mod eval(interval) == 0:
             if progress != "":
-              eval_x.addVar(progress, (state.turn + 1 - state.moveBeat - ft) / (tt + 1 - ft))
+              eval_x.addVar(progress, (turn + 1 - beat - ft) / (tt + 1 - ft))
             for p in body:
               p()
               if isBreaking or isReturning: break

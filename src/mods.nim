@@ -28,7 +28,9 @@ proc loadMods* =
           modAuthor = modNode["author"].getStr()
           modNamespace = modNode["namespace"].getStr()
           modEnabled = modNode{"enabled"}.getBool(true)
+          modDebug = modNode{"debug"}.getBool(false)
         if not modEnabled: continue
+        debugMode = modDebug
         currentNamespace = modNamespace
         
         # TODO do something with description
