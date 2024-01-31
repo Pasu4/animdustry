@@ -157,7 +157,11 @@ proc getColor(str: string): Color =
   if str in colorTable:
     return colorTable[str]
   else:
-    return parseColor(str) # fau color
+    try:
+      return parseColor(str) # fau color
+    except ValueError as e:
+      e.msg = "'" & str & "' is not a color literal and not defined as a color variable."
+      raise
 
 # Add functions and constants that can be used in formulas.
 # Must be called before any other function in the API
@@ -357,7 +361,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         toTurn = elem{"toTurn"}.getStr($elem{"toTurn"}.getInt(high(int)))
         interval = elem{"interval"}.getStr($elem{"interval"}.getInt(1))
         progress = elem{"progress"}.getStr("")
-        body = parseScript(elem["body"])
+        body = (if "body" in elem: parseScript(elem["body"]) else: @[])
       capture fromTurn, toTurn, interval, progress, body, debugMode:
         procs.add(proc() =
           let
@@ -367,7 +371,9 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
             beat = (if debugMode: eval("state_moveBeat") else: state.moveBeat)
           if turn in ft..tt and (turn - ft) mod eval(interval) == 0:
             if progress != "":
-              eval_x.addVar(progress, (turn + 1 - beat - ft) / (tt + 1 - ft))
+              let prog = (turn + 1 - beat - ft) / (tt + 1 - ft)
+              eval_x.addVar(progress, prog)
+              eval_y.addVar(progress, prog)
             for p in body:
               p()
               if isBreaking or isReturning: break

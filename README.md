@@ -184,9 +184,9 @@ Procedures are used the same way as [API calls](#api-calls). They are placed as 
 {
     "name": "Example",
     "parameters": [
-        {"name": "param1", "default": 1.0},
-        {"name": "param2"},
-        {"name": "col1", "default": "#ff0000"}
+        {"name": "_param1", "default": 1.0},
+        {"name": "_param2"},
+        {"name": "_col1", "default": "#ff0000"}
     ],
     "script": [
         {"type": "Comment", "comment": "Useful function here."}
@@ -194,16 +194,20 @@ Procedures are used the same way as [API calls](#api-calls). They are placed as 
 }
 ```
 
+- **name:** The name the procedure is referenced with.
+- **parameters:** The parameters the procedure accepts.
+- **script:** An array of calls that is executed when the procedure is called.
+
 This procedure would be called from another script like so:
 
 ```json
-{"type": "Example", "param1": 2.0, "param2": 42.0}
+{"type": "Example", "_param1": 2.0, "_param2": 42.0}
 ```
 
 You can also call procedures from another mod. To do that, you have to qualify the procedure you want to call with the namespace of the mod it is from, like so:
 
 ```json
-{"type": "utils::Example", "param1": 2.0, "param2": 42.0}
+{"type": "utils::Example", "_param1": 2.0, "_param2": 42.0}
 ```
 
 The parameters of the called procedure are stored as global variables, which means they are accessible from outside the procedure. Since all variables are global, even those used internally can be accessed (this way you can make a return value).
@@ -216,6 +220,21 @@ A procedure can also call another procedure, even itself recursively. Keep in mi
 Procedures may have the same name as API calls, but the only way to call them then is by qualifying them with their namespace.
 
 The `Return` call always jumps to the end of the current procedure.
+
+### Init procedure
+
+If the mod contains a procedure with the name `Init` (case-sensitive), it is automatically called with default arguments when loading the mod. Use it to set constants or initialize variables for use in other scripts. Example:
+
+```json
+{
+    "name": "Init",
+    "script": [
+        {"type": "SetColor", "name": "colorWClear", "value": "#ffffff00"},
+
+        {"type": "SetFloat", "name": "objFade", "value": 0}
+    ]
+}
+```
 
 # API Reference
 
@@ -389,7 +408,7 @@ If debug mode is enabled, the *state_turns* variable is evaluated instead of the
 - **int** *toTurn*: The turn on which to execute the calls the last time. (Default: *9223372036854775807*)
 - **int** *interval*: The interval between the turns.
 - **string** *progress*: The variable to store the progress in. The progress is the position between the beginning of *fromTurn* to the end of *toTurn* mapped to a range between 0 and 1. If not specified, the progress value will not be stored. (Default: *""*)
-- **Array** *body*: An array of calls that will be executed on the specified turns.
+- **Array** *body*: An array of calls that will be executed on the specified turns. (Default: *[]*)
 
 ### Pattern Drawing
 

@@ -23,7 +23,7 @@ proc loadMods* =
       echo &"Found {kind} {modPath}"
       let isHjson = fileExists(modPath / "mod.hjson")
       if kind == pcDir and isHjson or fileExists(modPath / "mod.json"):
-        var modName, modAuthor, modNamespace: string
+        var modName, modAuthor: string
         try:
           let
             modJson =
@@ -35,11 +35,10 @@ proc loadMods* =
           
           modName = modNode["name"].getStr()
           modAuthor = modNode["author"].getStr()
-          modNamespace = modNode["namespace"].getStr()
+          currentNamespace = modNode["namespace"].getStr()
 
           if not modEnabled: continue
           debugMode = modDebug
-          currentNamespace = modNamespace
           
           # TODO do something with description
         except JsonParsingError, HjsonParsingError, KeyError:
@@ -140,8 +139,8 @@ proc loadMods* =
                     readFile(filePath)
                 let
                   procNode = parseJson(procJson)
-                  procName = modNamespace & "::" & procNode["name"].getStr()
-                  paramNodes = procNode["parameters"].getElems()
+                  procName = currentNamespace & "::" & procNode["name"].getStr()
+                  paramNodes = procNode{"parameters"}.getElems(@[])
                   procedure = Procedure(
                     script: getScript(procNode["script"], update = false)
                   )
@@ -158,7 +157,9 @@ proc loadMods* =
               except JsonParsingError, HjsonParsingError, KeyError:
                 modError()
               #endregion
-        
+          # Call Init procedure
+          if (currentNamespace & "::Init") in procedures:
+            procedures[currentNamespace & "::Init"].script()
         # Credits
         if fileExists(modPath / "credits.txt"):
           creditsText &= "\n" & readFile(modPath / "credits.txt") & "\n\n------\n"
