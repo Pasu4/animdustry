@@ -1,16 +1,12 @@
 {
     "mods": [
         {
-            "name": "Template",
-            "namespace": "template",
-            "repo": "https://github.com/Pasu4/animdustry-mod-template",
-            "wip": false
+            "id": "template",
+            "repo": "https://github.com/Pasu4/animdustry-mod-template"
         },
         {
-            "name": "Crux",
-            "namespace": "crux",
-            "repo": "https://github.com/Pasu4/crux-mod",
-            "wip": true
+            "id": "crux",
+            "repo": "https://github.com/Pasu4/crux-mod"
         }
     ]
 }
