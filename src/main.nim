@@ -3,7 +3,7 @@ import std/[tables, sequtils, algorithm, macros, options, random, math, strforma
 import pkg/polymorph
 import types, vars, saveio, patterns, maps, sugar, units
 import std/os
-import mods, jsonapi
+import mods, apivars, jsonapi, jsapi
 
 include components
 include fx
@@ -302,6 +302,7 @@ makeSystem("core", []):
         sysDraw.bloom.blit(params = meshParams(blend = blendNormal))
       )
     )
+    initJsApi()
 
     loadMods()
 

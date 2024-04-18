@@ -1,26 +1,17 @@
 import core, vars, os, mathexpr, types, patterns, sugar, pkg/polymorph, fau/fmath
 import std/[json, tables, math, strutils, sequtils], system
+import apivars
 
 type Procedure* = ref object
   script*: proc()                                 # The script of the procedure
   defaultValues*: Table[string, string]           # The default values of parameters
-  # defaultFloats*: Table[string, string]          # The default values of float parameters
-  # defaultColors*: Table[string, string]          # The default values of color parameters
-
-let
-  formations = {
-    "d4": d4.toSeq(),
-    "d4mid": d4mid.toSeq(),
-    "d4edge": d4edge.toSeq(),
-    "d8": d8.toSeq(),
-    "d8mid": d8mid.toSeq()
-  }.toTable
+  # defaultFloats*: Table[string, string]         # The default values of float parameters
+  # defaultColors*: Table[string, string]         # The default values of color parameters
 
 var
   eval_x = newEvaluator()                       # General draw evaluator, holds x component of vectors
   eval_y = newEvaluator()                       # Holds y component of vectors
   colorTable = initTable[string, Color]()       # Holds color variables
-  drawBloomA, drawBloomB: proc()                # Draws bloom (it's unfortunate but what can you do)
   currentUnit: Unit                             # The current unit
   currentEntityRef: EntityRef                   # The current EntityRef (for abilityProc)
   isBreaking = false                            # Flow control: break
@@ -28,72 +19,6 @@ var
   currentNamespace*: string                     # Current namespace for resolving procedures
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
   debugMode* = false                            # Whether the mod is in debug mode
-  
-  # Procs from main
-  # I unfortunately see no better way to do this.
-  fetchGridPosition*: (proc(entity: EntityRef): Vec2i)
-  fetchLastMove*: (proc(entity: EntityRef): Vec2i)
-
-  apiMakeDelay*: proc(delay: int, callback: proc())
-  apiMakeBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet")
-  apiMakeTimedBullet*: proc(pos: Vec2i, dir: Vec2i, tex = "bullet", life = 3)
-  apiMakeConveyor*: proc(pos: Vec2i, dir: Vec2i, length = 2, tex = "conveyor", gen = 0)
-  apiMakeLaserSegment*: proc(pos: Vec2i, dir: Vec2i)
-  apiMakeRouter*: proc(pos: Vec2i, length = 2, life = 2, diag = false, sprite = "router", alldir = false)
-  apiMakeSorter*: proc(pos: Vec2i, mdir: Vec2i, moveSpace = 2, spawnSpace = 2, length = 1)
-  apiMakeTurret*: proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")
-  apiMakeArc*: proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)
-  apiMakeWall*: proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)
-
-  apiMakeDelayBullet*: proc(pos, dir: Vec2i, tex = "")
-  apiMakeDelayBulletWarn*: proc(pos, dir: Vec2i, tex = "")
-  apiMakeBulletCircle*: proc(pos: Vec2i, tex = "")
-  apiMakeLaser*: proc(pos, dir: Vec2i)
-
-  apiAddPoints*: proc(amount = 1)
-  apiDamageBlocks*: proc(target: Vec2i)
-
-  #apiEffectExplode*: proc(pos: Vec2, rotation = 0.0'f32, color = colorWhite, life = 0.4'f32, size = 0.0'f32, parent = NO_ENTITY_REF)
-  apiEffectExplode*: proc(pos: Vec2)
-  apiEffectExplodeHeal*: proc(pos: Vec2)
-  # apiEffectLaserShoot*: proc()
-  apiEffectWarn*: proc(pos: Vec2, life: float32)
-  apiEffectWarnBullet*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
-  apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
-
-# Export main's procs to the API
-template exportProcs* =
-  # Fetch
-  jsonapi.fetchGridPosition = proc(entity: EntityRef): Vec2i = entity.fetch(GridPos).vec
-  jsonapi.fetchLastMove = proc(entity: EntityRef): Vec2i = entity.fetch(Input).lastMove
-
-  # Makers
-  jsonapi.apiMakeDelay        = makeDelay
-  jsonapi.apiMakeBullet       = makeBullet
-  jsonapi.apiMakeTimedBullet  = makeTimedBullet
-  jsonapi.apiMakeConveyor     = makeConveyor
-  jsonapi.apiMakeLaserSegment = makeLaser
-  jsonapi.apiMakeRouter       = makeRouter
-  jsonapi.apiMakeSorter       = makeSorter
-  jsonapi.apiMakeTurret       = makeTurret
-  jsonapi.apiMakeArc          = makeArc
-  jsonapi.apiMakeWall         = makeWall
-
-  jsonapi.apiMakeDelayBullet      = proc(pos, dir: Vec2i, tex = "") = delayBullet(pos, dir, tex)
-  jsonapi.apiMakeDelayBulletWarn  = proc(pos, dir: Vec2i, tex = "") = delayBulletWarn(pos, dir, tex)
-  jsonapi.apiMakeBulletCircle     = proc(pos: Vec2i,      tex = "") = bulletCircle(pos, tex)
-  jsonapi.apiMakeLaser            = proc(pos, dir: Vec2i)           = laser(pos, dir)
-
-  # Other
-  jsonapi.apiAddPoints = addPoints
-  jsonapi.apiDamageBlocks = damageBlocks
-
-  # Effects (evil post-compile-time signature apparently)
-  jsonapi.apiEffectExplode = proc(pos: Vec2) = effectExplode(pos)
-  jsonapi.apiEffectExplodeHeal = proc(pos: Vec2) = effectExplodeHeal(pos)
-  jsonapi.apiEffectWarn = proc(pos: Vec2, life: float32) = effectWarn(pos, life = life)
-  jsonapi.apiEffectWarnBullet = proc(pos: Vec2, life: float32, rotation: float32) = effectWarnBullet(pos, life = life, rotation = rotation)
-  jsonapi.apiEffectStrikeWave = proc(pos: Vec2, life: float32, rotation: float32) = effectStrikeWave(pos, life = life, rotation = rotation)
 
 #region Procs copied to avoid circular dependency
 proc getTexture(unit: Unit, name: string = ""): Texture =
@@ -114,11 +39,6 @@ proc getTexture(unit: Unit, name: string = ""): Texture =
 proc musicTime(): float = state.secs
 
 #endregion
-
-template drawBloom(body: untyped) =
-  drawBloomA()
-  body
-  drawBloomB()
 
 #region Functions callable from formulas
 
@@ -340,7 +260,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
 
     of "Formation", "ForEach":
       let
-        formation = formations[elem["name"].getStr()]
+        formation: seq[Vec2i] = formations[elem["name"].getStr()]
         iter = elem["iterator"].getStr()
         body = parseScript(elem["body"])
       capture formation, iter, body:
