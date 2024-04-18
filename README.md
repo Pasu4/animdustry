@@ -1,3 +1,5 @@
+> [!Important]
+> This API is currently being migrated to JavaScript. The old JSON API will still be supported, but might not receive new features.
 ![](assets-raw/icon.png)
 
 # Animdustry Mod Loader
