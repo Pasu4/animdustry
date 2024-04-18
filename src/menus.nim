@@ -450,6 +450,11 @@ makeSystem("drawUI", []):
       safeTransition:
         mode = gmSettings
 
+    if button(rectCenter(screen.topLeft - vec2(-buttonSize*1.5f, buttonSize/2f), vec2(buttonSize)), icon = "book".patchConst):
+      safeTransition:
+        loadModList()
+        mode = gmModBrowser
+
     var anyHover = false
 
     #draw map select
@@ -666,6 +671,22 @@ makeSystem("drawUI", []):
     #only draw copper in debug mode to visualize the cursor for videos
     when defined(debug):
       draw("big-copper".patch, fau.mouseWorld, scl = vec2(peekScl * 1.5f))
+  elif mode == gmModBrowser:
+    patStripes(%"accce3", %"57639a")
+    patVertGradient(%"57639a")
+
+    titleFont.draw("M O D S", screen - rect(vec2(), vec2(0f, 4f.px)), align = daTop)
+
+    for i, m in modList:
+      let modRect = rectCenter(0f, screen.top - 4f - i * 4f, 15f, 3f)
+      fillRect(modRect, color = colorBlack.withA(0.5f))
+      lineRect(modRect, stroke = 2f.px, color = colorWhite)
+
+    # Return to main menu
+    if button(rectCenter(screen.x + 2f, screen.y + 1f  + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
+      safeTransition:
+        soundBack.play()
+        mode = gmMenu
 
   drawFlush()
 

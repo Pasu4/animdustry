@@ -86,7 +86,9 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
     "author": "You",
     "description": "Description of your mod",
     "enabled": true,
-    "debug": false
+    "debug": false,
+    "wip": true,
+    "dependencies": []
 }
 ```
 
@@ -96,6 +98,8 @@ A `mod.json` or `mod.hjson` file must be be placed in the root folder of the mod
 - **description:** The description of your mod. Currently does absolutely nothing.
 - **enabled:** Whether the mod should be loaded. Can be omitted (assumed true).
 - **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Can be omitted (assumed false).
+- **wip:** Whether the mod is a *work in progress* (WIP). Can be ommitted (assumed false).
+- **dependencies:** Namespaces of mods that need to be installed for this mod to work. Use this if you want to call procedures from a different mod. Can be omitted (assumed to be empty).
 
 ## Custom Units
 

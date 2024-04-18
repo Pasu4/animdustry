@@ -32,22 +32,22 @@ task pack, "Pack textures":
 
 task debug, "Run the game in debug mode - for development only!":
   packTask()
-  shell &"nim r -d:debug src/{app}"
+  shell &"nim r -d:debug -d:ssl src/{app}"
 
 task run, "Run the game":
   packTask()
-  shell &"nim r -d:release src/{app}"
+  shell &"nim r -d:release -d:ssl src/{app}"
 
 task debugBin, "Create debug build file":
-  shell &"nim c -d:debug -o:{app} --debugger:native src/{app}"
+  shell &"nim c -d:debug -d:ssl -o:{app} --debugger:native src/{app}"
 
 task release, "Release build":
   packTask()
-  shell &"nim r -d:danger -o:build/{app} src/{app}"
+  shell &"nim r -d:danger -d:ssl -o:build/{app} src/{app}"
 
 task web, "Deploy web build":
   mkDir "build/web"
-  shell &"nim c -f -d:emscripten -d:danger src/{app}.nim"
+  shell &"nim c -f -d:emscripten -d:danger -d:ssl src/{app}.nim"
   writeFile("build/web/index.html", readFile("build/web/index.html").replace("$title$", capitalizeAscii(app)))
 
 task deploy, "Build for all platforms":
@@ -67,7 +67,7 @@ task deploy, "Build for all platforms":
       bin = dir / exeName & exeExt
 
     mkDir dir
-    shell &"nim --cpu:{cpu} --os:{os} --app:gui -f {args} -d:danger -o:{bin} c src/{app}"
+    shell &"nim --cpu:{cpu} --os:{os} --app:gui -f {args} -d:danger -d:ssl -o:{bin} c src/{app}"
     if not defined(macosx):
       shell &"strip -s {bin}"
 
@@ -86,7 +86,7 @@ task androidBuild, "Android build":
       rmDir &"android/src/c{arch}"
     let cpu = if arch == "32": "" else: "64"
 
-    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
+    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -d:ssl -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
     var 
       includes: seq[string]
       sources: seq[string]

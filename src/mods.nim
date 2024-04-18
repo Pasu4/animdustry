@@ -1,5 +1,10 @@
-import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
+import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri]
 import jsonapi, patterns, hjson
+
+type ModListEntry = object
+  name*, id*, namespace*, repo*: string
+  wip* = false
+  dependencies*: seq[string]
 
 let
   dataDir = getSaveDir("animdustry")
@@ -10,13 +15,80 @@ let
       dataDir / "mods/"
 var
   modErrorLog*: string
+  modList*: seq[ModListEntry]
+  modListLoaded* = false
 
 template modError =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
   mode = gmModError
   continue
 
+# Downloads a json file from the latest release of the repository.
+# If there is no latest release, downloads from head.
+proc downloadJsonFromGithub(client: HttpClient, repo, filepath: string, specificRef = ""): JsonNode =
+  let
+    parsedUri = parseUri(repo)
+    path = parsedUri.path.split('/')
+    releaseResponse = client.get(&"https://api.github.com/repos/{path[1]}/{path[2]}/releases/latest")
+    latestRef = # HEAD if latest release is not found
+      if specificRef.len != 0:
+        specificRef
+      elif releaseResponse.status.startsWith("200"):
+        parseJson(releaseResponse.body())["tag_name"].getStr()
+      else:
+        "HEAD"
+    fileUri = &"https://api.github.com/repos/{path[1]}/{path[2]}/contents/{filepath}?ref={latestRef}"
+    json = parseJson(client.getContent(fileUri))
+    content = base64.decode(json["content"].getStr())
+    contentJson =
+      if filepath.endsWith(".hjson"):
+        parseJson(hjson2json(content))
+      else:
+        parseJson(content)
+  return contentJson
+
+proc fileExistsOnGithub(client: HttpClient, repo, filepath: string): bool =
+  let
+    parsedUri = parseUri(repo)
+    path = parsedUri.path.split('/')
+    apiUri = &"https://api.github.com/repos/{path[1]}/{path[2]}/contents/{filepath}"
+  return client.get(apiUri).status.startsWith("200")
+
+proc loadModList* =
+  if modListLoaded:
+    return
+  modListLoaded = true
+  # Fetch mods from their repositories
+  var client = newHttpClient()
+  try:
+    echo "Fetching mod list"
+    let modListJson = client.downloadJsonFromGithub("https://github.com/Pasu4/animdustry", "mod-list.json", "HEAD")
+    for m in modListJson["mods"].getElems():
+      try:
+        echo "Fetching ", m["id"].getStr(), " from ", m["repo"].getStr()
+        let
+          modRepoUri = m["repo"].getStr()
+          fileName = (if client.fileExistsOnGithub(modRepoUri, "mod.json"): "mod.json" else: "mod.hjson")
+          modJson = client.downloadJsonFromGithub(modRepoUri, fileName)
+          mle = ModListEntry(
+            name: modJson["name"].getStr(),
+            id: m["id"].getStr(),
+            namespace: modJson["namespace"].getStr(),
+            repo: modRepoUri,
+            wip: modJson{"wip"}.getBool(false),
+            dependencies: modJson{"dependencies"}.getElems().map(proc(j: JsonNode): string = j.getStr())
+          )
+        modList.add(mle)
+
+      # except JsonParsingError, HjsonParsingError, KeyError:
+      #   echo "Error parsing mod \"", m["id"].getStr(), "\": ", getCurrentExceptionMsg()
+      except HttpRequestError, ProtocolError:
+        echo getCurrentExceptionMsg()
+  finally:
+    client.close()
+
 proc loadMods* =
+  # Load local mods
   echo "Loading mods from ", modDir
   if dirExists(modDir):
     for kind, modPath in walkDir(modDir):
