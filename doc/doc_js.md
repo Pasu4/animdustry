@@ -1,3 +1,6 @@
+> [!Warning]
+> The contents of this document are not yet updated.
+
 # Documentation
 
 ## Folder structure
@@ -212,12 +215,30 @@ If the mod contains a procedure with the name `Init` (case-sensitive), it is aut
 
 # API Reference
 
+## Types
+
+#### Vec2
+
+A 2D Vector.
+
+##### Fields
+
+- **float** *x*: The x component of the vector.
+- **float** *y*: The y component of the vector.
+
+##### Static methods
+
+- **Vec2** *new Vec2(x = 0, y = x)*: Constructs a 2D Vector.
+- **Vec2** *add(Vec2 u, Vec2 v)*: Adds two vectors.
+- **Vec2** *sub(Vec2 u, Vec2 v)*: Subtracts vector v from vector u.
+- **Vec2** *neg(Vec2 v)*: Negates the vector.
+- **Vec2** *scale(Vec2 v, float s)*: Scales the vector v by the scaling factor s.
+
 ## Functions
 
 - **float** *px(val)*: Converts pixel units into world units.
 - **Vec2** *getScl(base)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
 - **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
-- **Vec2** *new Vec2(x = 0, y = x)*: Constructs a Vec2.
 
 ## Variables
 
