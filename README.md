@@ -31,6 +31,6 @@ music used:
 
 # Documentation
 
-[JavaScript API](/doc/doc_js.md) (Recommended)
+[JavaScript API](/doc/doc_js.md) (Work in progress)
 
 [JSON API](/doc/doc_json.md) (Legacy)
