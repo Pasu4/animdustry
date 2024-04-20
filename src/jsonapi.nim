@@ -12,8 +12,6 @@ var
   eval_x = newEvaluator()                       # General draw evaluator, holds x component of vectors
   eval_y = newEvaluator()                       # Holds y component of vectors
   colorTable = initTable[string, Color]()       # Holds color variables
-  currentUnit: Unit                             # The current unit
-  currentEntityRef: EntityRef                   # The current EntityRef (for abilityProc)
   isBreaking = false                            # Flow control: break
   isReturning = false                           # Flow control: return
   currentNamespace*: string                     # Current namespace for resolving procedures
@@ -85,12 +83,7 @@ proc getColor(str: string): Color =
 
 # Add functions and constants that can be used in formulas.
 # Must be called before any other function in the API
-proc initJsonApi*(bloomA, bloomB: proc()) =
-  # Set bloom procs
-  # For whatever reason, sysDraw only exists within main
-  drawBloomA = bloomA
-  drawBloomB = bloomB
-
+proc initJsonApi*() =
   # Init evals
   for eval in [eval_x, eval_y]:
     # Functions
@@ -1000,71 +993,12 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         col2 = elem{"col2"}.getStr($colorClear)
         factor = elem{"factor"}.getStr($elem{"factor"}.getFloat(1))
       capture name, mode, col1, col2, factor:
-        case mode
-        of "add":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            colorTable[name] = c1.mix(c1 + getColor(col2), eval(factor))
-          )
-        of "sub":
-          procs.add(proc() =
-            let
-              c1 = getColor(col1)
-              c2 = getColor(col2)
-            colorTable[name] = c1.mix(rgba(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b, c1.a - c2.a), eval(factor))
-          )
-        of "mul":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            colorTable[name] = c1.mix(c1 * getColor(col2), eval(factor))
-          )
-        of "div":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            colorTable[name] = c1.mix(c1 / getColor(col2), eval(factor))
-          )
-        of "and":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            var c2 = getColor(col2)
-            c2.rv = c1.rv and c2.rv
-            c2.gv = c1.gv and c2.gv
-            c2.bv = c1.bv and c2.bv
-            c2.av = c1.av and c2.av
-            colorTable[name] = c1.mix(c2, eval(factor))
-          )
-        of "or":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            var c2 = getColor(col2)
-            c2.rv = c1.rv or c2.rv
-            c2.gv = c1.gv or c2.gv
-            c2.bv = c1.bv or c2.bv
-            c2.av = c1.av or c2.av
-            colorTable[name] = c1.mix(c2, eval(factor))
-          )
-        of "xor":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            var c2 = getColor(col2)
-            c2.rv = c1.rv xor c2.rv
-            c2.gv = c1.gv xor c2.gv
-            c2.bv = c1.bv xor c2.bv
-            c2.av = c1.av xor c2.av
-            colorTable[name] = c1.mix(c2, eval(factor))
-          )
-        of "not":
-          procs.add(proc() =
-            let c1 = getColor(col1)
-            var c2 = c1
-            c2.rv = not c2.rv
-            c2.gv = not c2.gv
-            c2.bv = not c2.bv
-            c2.av = not c2.av
-            colorTable[name] = c1.mix(c2, eval(factor))
-          )
-        else: # If not valid then mix
-          procs.add(proc() = colorTable[name] = getColor(col1).mix(getColor(col2), eval(factor)))
+        procs.add(proc() =
+          let
+            c1 = getColor(col1)
+            c2 = getColor(col2)
+          colorTable[name] = apiMixColor(c1, c2, eval(factor), mode)
+        )
 
     of "ChangeBPM":
       let bpm = elem["bpm"].getStr($elem["bpm"].getFloat())

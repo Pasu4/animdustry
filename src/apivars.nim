@@ -1,5 +1,6 @@
-import fau/fmath, pkg/polymorph
 import sequtils, tables
+import fau/[fmath, color], pkg/polymorph
+import types
 
 let
   formations* = {
@@ -11,6 +12,9 @@ let
   }.toTable
 
 var
+  currentUnit*: Unit                             # The current unit
+  currentEntityRef*: EntityRef                   # The current EntityRef (for abilityProc)
+
   # Procs from main
   # I unfortunately see no better way to do this.
   drawBloomA*, drawBloomB*: proc() # Draws bloom (it's unfortunate but what can you do)
@@ -45,8 +49,16 @@ var
   apiEffectWarnBullet*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
   apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
 
+# Export bloom procs
+proc exportBloom*(bloomA: proc(), bloomB: proc()) =
+  # Set bloom procs
+  # For whatever reason, sysDraw only exists within main
+  drawBloomA = bloomA
+  drawBloomB = bloomB
+
 # Export main's procs to the API
 template exportProcs* =
+
   # Fetch
   apivars.fetchGridPosition = proc(entity: EntityRef): Vec2i = entity.fetch(GridPos).vec
   apivars.fetchLastMove = proc(entity: EntityRef): Vec2i = entity.fetch(Input).lastMove
@@ -83,3 +95,44 @@ template drawBloom*(body: untyped) =
   drawBloomA()
   body
   drawBloomB()
+
+proc apiMixColor*(col1, col2: Color, alpha: float32, mode: string = "mix"): Color =
+  case mode
+  of "add":
+    return col1.mix(col1 + col2, alpha)
+  of "sub":
+    return col1.mix(rgba(col1.r - col2.r, col1.g - col2.g, col1.b - col2.b, col1.a - col2.a), alpha)
+  of "mul":
+    return col1.mix(col1 * col2, alpha)
+  of "div":
+    return col1.mix(col1 / col2, alpha)
+  of "and":
+    var c2 = col2
+    c2.rv = col1.rv and col2.rv
+    c2.gv = col1.gv and col2.gv
+    c2.bv = col1.bv and col2.bv
+    c2.av = col1.av and col2.av
+    return col1.mix(c2, alpha)
+  of "or":
+    var c2 = col2
+    c2.rv = col1.rv or col2.rv
+    c2.gv = col1.gv or col2.gv
+    c2.bv = col1.bv or col2.bv
+    c2.av = col1.av or col2.av
+    return col1.mix(c2, alpha)
+  of "xor":
+    var c2 = col2
+    c2.rv = col1.rv xor col2.rv
+    c2.gv = col1.gv xor col2.gv
+    c2.bv = col1.bv xor col2.bv
+    c2.av = col1.av xor col2.av
+    return col1.mix(c2, alpha)
+  of "not":
+    var c2 = col1
+    c2.rv = not col1.rv
+    c2.gv = not col1.gv
+    c2.bv = not col1.bv
+    c2.av = not col1.av
+    return col1.mix(c2, alpha)
+  else: # If not valid then mix
+    return col1.mix(col2, alpha)

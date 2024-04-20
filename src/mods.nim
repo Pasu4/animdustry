@@ -1,5 +1,5 @@
 import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
-import jsonapi, patterns, hjson
+import jsonapi, jsapi, patterns, hjson
 
 let
   dataDir = getSaveDir("animdustry")
@@ -19,11 +19,13 @@ template modError =
 proc loadMods* =
   echo "Loading mods from ", modDir
   if dirExists(modDir):
-    for kind, modPath in walkDir(modDir):
+    for kind, modPath in walkDir(modDir): # Walk through mods
       echo &"Found {kind} {modPath}"
       let isHjson = fileExists(modPath / "mod.hjson")
       if kind == pcDir and isHjson or fileExists(modPath / "mod.json"):
-        var modName, modAuthor: string
+        var
+          modName, modAuthor: string
+          modLegacy: bool
         try:
           let
             modJson =
@@ -36,9 +38,10 @@ proc loadMods* =
           modName = modNode["name"].getStr()
           modAuthor = modNode["author"].getStr()
           currentNamespace = modNode["namespace"].getStr()
+          modLegacy = modNode{"legacy"}.getBool(false) # Legacy mods use JSON scripts instead of JavaScript
 
           if not modEnabled: continue
-          debugMode = modDebug
+          debugMode = debugMode or modDebug
           
           # TODO do something with description
         except JsonParsingError, HjsonParsingError, KeyError:
@@ -54,6 +57,10 @@ proc loadMods* =
           procedurePath = modPath / "procedures"
         
         echo &"Loading {modName} by {modAuthor}"
+
+        if not modLegacy:
+          # Add namespace
+          addNamespace(currentNamespace)
 
         # Units
         if dirExists(unitPath):
@@ -82,8 +89,12 @@ proc loadMods* =
                 parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
                 parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
 
-                parsedUnit.draw = getUnitDraw(unitNode["draw"])
-                parsedUnit.abilityProc = getUnitAbility(unitNode["abilityProc"])
+                if modLegacy:
+                  parsedUnit.draw = getUnitDraw(unitNode["draw"])
+                  parsedUnit.abilityProc = getUnitAbility(unitNode["abilityProc"])
+                else:
+                  parsedUnit.draw = getUnitDrawJs(unitName & "_draw")
+                  parsedUnit.abilityProc = getUnitAbilityJs(unitName & "_ability")
 
                 allUnits.add(parsedUnit)
                 unlockableUnits.add(parsedUnit)
@@ -118,6 +129,7 @@ proc loadMods* =
                     alwaysUnlocked: mapNode{"alwaysUnlocked"}.getBool()
                   )
 
+                if modLegacy:
                 parsedMap.drawPixel = getScript(mapNode["drawPixel"])
                 parsedMap.draw = getScript(mapNode["draw"])
                 parsedMap.update = getScript(mapNode["update"])

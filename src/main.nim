@@ -293,7 +293,7 @@ makeSystem("core", []):
     createUnits()
 
     exportProcs()
-    initJsonApi(
+    exportBloom(
       (proc() =
         drawBuffer(sysDraw.bloom.buffer)
       ),
@@ -302,6 +302,7 @@ makeSystem("core", []):
         sysDraw.bloom.blit(params = meshParams(blend = blendNormal))
       )
     )
+    initJsonApi()
     initJsApi()
 
     loadMods()

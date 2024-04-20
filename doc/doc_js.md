@@ -23,10 +23,11 @@ modfolder
 │   └── exampleMap.json
 ├── music
 │   └── exampleMusic.ogg
-├── procedures
-│   └── exampleProc.json
 ├── sprites
 │   └── exampleSprite.png
+├── scripts
+│   ├── exampleScript.js
+│   └── init.js
 ├── units
 │   └── exampleUnit.json
 ├── unitSplashes
@@ -42,8 +43,8 @@ modfolder
 - **credits.txt:** Additional credits added to the credits of the game. Credits will be auto-generated if this file is missing.
 - **maps:** Contains the playable maps this mod adds.
 - **music:** Contains the music for the maps. All music files must be OGG files.
-- **procedures:** Contains user-defined procedures for use in scripts.
 - **sprites:** Contains sprites for bullets and enemies.
+- **scripts:** Contains scripts that will be executed on startup.
 - **units:** Contains unit scripts. The name of a file should match the name of the unit.
 - **unitSplashes:** Contains the unit splashes. Unit splashes must be named like the unit they belong to.
 - **unitSprites:** Contains in-game sprites for the units.
@@ -67,7 +68,7 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 ```
 
 - **name:** The name of your mod.
-- **namespace:** The namespace of your mod. Used to organize procedures. Only required for JSON mods, does nothing in JavaScript mods.
+- **namespace:** The namespace of your mod. Used to organize procedures.
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
 - **enabled:** Whether the mod should be loaded. Defaults to `true`.
@@ -234,18 +235,18 @@ A 2D Vector.
 - **Vec2** *neg(Vec2 v)*: Negates the vector.
 - **Vec2** *scale(Vec2 v, float s)*: Scales the vector v by the scaling factor s.
 
-## Functions
+#### Color
 
-- **float** *px(val)*: Converts pixel units into world units.
-- **Vec2** *getScl(base)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
-- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
+A color consisting of red, green, blue and alpha.
 
-## Variables
+##### Fields
 
-### Available anywhere
+- **float** *r*: The red component of the color from 0 to 1.
+- **float** *g*: The green component of the color from 0 to 1.
+- **float** *b*: The blue component of the color from 0 to 1.
+- **float** *a*: The alpha (opacity) component of the color from 0 to 1.
 
-- **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
-- **int** *mapSize*: The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
+##### Static fields
 
 - **Color** *shadowColor*: #00000066
 - **Color** *colorAccent*: #ffd37f
@@ -267,6 +268,19 @@ A 2D Vector.
 - **Color** *colorBlue*: #0000ff
 - **Color** *colorPink*: #ff69b4
 - **Color** *colorYellow*: #ffff00
+
+## Functions
+
+- **float** *px(float val)*: Converts pixel units into world units.
+- **Vec2** *getScl(float base = 0.175)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
+- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
+
+## Variables
+
+### Available anywhere
+
+- **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+- **int** *mapSize*: The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
 
 ### Only available inside levels
 
