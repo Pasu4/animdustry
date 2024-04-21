@@ -421,6 +421,8 @@ If debug mode is enabled, the *state_turns* variable is evaluated instead of the
 
 #### DrawFft
 
+`drawFft(pos: Vec2, radius: float = px(90), length: float = 8, color: Color = colorWhite)`
+
 Draws a circular audio spectrum. Never used in the base game.
 
 - **Vec2** *pos*: The position of the spectrum.
@@ -430,13 +432,19 @@ Draws a circular audio spectrum. Never used in the base game.
 
 #### DrawTiles
 
+`drawTiles()`
+
 Draws the playing field with diagonal highlighted tiles that move with the beat. Should only be used inside levels.
 
 #### DrawTilesFft
 
+`drawTilesFft()`
+
 Draws the playing field with an audio spectrum. Never used in the base game. Should only be used inside levels.
 
 #### DrawTilesSquare
+
+`drawTilesSquare(col1: Color = colorWhite, col2: Color = colorBlue)`
 
 Draws the playing field with tiles highlighted in a repeating square pattern. Should only be used inside levels.
 
@@ -444,6 +452,8 @@ Draws the playing field with tiles highlighted in a repeating square pattern. Sh
 - **Color** *col2*: The color of the highlighted tiles. (Default: *colorBlue*)
 
 #### DrawBackground
+
+`drawBackground(col: Color = colorWhite)`
 
 Draws a single color background.
 
@@ -461,17 +471,23 @@ Draws construction-tape-like stripes. If used inside a level, scrolls from right
 
 #### DrawBeatSquare
 
+`drawBeatSquare(col: Color = colorPink.mix(colorWhite, 0.7)`
+
 Draws a square that flashes and changes size with the beat. Only works inside levels.
 
 - **Color** *col*: The color of the square. (Default: *colorPink* with 70% *colorWhite*)
 
 #### DrawBeatAlt
 
+`drawBeatAlt(col: Color)`
+
 Same as `DrawBeatSquare`, but flashes in a different pattern. Only works inside levels.
 
 - **Color** *col*: The color of the square.
 
 #### DrawTriSquare
+
+`drawTriSquare(pos: Vec2, col: Color, len: float, rad: float, offset: float = rad(45), amount: int = 4, sides: int = 3, shapeOffset: float = rad(0))`
 
 Draws regular polygons in a circle around a position.
 
@@ -486,6 +502,8 @@ Draws regular polygons in a circle around a position.
 
 #### DrawSpin
 
+`drawSpin(col1: Color, col2: Color, blades: int = 10)`
+
 Draws stripes radially from the center. (TODO better explanation)
 
 - **Color** *col1*: The first color.
@@ -493,6 +511,8 @@ Draws stripes radially from the center. (TODO better explanation)
 - **int** *blades*: The number of stripes to draw. (Default: *10*)
 
 #### DrawSpinGradient
+
+`drawSpinGradient(pos: Vec2, col1: Color, col2: Color, len: float = 5, blades: int = 10, spacing: int = 2)`
 
 Draws a "fan" of triangles. (TODO better explanation)
 
@@ -504,6 +524,8 @@ Draws a "fan" of triangles. (TODO better explanation)
 - **int** *spacing*: How often a triangle occurs. (Default: *2*)
 
 #### DrawSpinShape
+
+`drawSpinShape(col1: Color, col2: Color, sides: int = 4, rad: float = 2.5, turnSpeed: float = rad(19), rads: int = 6, radsides: int = 4, radOff: float = 7, radrad: float = 1.3, radrotscl: float = 0.25)`
 
 Draws a central layered regular polygon surrounded by smaller "sattelite" polygons. Flashes and rotates with the beat. Only works inside levels.
 
@@ -520,6 +542,8 @@ Draws a central layered regular polygon surrounded by smaller "sattelite" polygo
 
 #### DrawShapeBack
 
+`drawShapeBack(col1: Color, col2: Color, sides: int = 4, spacing: float = 2.5, angle: float = rad(90))`
+
 Draws concentric polygons of alternating colors around the center.
 
 - **Color** *col1*: The first color.
@@ -530,11 +554,15 @@ Draws concentric polygons of alternating colors around the center.
 
 #### DrawFadeShapes
 
+`drawFadeShapes(col: Color)`
+
 Draws repeating rotated squares that move towards the center with the beat. Only works inside levels.
 
 - **Color** *col*: The color of the squares.
 
 #### DrawRain
+
+`drawRain(amount: int = 80)`
 
 Draws pinkish squares with trails that move down-left with the beat. Only works inside levels.
 
@@ -542,13 +570,19 @@ Draws pinkish squares with trails that move down-left with the beat. Only works 
 
 #### DrawPetals
 
+`drawPetals()`
+
 Draws cherry petals that fall down-left. Only works inside levels.
 
 #### DrawSkats
 
+`drawSkats()`
+
 Draws "skats". Used for the credits. Behaves strangely in levels.
 
 #### DrawClouds
+
+`drawClouds(col: Color = colorWhite)`
 
 Draws clouds in the upper half of the screen. Only works inside levels.
 
@@ -556,11 +590,15 @@ Draws clouds in the upper half of the screen. Only works inside levels.
 
 #### DrawLongClouds
 
+`drawLongClouds(col: Color = colorWhite)`
+
 Draws clouds in the upper half of the screen. Only works inside levels.
 
 - **Color** *col*: The color of the clouds. (Default: *colorWhite*)
 
 #### DrawStars
+
+`drawStars(col: Color = colorWhite, flash: Color = colorWhite, amount: int = 40, seed: int = 1)`
 
 Draws stars in different shapes and sizes that flash with the beat. Only works inside levels.
 
@@ -571,6 +609,8 @@ Draws stars in different shapes and sizes that flash with the beat. Only works i
 
 #### DrawTris
 
+`drawTris(col1: Color = colorWhite, col2: Color = colorWhite, amount: int = 50, seed: int = 1)`
+
 Draws triangles that flash with the beat and move down-left. Only works inside levels.
 
 - **Color** *col1*: The normal color of the triangles. (Default: *colorWhite*)
@@ -580,11 +620,15 @@ Draws triangles that flash with the beat and move down-left. Only works inside l
 
 #### DrawBounceSquares
 
+`drawBounceSquares(col: Color = colorWhite)`
+
 Draws a lattice of squares with alternating sizes. The sizes of the squares swap with the beat. Only works inside levels.
 
 - **Color** *col*: The color of the squares. (Default: *colorWhite*)
 
 #### DrawCircles
+
+`drawCircles(col: Color = colorWhite, time: float = state_time, amount: int = 50, seed: int = 1, minSize: float = 2, maxSize: float = 7, moveSpeed: float = 0.2)`
 
 Draws circles in random sizes that move around the screen in random directions. This effect is used for Mono, Oct and Sei.
 
@@ -598,6 +642,8 @@ Draws circles in random sizes that move around the screen in random directions. 
 
 #### DrawRadTris
 
+`drawRadTris(col: Color = colorWhite, time: float = state_time, amount: int = 50, seed: int = 1)`
+
 Draws triangles in random sizes that point away from the center and move around the screen in random directions. This effect is used for Crawler.
 
 - **Color** *col*: The color of the triangles. (Default: *colorWhite*)
@@ -606,6 +652,8 @@ Draws triangles in random sizes that point away from the center and move around 
 - **int** *seed*: The random seed. (Default: *1*)
 
 #### DrawMissiles
+
+`drawMissiles(col: Color = colorWhite, time: float = state_time, amount: int = 50, seed: int = 1)`
 
 Draws moving circles with a trail of smaller circles ("missiles"). This effect is used for Zenith.
 
@@ -616,6 +664,8 @@ Draws moving circles with a trail of smaller circles ("missiles"). This effect i
 
 #### DrawFallSquares
 
+`drawFallSquares(col1: Color = colorWhite, col2: Color = colorWhite, time: float = state_time, amount: int = 50)`
+
 Draws squares that fall down while spinning and changing color. This effect is used for Quad.
 
 - **Color** *col1*: The initial color of the squares. (Default: *colorWhite*)
@@ -624,6 +674,8 @@ Draws squares that fall down while spinning and changing color. This effect is u
 - **int** *amount*: The number of squares to draw. (Default: *50*)
 
 #### DrawFlame
+
+`drawFlame(col1: Color = colorWhite, col2: Color = colorWhite, time: float = state_time, amount: int = 80)`
 
 Draws circles that move upwards while becoming smaller and changing color. This effect is used for Oxynoe.
 
@@ -645,6 +697,8 @@ Draws squares that slowly move around the screen and periodically shrink and gro
 
 #### DrawRoundLine
 
+`drawRoundLine(pos: Vec2, angle: float, len: float, color: Color = colorWhite, stroke: float = 1)`
+
 Draws a line with rounded endpoints.
 
 - **Vec2** *pos*: The position of the midpoint of the line.
@@ -655,6 +709,8 @@ Draws a line with rounded endpoints.
 
 #### DrawLines
 
+`drawLines(col: Color = colorWhite, seed: int = 1, amount: int = 30, angle: float = rad(45))`
+
 Draws rounded lines that move around slightly (looks a bit like rays of light).
 
 - **Color** *col*: The color of the lines. (Default: *colorWhite*)
@@ -663,6 +719,8 @@ Draws rounded lines that move around slightly (looks a bit like rays of light).
 - **float** *angle*: The angle at which to draw the lines. (Default: *rad(45)*)
 
 #### DrawRadLinesRound
+
+`drawRadLinesRound(col: Color = colorWhite, seed: int = 6, amount: int = 40, stroke: float = 0.25, posScl: float = 1, lenScl: float = 1)`
 
 Draws rounded lines pointing at the center of the screen that move around slightly.
 
@@ -675,6 +733,8 @@ Draws rounded lines pointing at the center of the screen that move around slight
 
 #### DrawRadCircles
 
+`drawRadCircles(col: Color = colorWhite, seed: int = 7, amount: int = 40, fin: float = 0.5)`
+
 Draws circles in random sizes scattered around the center of the screen.
 
 - **Color** *col*: The color of the circles. (Default: *colorWhite*)
@@ -683,6 +743,8 @@ Draws circles in random sizes scattered around the center of the screen.
 - **float** *fin*: How far away the circles are from the center on average. Also scales the circles. (Default: *0.5*)
 
 #### DrawSpikes
+
+`drawSpikes(pos: Vec2, col: Color = colorWhite, amount: int = 10, offset: float = 8, len: float = 3, angleOffset: float = 0)`
 
 Draws rounded lines pointing to a position. The angle between all lines is the same.
 
@@ -694,6 +756,8 @@ Draws rounded lines pointing to a position. The angle between all lines is the s
 - **float** *angleOffset*: Additional rotation around the target position applied to each line. (Default: *0*)
 
 #### DrawGradient
+
+`drawGradient(col1: Color = colorClear, col2: Color = colorClear, col3: Color = colorClear, col4: Color = colorClear)`
 
 Draws a gradient across the screen.
 
@@ -713,6 +777,8 @@ Draws a vertical gradient.
 
 #### DrawZoom
 
+`drawZoom(col: Color = colorWhite, offset: float = 0, amount: int = 10, sides: int = 4)`
+
 Draws concentric polygons around the center of the screen that increase in thickness further out.
 
 - **Color** *col*: The color of the polygons. (Default: *colorWhite*)
@@ -722,17 +788,23 @@ Draws concentric polygons around the center of the screen that increase in thick
 
 #### DrawFadeOut
 
+`drawFadeOut(time: float)`
+
 The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
 
 - **float** *time*: The screen will move if you put in a value that changes over time.
 
 #### DrawFadeIn
 
+`drawFadeIn(time: float)`
+
 A light blue screen disappears into the bottom right corner. This effect is used to transition between the menu and levels.
 
 - **float** *time*: The circles will move if you put in a value that changes over time. The value should change in reverse (?).
 
 #### DrawSpace
+
+`drawSpace(col: Color)`
 
 Draws many stripes pointing towards the center. Only works inside levels.
 
@@ -753,6 +825,8 @@ Draws the current unit's splash image. Should only be used in unit splash drawin
 
 #### DrawFillQuadGradient
 
+`drawFillQuadGradient(v1: Vec2, v2: Vec2, v3: Vec2, v4: Vec2, c1: Color, c2: Color, c3: Color, c4: Color, z: float = 0)`
+
 Draws a filled quad with a gradient.
 
 - **Vec2** *v1*: A vertex of the quad.
@@ -767,6 +841,8 @@ Draws a filled quad with a gradient.
 
 #### DrawFillQuad
 
+`drawFillQuad(v1: Vec2, v2: Vec2, v3: Vec2, v4: Vec2, color: Color, z: float = 0)`
+
 Draws a filled quad with a single color.
 
 - **Vec2** *v1*: A vertex of the quad.
@@ -777,6 +853,8 @@ Draws a filled quad with a single color.
 - **float** *z*: The z layer of the quad. (Default: *0*)
 
 #### DrawFillRect
+
+`drawFillRect(x: float, y: float, w: float, h: float, color: Color = colorWhite, z: float = 0)`
 
 Draws a filled rectangle.
 
@@ -789,12 +867,16 @@ Draws a filled rectangle.
 
 #### DrawFillSquare
 
+`drawFillSquare(pos: Vec2, radius: float, color: Color = colorWhite, z: float = 0)`
+
 - **Vec2** *pos*: The position of the midpoint of the square.
 - **float** *radius*: The radius of the square (half the side length).
 - **Color** *color*: The color of the square. (Default: *colorWhite*)
 - **float** *z*: The z layer of the square. (Default: *0*)
 
 #### DrawFillTri
+
+`drawFillTri(v1: Vec2, v2: Vec2, v3: Vec2, color: Color, z: float = 0)`
 
 Draws a filled triangle with a single color.
 
@@ -805,6 +887,8 @@ Draws a filled triangle with a single color.
 - **float** *z*: The z layer of the. (Default: *0*)
 
 #### DrawFillTriGradient
+
+`drawFillTriGradient(v1: Vec2, v2: Vec2, v3: Vec2, c1: Color, c2: Color, c3: Color, z: float = 0)`
 
 Draws a filled triangle with a gradient.
 
@@ -817,6 +901,8 @@ Draws a filled triangle with a gradient.
 - **float** *z*: The z layer of the triangle. (Default: *0*)
 
 #### DrawFillCircle
+
+`drawFillCircle(pos: Vec2, rad: float, color: Color = colorWhite, z: float = 0)`
 
 Draws a filled circle.
 
@@ -840,6 +926,8 @@ Draws a filled polygon.
 
 #### DrawFillLight
 
+`drawFillLight(pos: Vec2, radius: float, sides: int, centerColor: Color = colorWhite, edgeColor: Color = colorWhite, z: float = 0)`
+
 Draws a regular polygon with a gradient to the middle.
 
 - **Vec2** *pos*: The position of the shape.
@@ -851,6 +939,8 @@ Draws a regular polygon with a gradient to the middle.
 
 #### DrawLine
 
+`drawLine(p1: Vec2, p2: Vec2, stroke: float = px(1), color: Color = colorWhite, square: bool = true, z: float = 0)`
+
 Draws a line between two points.
 
 - **Vec2** *p1*: The position of the start point.
@@ -861,6 +951,8 @@ Draws a line between two points.
 - **float** *z*: The z layer of the line. (Default: *0*)
 
 #### DrawLineAngle
+
+`drawLineAngle(p: Vec2, angle: float, len: float, stroke: float = px(1), color: Color = colorWhite, square: bool = true, z: float = 0)`
 
 Draws a line from a point at an angle.
 
@@ -874,6 +966,8 @@ Draws a line from a point at an angle.
 
 #### DrawLineAngleCenter
 
+`drawLineAngleCenter(p: Vec2, angle: float, len: float, stroke: float = px(1), color: Color = colorWhite, square: bool = true, z: float = 0)`
+
 - **Vec2** *p*: The position of the midpoint.
 - **float** *angle*: The angle of the line.
 - **float** *len*: The length of the line.
@@ -883,6 +977,8 @@ Draws a line from a point at an angle.
 - **float** *z*: The z layer of the line. (Default: *0*)
 
 #### DrawLineRect
+
+`drawLineRect(pos: Vec2, size: Vec2, stroke: float = px(1), color: Color = colorWhite, z: float = 0, margin: float = 0)`
 
 Draws a rectangle outline.
 
@@ -895,6 +991,8 @@ Draws a rectangle outline.
 
 #### DrawLineSquare
 
+`drawLineSquare(pos: Vec2, rad: float, stroke: float = px(1), color: Color = colorWhite, z: float = 0)`
+
 Draws a square outline.
 
 - **Vec2** *pos*: The position of the midpoint.
@@ -904,6 +1002,8 @@ Draws a square outline.
 - **float** *z*: The z layer of the square. (Default: *0*)
 
 #### DrawRadLines
+
+`drawRadLines(pos: Vec2, sides: int, radius: float, len: float, stroke: float = px(1), rotation: float = 0, color: Color = colorWhite, z: float = 0)`
 
 Draws lines pointing at a target position.
 
@@ -932,6 +1032,8 @@ Draws a regular polygon outline.
 
 #### DrawArcRadius
 
+`drawArcRadius(pos: Vec2, sides: int, angleFrom: float, angleTo: float, radiusFrom: float, radiusTo: float, rotation: float = 0, color: Color = colorWhite, z: float = 0)`
+
 Draws a polygonal ring sector.
 
 - **Vec2** *pos*: The midpoint of the ring.
@@ -945,6 +1047,8 @@ Draws a polygonal ring sector.
 - **float** *z*: The z layer of the ring. (Default: *0*)
 
 #### DrawArc
+
+`drawArc(pos: Vec2, sides: int, angleFrom: float, angleTo: float, radius: float, rotation: float = 0, stroke: float = px(1), color: Color = colorWhite, z: float = 0)`
 
 Draws a polygonal arc.
 
@@ -960,6 +1064,8 @@ Draws a polygonal arc.
 
 #### DrawCrescent
 
+`drawCrescent(pos: Vec2, sides: int, angleFrom: float, angleTo: float, radius: float, rotation: float = 0, stroke: float = px(1), color: Color = colorWhite, z: float = 0)`
+
 Draws a polygonal crescent shape.
 
 - **Vec2** *pos*: The midpoint of the shape.
@@ -973,6 +1079,8 @@ Draws a polygonal crescent shape.
 - **float** *z*: The z layer of the shape. (Default: *0*)
 
 #### DrawShape
+
+`drawShape(points: Array, wrap: bool = false, stroke: float = px(1), color: Color = colorWhite, z: float = 0)`
 
 Draws a polygon outline.
 
@@ -998,6 +1106,8 @@ Disables bloom for pattern drawing. Only works in unit splash drawing.
 
 #### MakeWall
 
+`makeWall(pos: Vec2, sprite: string = "wall", life: int = 10, health: int = 3)`
+
 Creates a wall that blocks bullets and conveyors.
 
 - **Vec2** *pos*: The tile where the wall will appear.
@@ -1017,12 +1127,16 @@ Damages (usually destroys) bullets, conveyors, etc. on a target tile.
 
 #### MakeDelay
 
+`makeDelay(delay: int, callback: function())`
+
 Delays an action by a number of turns. Appears to be slightly bugged. Should only be used in map update scripts.
 
-- **int** *delay*: The number of turns until the callback is executed minus one. (Default: *0*)
+- **int** *delay*: The number of turns until the callback is executed minus one.
 - **Array** *callback*: An array of calls that is executed after the delay.
 
 #### MakeBullet
+
+`makeBullet(pos: Vec2, dir: Vec2, tex: string = "bullet")`
 
 Creates a bullet on the playing field. Should only be used in map update scripts.
 
@@ -1032,6 +1146,8 @@ Creates a bullet on the playing field. Should only be used in map update scripts
 
 #### MakeTimedBullet
 
+`makeTimedBullet(pos: Vec2, dir: Vec2, tex: string = "bullet", life: int = 3)`
+
 Creates a bullet on the playing field that disappears after a set amount of turns. Should only be used in map update scripts.
 
 - **Vec2** *pos*: The position of the bullet.
@@ -1040,6 +1156,8 @@ Creates a bullet on the playing field that disappears after a set amount of turn
 - **int** *life*: The number of turns after which the bullet disappears. (Default: *3*)
 
 #### MakeConveyor
+
+`makeConveyor(pos: Vec2, dir: Vec2, length: int = 2, tex: string = "conveyor", gen: int = 0)`
 
 Creates a conveyor on the playing field. Should only be used in map update scripts.
 
@@ -1051,12 +1169,16 @@ Creates a conveyor on the playing field. Should only be used in map update scrip
 
 #### MakeLaserSegment
 
+`makeLaserSegment(pos: Vec2, dir: Vec2)`
+
 Makes a one tile long laser segment. You should probably use `MakeLaser` instead. Should only be used in map update scripts.
 
 - **Vec2** *pos*: The position of the laser segment.
 - **Vec2** *dir*: The direction in which the laser points.
 
 #### MakeRouter
+
+`makeRouter(pos: Vec2, length: int = 2, life: int = 2, diag: bool = false, tex: string = "router", allDir: bool = false)`
 
 Creates a router that shoots conveyors. Should only be used in map update scripts.
 
@@ -1069,6 +1191,8 @@ Creates a router that shoots conveyors. Should only be used in map update script
 
 #### MakeSorter
 
+`makeSorter(pos: Vec2, mdir: Vec2, moveSpace: int = 2, spawnSpace: int = 2, length: int = 1)`
+
 Creates a sorter on the playing field that shoots conveyors and moves. Should only be used in map update scripts.
 
 - **Vec2** *pos*: The position of the sorter.
@@ -1078,6 +1202,8 @@ Creates a sorter on the playing field that shoots conveyors and moves. Should on
 - **int** *length*: The number of conveyors spawned. Only 1 and 2 work. (Default: *1*)
 
 #### MakeTurret
+
+`makeTurret(pos: Vec2, face: Vec2, reload: int = 4, life: int = 8, tex: string = "duo")`
 
 Creates a turret on the playing field that moves and shoots bullets at the player. Should only be used in map update scripts.
 
@@ -1089,6 +1215,8 @@ Creates a turret on the playing field that moves and shoots bullets at the playe
 
 #### MakeArc
 
+`makeArc(pos: Vec2, dir: Vec2, tex: string = "arc", bounces: int = 1, life: int = 3)`
+
 Creates an Arc turret on the playing field that moves across the screen, bounces from walls and leaves a trail of stationary bullets. Should only be used in map update scripts.
 
 - **Vec2** *pos*: The position of the Arc.
@@ -1099,6 +1227,8 @@ Creates an Arc turret on the playing field that moves across the screen, bounces
 
 #### MakeDelayBullet
 
+`makeDelayBullet(pos: Vec2, dir: Vec2, tex: string = "")`
+
 Creates a bullet delayed by one turn.
 
 - **Vec2** *pos*: The position of the bullet.
@@ -1106,6 +1236,8 @@ Creates a bullet delayed by one turn.
 - **string** *tex*: The texture of the bullet. (Default: *""*)
 
 #### MakeDelayBulletWarn
+
+`makeDelayBulletWarn(pos: Vec2, dir: Vec2, tex: string = "")`
 
 Creates a bullet delayed by one turn with an indicator at the position the bullet will appear.
 
@@ -1115,12 +1247,16 @@ Creates a bullet delayed by one turn with an indicator at the position the bulle
 
 #### MakeBulletCircle
 
+`makeBulletCircle(pos: Vec2, tex: string = "")`
+
 Shoots 8 bullets from a position in all 8 directions.
 
 - **Vec2** *pos*: The position to shoot the bullets from.
 - **string** *tex*: The texture of the bullets. (Default: *""*)
 
 #### MakeLaser
+
+`makeLaser(pos: Vec2, dir: Vec2)`
 
 Creates a Lancer turret on the playing field that shoots a laser across the playing field two turns later.
 
@@ -1139,11 +1275,15 @@ Creates an explosion effect on a tile.
 
 #### EffectExplodeHeal
 
+`effectExplodeHeal(pos: Vec2)`
+
 Creates a green explosion effect on a tile.
 
 - **Vec2** *pos*: The position of the tile where the effect will appear.
 
 #### EffectWarn
+
+`effectWarn(pos: Vec2, life: float)`
 
 Creates a warning effect (white square) on a tile.
 
@@ -1152,13 +1292,17 @@ Creates a warning effect (white square) on a tile.
 
 #### EffectWarnBullet
 
+`effectWarnBullet(pos: Vec2, life: float, rotation: float)`
+
 Creates a warning effect (white bullet) on a tile.
 
 - **Vec2** *pos*: The position of the tile where the effect will appear.
 - **float** *life*: The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
- **float** *rotation*: The rotation of the effect.
+- **float** *rotation*: The rotation of the effect.
 
 #### EffectStrikeWave
+
+`effectStrikeWave(pos: Vec2, life: float, rotation: float)`
 
 Creates a warning effect (large square) around a tile.
 
