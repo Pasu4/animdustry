@@ -267,7 +267,6 @@ proc initJsApi*() =
     return 1
   ))
 
-  echo "static fields"
   # Static fields
   setObjColor("shadow", rgba(0f, 0f, 0f, 0.4f), false)
   setObjColor("accent", colorAccent, false)
@@ -290,7 +289,6 @@ proc initJsApi*() =
   setObjColor("pink", colorPink, false)
   setObjColor("yellow", colorYellow, false)
 
-  echo "finalize"
   discard ctx.duk_put_global_string("Color")
 
   #endregion
@@ -389,8 +387,6 @@ proc initJsApi*() =
     let
       col1 = getColorDefault(0, colorClear)
       col2 = getColorDefault(1, colorClear)
-    echo "Color 1: ", col1
-    echo "Color 2: ", col2
     patVertGradient(col1, col2)
     return 0
   ))
