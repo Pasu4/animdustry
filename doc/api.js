@@ -47,24 +47,24 @@ class Color {
      * @readonly
      * @type {Color}
      */
-    static acc
+    static accent;
     /**
      * `#bfecf3`
      * @readonly
      * @type {Color}
-     */ent;
+     */
     static ui;
     /**
      * `#57639a`
      * @readonly
      * @type {Color}
      */
-    static uiDa
+    static uiDark;
     /**
      * `#ff584c`
      * @readonly
      * @type {Color}
-     */rk;
+     */
     static hit;
     /**
      * `#84f490`
@@ -89,12 +89,12 @@ class Color {
      * @readonly
      * @type {Color}
      */
-    static black
+    static black;
     /**
      * `#7f7f7f`
      * @readonly
      * @type {Color}
-     */;
+     */
     static gray;
     /**
      * `#4169e1`
@@ -113,36 +113,36 @@ class Color {
      * @readonly
      * @type {Color}
      */
-    static oran
+    static orange;
     /**
      * `#ff0000`
      * @readonly
      * @type {Color}
-     */ge;
+     */
     static red;
     /**
      * `#ff00ff`
      * @readonly
      * @type {Color}
      */
-    static magenta
+    static magenta;
     /**
      * `#a020f0`
      * @readonly
      * @type {Color}
-     */;
-    static purple
+     */
+    static purple;
     /**
      * `#00ff00`
      * @readonly
      * @type {Color}
-     */;
-    static green
+     */
+    static green;
     /**
      * `#0000ff`
      * @readonly
      * @type {Color}
-     */;
+     */
     static blue;
     /**
      * `#ff69b4`
@@ -157,14 +157,6 @@ class Color {
      */
     static yellow;
 }
-
-/**
- * Draws stripes on the screen.
- * @param {Color} [col1=colorPink] The first color
- * @param {Color} [col2=Color.mix(colorPink, colorWhite, 0.2)] The second color
- * @param {number} [angle=rad(135)] The angle of the stripes
- */
-function drawStripes(col1 = colorPink, col2 = Color.mix(colorPink, colorWhite, 0.2), angle = rad(135)) { }
 
 //#endregion
 
