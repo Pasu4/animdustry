@@ -1,5 +1,5 @@
-import sequtils, tables
-import fau/[fmath, color], pkg/polymorph
+import sequtils, tables, os
+import core, vars, fau/[fmath, color], pkg/polymorph
 import types
 
 let
@@ -136,3 +136,23 @@ proc apiMixColor*(col1, col2: Color, alpha: float32, mode: string = "mix"): Colo
     return col1.mix(c2, alpha)
   else: # If not valid then mix
     return col1.mix(col2, alpha)
+
+#region Procs copied to avoid circular dependency
+proc getTexture*(unit: Unit, name: string = ""): Texture =
+  ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
+  if not unit.textures.hasKey(name):
+    let tex =
+      if not unit.isModded:
+        echo "Loading asset ", "textures/" & unit.name & name & ".png"
+        loadTextureAsset("textures/" & unit.name & name & ".png")
+      else:
+        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
+    tex.filter = tfLinear
+    unit.textures[name] = tex
+    return tex
+  return unit.textures[name]
+
+proc musicTime*(): float = state.secs
+
+#endregion

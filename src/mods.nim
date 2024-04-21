@@ -11,7 +11,7 @@ let
 var
   modErrorLog*: string
 
-template modError =
+template modError(filePath) =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
   mode = gmModError
   continue
@@ -55,12 +55,73 @@ proc loadMods* =
           unitPath = modPath / "units"
           mapPath = modPath / "maps"
           procedurePath = modPath / "procedures"
+          scriptPath = modPath / "scripts"
         
         echo &"Loading {modName} by {modAuthor}"
 
         if not modLegacy:
           # Add namespace
           addNamespace(currentNamespace)
+        else:
+          echo "Warning: Legacy mod."
+
+        # Procedures
+        if modLegacy and dirExists(procedurePath):
+          for fileType, filePath in walkDir(procedurePath):
+            if fileType == pcFile and (filePath.endsWith(".json") or filePath.endsWith(".hjson")):
+              #region Parse procedure
+              try:
+                let procJson =
+                  if filePath.endsWith(".hjson"):
+                    hjson2json(readFile(filePath))
+                  else:
+                    readFile(filePath)
+                let
+                  procNode = parseJson(procJson)
+                  procName = currentNamespace & "::" & procNode["name"].getStr()
+                  paramNodes = procNode{"parameters"}.getElems(@[])
+                  procedure = Procedure(
+                    script: getScript(procNode["script"], update = false)
+                  )
+                # Parse default parameters
+                var parameters: Table[string, string]
+                for pn in paramNodes:
+                  let
+                    key = pn["name"].getStr()
+                    val = pn{"default"}.getStr("")
+                  if not val.len == 0:
+                    parameters[key] = val
+                procedure.defaultValues = parameters
+                procedures[procName] = procedure
+              except JsonParsingError, HjsonParsingError, KeyError:
+                modError(filePath)
+              #endregion
+          # Call Init procedure
+          if (currentNamespace & "::Init") in procedures:
+            procedures[currentNamespace & "::Init"].script()
+        elif dirExists(scriptPath):
+          #region Load scripts
+          # First, check if a 'init.js' file exists
+          var filePath = scriptPath / "init.js"
+          if fileExists(filePath):
+            let script = readFile(scriptPath / "init.js")
+            echo "Executing, ", filePath
+            try:
+              evalScriptJs(script)
+            except JavaScriptError:
+              modError(filePath)
+
+          # Load all scripts
+          for fileType, filePath in walkDir(scriptPath):
+            # Load all scripts except 'init.js' (already loaded above) and '__api.js' (for function highlighting)
+            if fileType == pcFile and filePath.endsWith(".js") and not (filePath[(scriptPath.len+1)..^1] in ["init.js", "__api.js"]):
+              let script = readFile(filePath)
+              echo "Executing ", filePath
+              try:
+                evalScriptJs(script)
+              except JavaScriptError:
+                modError(filePath)
+          #endregion
 
         # Units
         if dirExists(unitPath):
@@ -93,14 +154,15 @@ proc loadMods* =
                   parsedUnit.draw = getUnitDraw(unitNode["draw"])
                   parsedUnit.abilityProc = getUnitAbility(unitNode["abilityProc"])
                 else:
-                  parsedUnit.draw = getUnitDrawJs(unitName & "_draw")
-                  parsedUnit.abilityProc = getUnitAbilityJs(unitName & "_ability")
+                  parsedUnit.draw = getUnitDrawJs(currentNamespace, unitName & "_draw")
+                  parsedUnit.abilityProc = getUnitAbilityJs(currentNamespace, unitName & "_ability")
 
                 allUnits.add(parsedUnit)
                 unlockableUnits.add(parsedUnit)
               except JsonParsingError, HjsonParsingError, KeyError:
-                modError()
+                modError(filePath)
               #endregion
+
         # Maps
         if dirExists(mapPath):
           for fileType, filePath in walkDir(mapPath):
@@ -114,6 +176,7 @@ proc loadMods* =
                     readFile(filePath)
                 let
                   mapNode = parseJson(mapJson)
+                  mapName = (if modLegacy: "" else: mapNode["name"].getStr())
                   songName = mapNode["songName"].getStr()
                   parsedMap = Beatmap(
                     songName: songName,
@@ -130,48 +193,21 @@ proc loadMods* =
                   )
 
                 if modLegacy:
-                parsedMap.drawPixel = getScript(mapNode["drawPixel"])
-                parsedMap.draw = getScript(mapNode["draw"])
-                parsedMap.update = getScript(mapNode["update"])
+                  parsedMap.drawPixel = getScript(mapNode["drawPixel"])
+                  parsedMap.draw = getScript(mapNode["draw"])
+                  parsedMap.update = getScript(mapNode["update"])
+                else:
+                  if mapName.len == 0:
+                    raise newException(JsonParsingError, "Missing 'name' field in map JSON.")
+                  parsedMap.drawPixel = getScriptJs(currentNamespace, mapName & "_drawPixel")
+                  parsedMap.draw = getScriptJs(currentNamespace, mapName & "_draw")
+                  parsedMap.update = getScriptJs(currentNamespace, mapName & "_update")
 
                 allMaps.add(parsedMap)
               except JsonParsingError, HjsonParsingError, KeyError:
-                modError()
+                modError(filePath)
               #endregion
-        # Procedures
-        if dirExists(procedurePath):
-          for fileType, filePath in walkDir(procedurePath):
-            if fileType == pcFile and (filePath.endsWith(".json") or filePath.endsWith(".hjson")):
-              #region Parse procedure
-              try:
-                let procJson =
-                  if filePath.endsWith(".hjson"):
-                    hjson2json(readFile(filePath))
-                  else:
-                    readFile(filePath)
-                let
-                  procNode = parseJson(procJson)
-                  procName = currentNamespace & "::" & procNode["name"].getStr()
-                  paramNodes = procNode{"parameters"}.getElems(@[])
-                  procedure = Procedure(
-                    script: getScript(procNode["script"], update = false)
-                  )
-                # Parse default parameters
-                var parameters: Table[string, string]
-                for pn in paramNodes:
-                  let
-                    key = pn["name"].getStr()
-                    val = pn{"default"}.getStr("")
-                  if not val.len == 0:
-                    parameters[key] = val
-                procedure.defaultValues = parameters
-                procedures[procName] = procedure
-              except JsonParsingError, HjsonParsingError, KeyError:
-                modError()
-              #endregion
-          # Call Init procedure
-          if (currentNamespace & "::Init") in procedures:
-            procedures[currentNamespace & "::Init"].script()
+
         # Credits
         if fileExists(modPath / "credits.txt"):
           creditsText &= "\n" & readFile(modPath / "credits.txt") & "\n\n------\n"

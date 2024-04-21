@@ -18,26 +18,6 @@ var
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
   debugMode* = false                            # Whether the mod is in debug mode
 
-#region Procs copied to avoid circular dependency
-proc getTexture(unit: Unit, name: string = ""): Texture =
-  ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
-  if not unit.textures.hasKey(name):
-    let tex =
-      if not unit.isModded:
-        echo "Loading asset ", "textures/" & unit.name & name & ".png"
-        loadTextureAsset("textures/" & unit.name & name & ".png")
-      else:
-        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
-        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
-    tex.filter = tfLinear
-    unit.textures[name] = tex
-    return tex
-  return unit.textures[name]
-
-proc musicTime(): float = state.secs
-
-#endregion
-
 #region Functions callable from formulas
 
 # getScl(base = 0.175f)

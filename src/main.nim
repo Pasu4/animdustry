@@ -305,6 +305,10 @@ makeSystem("core", []):
     initJsonApi()
     initJsApi()
 
+    echo "Updating variables"
+    updateJs()
+    echo "Variables updated"
+
     loadMods()
 
     loadGame()

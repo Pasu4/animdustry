@@ -98,7 +98,7 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 }
 ```
 
-- **name:** The internal name of the unit. Used for loading files. Should be unique.
+- **name:** The internal name of the unit. Used for loading files. Must be a valid JavaScript variable name.
 - **title:** The title of the unit displayed at the top of the screen when it is rolled or clicked in the menu.
 - **subtitle:** The subtitle, displayed below the title in smaller letters. Usually used for a short description of the unit.
 - **abilityDesc:** A description of the unit's ability, displayed in the bottom right corner. May also be used for other descriptions.
@@ -115,6 +115,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 
 ```json
 {
+    "name": "boss1",
     "songName": "Anuke - Boss 1",
     "music": "boss1",
     "bpm": 100.0,
@@ -142,6 +143,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 }
 ```
 
+- **name:** The internal name of the map. Must be a valid JavaScript variable name.
 - **songName:** The name of the song that is displayed in the menu.
 - **music:** The name of the music file without the file extension.
 - **bpm:** The BPM (beats per minute) of the song.
@@ -248,64 +250,64 @@ A color consisting of red, green, blue and alpha.
 
 ##### Static fields
 
-- **Color** *shadowColor*: #00000066
-- **Color** *colorAccent*: #ffd37f
-- **Color** *colorUi*: #bfecf3
-- **Color** *colorUiDark*: #57639a
-- **Color** *colorHit*: #ff584c
-- **Color** *colorHeal*: #84f490
-- **Color** *colorClear*: #00000000
-- **Color** *colorWhite*: #ffffff
-- **Color** *colorBlack*: #000000
-- **Color** *colorGray*: #7f7f7f
-- **Color** *colorRoyal*: #4169e1
-- **Color** *colorCoral*: #ff7f50
-- **Color** *colorOrange*: #ffa500
-- **Color** *colorRed*: #ff0000
-- **Color** *colorMagenta*: #ff00ff
-- **Color** *colorPurple*: #a020f0
-- **Color** *colorGreen*: #00ff00
-- **Color** *colorBlue*: #0000ff
-- **Color** *colorPink*: #ff69b4
-- **Color** *colorYellow*: #ffff00
+- **Color** *shadow*: #00000066
+- **Color** *accent*: #ffd37f
+- **Color** *ui*: #bfecf3
+- **Color** *uiDark*: #57639a
+- **Color** *hit*: #ff584c
+- **Color** *heal*: #84f490
+- **Color** *clear*: #00000000
+- **Color** *white*: #ffffff
+- **Color** *black*: #000000
+- **Color** *gray*: #7f7f7f
+- **Color** *royal*: #4169e1
+- **Color** *coral*: #ff7f50
+- **Color** *orange*: #ffa500
+- **Color** *red*: #ff0000
+- **Color** *magenta*: #ff00ff
+- **Color** *purple*: #a020f0
+- **Color** *green*: #00ff00
+- **Color** *blue*: #0000ff
+- **Color** *pink*: #ff69b4
+- **Color** *yellow*: #ffff00
 
 ## Functions
 
-- **float** *px(float val)*: Converts pixel units into world units.
-- **Vec2** *getScl(float base = 0.175)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
-- **Vec2** *hoverOffset(scl, offset = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
+- **float** *px(val: float)*: Converts pixel units into world units.
+- **Vec2** *getScl(base: float = 0.175)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a scaling vector dependent on the size of the screen and the time until the unit appears. Only usable in the context of unit splash drawing.
+- **Vec2** *hoverOffset(scl: float = 0.65, offset: float = 0)*: Used for displaying the unit splash when rolling / clicking on a unit in the menu. Returns a displacement vector that is used to slightly move the unit up and down periodically. Only usable in the context of unit splash drawing.
 
 ## Variables
 
 ### Available anywhere
 
-- **float** *fau_time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+- **float** *fau.time*: The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
 - **int** *mapSize*: The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
 
 ### Only available inside levels
 
-- **float** *state_secs*: Smoothed position of the music track in seconds.
-- **float** *state_lastSecs*: Last "discrete" music track position, internally used.
-- **float** *state_time*: Smooth game time, may not necessarily match seconds. Visuals only!
-- **float** *state_rawBeat*: Raw beat calculated based on music position.
-- **float** *state_moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
-- **float** *state_hitTime*: Snaps to 1 when player is hit for health animation.
-- **float** *state_healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
-- **int** *state_points*: Points awarded based on various events.
-- **int** *state_turn*: Beats that have passed total.
-- **int** *state_hits*: The number of times the player has been hit this map. (?)
-- **int** *state_totalHits*: Same as *state_hits*, probably.
-- **int** *state_misses*: The number of times the player has missed an input this map. (?)
-- **float** *state_currentBpm*: The current BPM (beats per minute).
-- **Vec2** *playerPos*: Last known player position.
-- **float** *beatSpacing*: The time between two beats.
+- **float** *state.secs*: Smoothed position of the music track in seconds.
+- **float** *state.lastSecs*: Last "discrete" music track position, internally used.
+- **float** *state.time*: Smooth game time, may not necessarily match seconds. Visuals only!
+- **float** *state.rawBeat*: Raw beat calculated based on music position.
+- **float** *state.moveBeat*: Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+- **float** *state.hitTime*: Snaps to 1 when player is hit for health animation.
+- **float** *state.healTime*: Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
+- **int** *state.points*: Points awarded based on various events.
+- **int** *state.turn*: Beats that have passed total.
+- **int** *state.hits*: The number of times the player has been hit this map. (?)
+- **int** *state.totalHits*: Same as *state_hits*, probably.
+- **int** *state.misses*: The number of times the player has missed an input this map. (?)
+- **float** *state.currentBpm*: The current BPM (beats per minute).
+- **Vec2** *state.playerPos*: Last known player position.
 
 ### Only available in unit splash drawing
 
-- **Vec2** *basePos*: The base position of the unit splash.
+- **Vec2** *basePos*: The base position of the unit splash. (TODO move to argument)
 
 ### Only available in unit ability procs
 
+(TODO all these are now arguments)
 - **int** *moves*: The number of moves this unit has made.
 - **Vec2** *gridPosition*: The position where the unit is now. **Must not be used for map scripts!** Use *playerPos* for that instead.
 - **Vec2** *lastMove*: The last movement direction.
@@ -448,6 +450,8 @@ Draws a single color background.
 - **Color** *col*: The color of the background.
 
 #### DrawStripes
+
+`drawStripes(col1: Color = colorPink, col2: Color = Color.mix(colorPink, colorWhite, 0.2), angle: float = rad(135))`
 
 Draws construction-tape-like stripes. If used inside a level, scrolls from right to left with the beat.
 
@@ -630,6 +634,8 @@ Draws circles that move upwards while becoming smaller and changing color. This 
 
 #### DrawSquares
 
+`drawSquares(col: Color = colorWhite, time: float = state_time, amount: int = 50, seed: int = 2)`
+
 Draws squares that slowly move around the screen and periodically shrink and grow. This effect is used for Alpha.
 
 - **Color** *col*: The color of the squares. (Default: *colorWhite*)
@@ -698,6 +704,8 @@ Draws a gradient across the screen.
 
 #### DrawVertGradient
 
+`drawVertGradient(col1: Color = colorClear, col2: Color = colorClear)`
+
 Draws a vertical gradient.
 
 - **Color** *col1*: The bottom color. (Default: *colorClear*)
@@ -731,6 +739,8 @@ Draws many stripes pointing towards the center. Only works inside levels.
 - **Color** *col*: The color of the stripes.
 
 #### DrawUnit
+
+`drawUnit(pos: Vec2, scl: Vec2 = new Vec2(1, 1), color: Color = colorWhite, part: string = "")`
 
 Draws the current unit's splash image. Should only be used in unit splash drawing.
 
@@ -816,6 +826,8 @@ Draws a filled circle.
 - **float** *z*: The z layer of the circle. (Default: *0*)
 
 #### DrawFillPoly
+
+`drawFillPoly(pos: Vec2, sides: int, radius: float, rotation: float = 0, color: Color = colorWhite, z: float = 0)`
 
 Draws a filled polygon.
 
@@ -906,6 +918,8 @@ Draws lines pointing at a target position.
 
 #### DrawPoly
 
+`drawPoly(pos: Vec2, sides: int, radius: float, rotation: float = 0, stroke: float = px(1), color: Color = colorWhite, z: float = 0)`
+
 Draws a regular polygon outline.
 
 - **Vec2** *pos*: The position of the center of the polygon.
@@ -968,11 +982,17 @@ Draws a polygon outline.
 - **Color** *color*: The color of the shape. (Default: *colorWhite*)
 - **float** *z*: The z layer of the shape. (Default: *0*)
 
-#### DrawBloom
+#### BeginBloom
 
-Draws one or more patterns with bloom enabled. Only works in unit splash drawing.
+`beginBloom()`
 
-- **Array** *body*: An array of draw calls to be drawn with bloom anabled.
+Patterns will be drawn with bloom enabled until `endBloom()` is called. Only works in unit splash drawing.
+
+#### EndBloom
+
+`endBloom()`
+
+Disables bloom for pattern drawing. Only works in unit splash drawing.
 
 ### Ability
 
@@ -986,6 +1006,8 @@ Creates a wall that blocks bullets and conveyors.
 - **int** *health*: How many bullets the wall can block before it is destroyed. (Default: *3*)
 
 #### DamageBlocks
+
+`damageBlocks(pos: Vec2)`
 
 Damages (usually destroys) bullets, conveyors, etc. on a target tile.
 
@@ -1108,6 +1130,8 @@ Creates a Lancer turret on the playing field that shoots a laser across the play
 ### Effects
 
 #### EffectExplode
+
+`effectExplode(pos: Vec2)`
 
 Creates an explosion effect on a tile.
 
