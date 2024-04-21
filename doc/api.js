@@ -3,6 +3,51 @@
 
 //#region Classes
 
+/**
+ * A 2D Vector of floating point numbers.
+ */
+class Vec2 {
+    /**
+     * @param {number} x The x coordinate
+     * @param {number} y The y coordinate
+     */
+    constructor(x, y) { }
+
+    /**
+     * Adds two vectors.
+     * @param {Vec2} u The first vector.
+     * @param {Vec2} v The second vector.
+     * @returns {Vec2} The sum of the two vectors.
+     */
+    static add(u, v) { }
+
+    /**
+     * Subtracts the second vector from the first vector.
+     * @param {Vec2} u The vector to subtract from.
+     * @param {Vec2} v The vector to subtract.
+     * @returns {Vec2} The difference of the two vectors.
+     */
+    static sub(u, v) { }
+
+    /**
+     * Negates a vector by negating both components.
+     * @param {Vec2} v The vector to negate.
+     * @returns {Vec2} The negated vector.
+     */
+    static neg(v) { }
+
+    /**
+     * Scales a vector by a scaling factor.
+     * @param {Vec2} v The vector to scale.
+     * @param {number} s The scaling factor.
+     * @returns {Vec2} The scaled vector.
+     */
+    static scale(v, s) { }
+}
+
+/**
+ * A color made up of red, green, blue and alpha.
+ */
 class Color {
     /**
      * @param {number} r The red component
