@@ -95,6 +95,9 @@ template setObjNumber(name: string, value: float, writable = true) =
 template setObjString(name: string, value: string, writable = true) =
   setObjectProperty(name, writable, ctx.duk_push_string(value))
 
+template setObjBoolean(name: string, value: bool, writable = true) =
+  setObjectProperty(name, writable, ctx.duk_push_boolean(if value: 1 else: 0))
+
 template setObjVec2(name: string, value: Vec2, writable = true) =
   setObjectProperty(name, writable, pushVec2(value, writable))
 
@@ -505,9 +508,6 @@ proc initJsApi*() =
   #region Global objects
 
   discard ctx.duk_push_object()
-  discard ctx.duk_put_global_string("fau")
-
-  discard ctx.duk_push_object()
   discard ctx.duk_put_global_string("state")
 
   #endregion
@@ -536,12 +536,6 @@ proc initJsApi*() =
       offset = ctx.duk_get_number_default(1, 0).float
       res = vec2(0f, (fau.time + offset).sin(scl, 0.14f) - 0.14f)
     pushVec2(res)
-    return 1
-  ))
-
-  # beatSpacing(): float
-  setGlobalFunc("beatSpacing", 0, (proc(ctx: DTContext): cint{.stdcall.} =
-    ctx.duk_push_number(1.0 / (state.currentBpm / 60.0))
     return 1
   ))
 
@@ -1507,26 +1501,26 @@ proc initJsApi*() =
   #endregion
 
 proc updateJs*() =
-  discard ctx.duk_get_global_string("fau")
-  setObjNumber("time", fau.time, false)
-  ctx.duk_pop()
-
   # Set state
   discard ctx.duk_get_global_string("state")
-  setObjNumber("secs",       state.secs,            false)
-  setObjNumber("lastSecs",   state.lastSecs,        false)
-  setObjNumber("time",       state.time,            false)
-  setObjNumber("rawBeat",    state.rawBeat,         false)
-  setObjNumber("moveBeat",   state.moveBeat,        false)
-  setObjNumber("hitTime",    state.hitTime,         false)
-  setObjNumber("healTime",   state.healTime,        false)
-  setObjInt(   "points",     state.points,          false)
-  setObjInt(   "turn",       state.turn,            false)
-  setObjInt(   "hits",       state.hits,            false)
-  setObjInt(   "totalHits",  state.totalHits,       false)
-  setObjInt(   "misses",     state.misses,          false)
-  setObjNumber("currentBpm", state.currentBpm,      false)
-  setObjVec2(  "playerPos",  vec2(state.playerPos), false)
+  setObjNumber( "secs",       state.secs,            false)
+  setObjNumber( "lastSecs",   state.lastSecs,        false)
+  setObjNumber( "time",       state.time,            false)
+  setObjNumber( "globalTime", fau.time,              false)
+  setObjNumber( "rawBeat",    state.rawBeat,         false)
+  setObjNumber( "moveBeat",   state.moveBeat,        false)
+  setObjBoolean("newTurn",    state.newTurn,         false)
+  setObjNumber( "hitTime",    state.hitTime,         false)
+  setObjNumber( "healTime",   state.healTime,        false)
+  setObjInt(    "points",     state.points,          false)
+  setObjInt(    "turn",       state.turn,            false)
+  setObjInt(    "hits",       state.hits,            false)
+  setObjInt(    "totalHits",  state.totalHits,       false)
+  setObjInt(    "misses",     state.misses,          false)
+  setObjNumber( "currentBpm", state.currentBpm,      false)
+
+  setObjVec2("playerPos", vec2(state.playerPos), false)
+  setObjNumber("beatSpacing", 1.0 / (state.currentBpm / 60.0), false)
   ctx.duk_pop()
 
 

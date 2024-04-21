@@ -106,7 +106,7 @@ type GameState* = object
   rawBeat*: float
   #Beat calculated as countdown after a music beat happens. Smoother, but less precise.
   moveBeat*: float32
-  #if true, a new turn was just fired this rame
+  #if true, a new turn was just fired this frame
   newTurn*: bool
   #snaps to 1 when player is hit for health animation
   hitTime*: float32

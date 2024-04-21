@@ -30,6 +30,20 @@
 // This file is not to be executed by the mod loader.
 // The file name should be "__api.js" to be ignored by the mod loader.
 
+//#region Values
+
+/**
+ * The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
+ */
+const mapSize = 6;
+
+/**
+ * The standard offset of a unit's shadow. Used for drawing unit splashes.
+ */
+const shadowOffset = new Vec2(0.3);
+
+//#endregion
+
 //#region Classes
 
 /**
@@ -242,8 +256,10 @@ class Color {
  * @property {number} secs - Smoothed position of the music track in seconds.
  * @property {number} lastSecs - Last "discrete" music track position, internally used.
  * @property {number} time - Smooth game time, may not necessarily match seconds. Visuals only!
+ * @property {number} globalTime - The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
  * @property {number} rawBeat - Raw beat calculated based on music position.
  * @property {number} moveBeat - Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+ * @property {Boolean} newTurn - If true, a new turn was just fired this frame
  * @property {number} hitTime - Snaps to 1 when player is hit for health animation.
  * @property {number} healTime - Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
  * @property {int} points - Points awarded based on various events.
@@ -253,6 +269,7 @@ class Color {
  * @property {int} misses - The number of times the player has missed an input this map. (?)
  * @property {number} currentBpm - The current BPM (beats per minute).
  * @property {Vec2} playerPos - Last known player position.
+ * @property {number} beatSpacing - The time between two beats.
  */
 var state = {
     /**
@@ -274,6 +291,12 @@ var state = {
      */
     time,
     /**
+     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+     * @type {number}
+     * @readonly
+     */
+    globalTime,
+    /**
      * Raw beat calculated based on music position.
      * @type {number}
      * @readonly
@@ -285,6 +308,12 @@ var state = {
      * @readonly
      */
     moveBeat,
+    /**
+     * If true, a new turn was just fired this frame
+     * @type {Boolean}
+     * @readonly
+     */
+    newTurn,
     /**
      * Snaps to 1 when player is hit for health animation.
      * @type {number}
@@ -339,6 +368,12 @@ var state = {
      * @readonly
      */
     playerPos,
+    /**
+     * The time between two beats.
+     * @type {number}
+     * @readonly
+     */
+    beatSpacing,
 }
 
 //#endregion
@@ -1154,13 +1189,13 @@ function log(message) { }
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#state">state</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#mapSize">mapSize</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#shadowOffset">shadowOffset</a></li><li><a href="global.html#state">state</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 21 2024 19:54:59 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 21 2024 20:41:02 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

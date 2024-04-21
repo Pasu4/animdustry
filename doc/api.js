@@ -2,6 +2,20 @@
 // This file is not to be executed by the mod loader.
 // The file name should be "__api.js" to be ignored by the mod loader.
 
+//#region Values
+
+/**
+ * The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
+ */
+const mapSize = 6;
+
+/**
+ * The standard offset of a unit's shadow. Used for drawing unit splashes.
+ */
+const shadowOffset = new Vec2(0.3);
+
+//#endregion
+
 //#region Classes
 
 /**
@@ -214,8 +228,10 @@ class Color {
  * @property {number} secs - Smoothed position of the music track in seconds.
  * @property {number} lastSecs - Last "discrete" music track position, internally used.
  * @property {number} time - Smooth game time, may not necessarily match seconds. Visuals only!
+ * @property {number} globalTime - The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
  * @property {number} rawBeat - Raw beat calculated based on music position.
  * @property {number} moveBeat - Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+ * @property {Boolean} newTurn - If true, a new turn was just fired this frame
  * @property {number} hitTime - Snaps to 1 when player is hit for health animation.
  * @property {number} healTime - Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
  * @property {int} points - Points awarded based on various events.
@@ -225,6 +241,7 @@ class Color {
  * @property {int} misses - The number of times the player has missed an input this map. (?)
  * @property {number} currentBpm - The current BPM (beats per minute).
  * @property {Vec2} playerPos - Last known player position.
+ * @property {number} beatSpacing - The time between two beats.
  */
 var state = {
     /**
@@ -246,6 +263,12 @@ var state = {
      */
     time,
     /**
+     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+     * @type {number}
+     * @readonly
+     */
+    globalTime,
+    /**
      * Raw beat calculated based on music position.
      * @type {number}
      * @readonly
@@ -257,6 +280,12 @@ var state = {
      * @readonly
      */
     moveBeat,
+    /**
+     * If true, a new turn was just fired this frame
+     * @type {Boolean}
+     * @readonly
+     */
+    newTurn,
     /**
      * Snaps to 1 when player is hit for health animation.
      * @type {number}
@@ -311,6 +340,12 @@ var state = {
      * @readonly
      */
     playerPos,
+    /**
+     * The time between two beats.
+     * @type {number}
+     * @readonly
+     */
+    beatSpacing,
 }
 
 //#endregion
