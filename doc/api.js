@@ -203,13 +203,342 @@ class Color {
     static yellow;
 }
 
+class Math {
+    /**
+     * The absolute value of `x`.
+     * @param {number} x The number to get the absolute value of.
+     * @returns {number} The absolute value of `x`.
+     */
+    static abs(x) { }
+
+    /**
+     * The arccosine of `x`.
+     * @param {number} x The number to get the arccosine of.
+     * @returns {number} The arccosine of `x`.
+     */
+    static acos(x) { }
+
+    /**
+     * The arcsine of `x`.
+     * @param {number} x The number to get the arcsine of.
+     * @returns {number} The arcsine of `x`.
+     */
+    static asin(x) { }
+
+    /**
+     * The arctangent of `x`.
+     * @param {number} x The number to get the arctangent of.
+     * @returns {number} The arctangent of `x`.
+     */
+    static atan(x) { }
+
+    /**
+     * The arctangent of `y / x`.
+     * @param {number} x The x coordinate.
+     * @param {number} y The y coordinate.
+     * @returns {number} The arctangent of `y / x`.
+     */
+    static atan2(y, x) { }
+
+    /**
+     * The smallest integer greater than or equal to `x`.
+     * @param {number} x The number to ceil.
+     * @returns {number} The smallest integer greater than or equal to `x`.
+     */
+    static ceil(x) { }
+
+    /**
+     * The cosine of `x`.
+     * @param {number} x The number to get the cosine of.
+     * @returns {number} The cosine of `x`.
+     */
+    static cos(x) { }
+
+    /**
+     * The hyperbolic cosine of `x`.
+     * @param {number} x The number to get the hyperbolic cosine of.
+     * @returns {number} The hyperbolic cosine of `x`.
+     */
+    static cosh(x) { }
+
+    /**
+     * Converts `x` from radians to degrees.
+     * @param {number} x The number to convert.
+     * @returns {number} `x` in degrees.
+     */
+    static deg(x) { }
+
+    /**
+     * The exponential of `x`.
+     * @param {number} x The number to get the exponential of.
+     * @returns {number} The exponential of `x`.
+     */
+    static exp(x) { }
+
+    /**
+     * The sign of `x`.
+     * @param {number} x The number to get the sign of.
+     * @returns {number} The sign of `x`.
+     */
+    static sgn(x) { }
+
+    /**
+     * The square root of `x`.
+     * @param {number} x The number to get the square root of.
+     * @returns {number} The square root of `x`.
+     */
+    static sqrt(x) { }
+
+    /**
+     * The factorial of `x`.
+     * @param {number} x The number to get the factorial of.
+     * @returns {number} The factorial of `x`.
+     */
+    static fac(x) { }
+
+    /**
+     * The largest integer less than or equal to `x`.
+     * @param {number} x The number to floor.
+     * @returns {number} The largest integer less than or equal to `x`.
+     */
+    static floor(x) { }
+
+    /**
+     * The natural logarithm of `x`.
+     * @param {number} x The number to get the natural logarithm of.
+     * @returns {number} The natural logarithm of `x`.
+     */
+    static ln(x) { }
+
+    /**
+     * The base 10 logarithm of `x`.
+     * @param {number} x The number to get the base 10 logarithm of.
+     * @returns {number} The base 10 logarithm of `x`.
+     */
+    static log(x) { }
+
+    /**
+     * The base 2 logarithm of `x`.
+     * @param {number} x The number to get the base 2 logarithm of.
+     * @returns {number} The base 2 logarithm of `x`.
+     */
+    static log2(x) { }
+
+    /**
+     * The maximum value out of all arguments.
+     * @param {...number} args The numbers to compare.
+     * @returns {number} The maximum value.
+     */
+    static max(...args) { }
+
+    /**
+     * The minimum value out of all arguments.
+     * @param {...number} args The numbers to compare.
+     * @returns {number} The minimum value.
+     */
+    static min(...args) { }
+
+    /**
+     * Converts `x` from degrees to radians.
+     * @param {number} x The number to convert.
+     * @returns {number} `x` in radians.
+     */
+    static rad(x) { }
+
+    /**
+     * `x` raised to the power of `y`.
+     * @param {number} x The base.
+     * @param {number} y The exponent.
+     * @returns {number} `x` raised to the power of `y`.
+     */
+    static pow(x, y) { }
+
+    /**
+     * The sine of `x`.
+     * @param {number} x The number to get the sine of.
+     * @returns {number} The sine of `x`.
+     */
+    static sin(x) { }
+
+    /**
+     * The hyperbolic sine of `x`.
+     * @param {number} x The number to get the hyperbolic sine of.
+     * @returns {number} The hyperbolic sine of `x`.
+     */
+    static sinh(x) { }
+
+    /**
+     * The tangent of `x`.
+     * @param {number} x The number to get the tangent of.
+     * @returns {number} The tangent of `x`.
+     */
+    static tan(x) { }
+
+    /**
+     * The hyperbolic tangent of `x`.
+     * @param {number} x The number to get the hyperbolic tangent of.
+     * @returns {number} The hyperbolic tangent of `x`.
+     */
+    static tanh(x) { }
+
+    /**
+     * The constant pi.
+     * @readonly
+     */
+    static PI = 3.141592653589793;
+
+    /**
+     * The constant e (Euler's number).
+     * @readonly
+     */
+    static E = 2.718281828459045;
+}
+
+//#endregion
+
+//#region Objects
+
+/**
+ * The current state of the game.
+ * @readonly
+ * @property {number} secs - Smoothed position of the music track in seconds.
+ * @property {number} lastSecs - Last "discrete" music track position, internally used.
+ * @property {number} time - Smooth game time, may not necessarily match seconds. Visuals only!
+ * @property {number} rawBeat - Raw beat calculated based on music position.
+ * @property {number} moveBeat - Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+ * @property {number} hitTime - Snaps to 1 when player is hit for health animation.
+ * @property {number} healTime - Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
+ * @property {int} points - Points awarded based on various events.
+ * @property {int} turn - Beats that have passed total.
+ * @property {int} hits - The number of times the player has been hit this map. (?)
+ * @property {int} totalHits - Same as state.hits, probably.
+ * @property {int} misses - The number of times the player has missed an input this map. (?)
+ * @property {number} currentBpm - The current BPM (beats per minute).
+ * @property {Vec2} playerPos - Last known player position.
+ */
+var state = {
+    /**
+     * Smoothed position of the music track in seconds.
+     * @type {number}
+     * @readonly
+     */
+    secs,
+    /**
+     * Last "discrete" music track position, internally used.
+     * @type {number}
+     * @readonly
+     */
+    lastSecs,
+    /**
+     * Smooth game time, may not necessarily match seconds. Visuals only!
+     * @type {number}
+     * @readonly
+     */
+    time,
+    /**
+     * Raw beat calculated based on music position.
+     * @type {number}
+     * @readonly
+     */
+    rawBeat,
+    /**
+     * Beat calculated as countdown after a music beat happens. Smoother, but less precise.
+     * @type {number}
+     * @readonly
+     */
+    moveBeat,
+    /**
+     * Snaps to 1 when player is hit for health animation.
+     * @type {number}
+     * @readonly
+     */
+    hitTime,
+    /**
+     * Snaps to 1 when player is healed. Seems like healing is an unimplemented mechanic in the base game.
+     * @type {number}
+     * @readonly
+     */
+    healTime,
+    /**
+     * Points awarded based on various events.
+     * @type {int}
+     * @readonly
+     */
+    points,
+    /**
+     * Beats that have passed total.
+     * @type {int}
+     * @readonly
+     */
+    turn,
+    /**
+     * The number of times the player has been hit this map. (?)
+     * @type {int}
+     * @readonly
+     */
+    hits,
+    /**
+     * Same as state.hits, probably.
+     * @type {int}
+     * @readonly
+     */
+    totalHits,
+    /**
+     * The number of times the player has missed an input this map. (?)
+     * @type {int}
+     * @readonly
+     */
+    misses,
+    /**
+     * The current BPM (beats per minute).
+     * @type {number}
+     * @readonly
+     */
+    currentBpm,
+    /**
+     * Last known player position.
+     * @type {Vec2}
+     * @readonly
+     */
+    playerPos,
+}
+
+//#endregion
+
+//#region Value functions
+
+/**
+ * Converts pixels into world units.
+ * @param {int} x The length in pixels.
+ * @returns {number} The length in world units.
+ */
+function px(x) { }
+
+/**
+ * Used for displaying the unit splash when rolling / clicking on a unit in
+ * the menu. Returns a scaling vector dependent on the size of the screen and
+ * the time until the unit appears. Only usable in the context of unit splash
+ * drawing.
+ * @param {number} [base=0.175] The base scale of the unit splash.
+ * @returns {Vec2} The scaling vector.
+ */
+function getScl(base = 0.175) { }
+
+/**
+ * Used for displaying the unit splash when rolling / clicking on a unit in the
+ * menu. Returns a displacement vector that is used to slightly move the unit
+ * up and down periodically. Only usable in the context of unit splash drawing.
+ * @param {number} scl The amplitude of the hover effect.
+ * @param {number} offset The vertical offset of the hover effect.
+ */
+function hoverOffset(scl = 0.65, offset = 0) { }
+
 //#endregion
 
 //#region Pattern Drawing
 
 /**
  * Draws a circular audio spectrum. Never used in the base game.
- *
  * @param {Vec2} pos The position of the spectrum.
  * @param {number} [radius=px(90)] The inner radius of the spectrum.
  * @param {number} [length=8] The length of the spectrum bars.
@@ -229,7 +558,6 @@ function drawTilesFft() { }
 
 /**
  * Draws the playing field with tiles highlighted in a repeating square pattern. Should only be used inside levels.
- *
  * @param {Color} [col1=colorWhite] The color of the normal tiles.
  * @param {Color} [col2=colorBlue] The color of the highlighted tiles.
  */
@@ -237,14 +565,12 @@ function drawTilesSquare(col1 = colorWhite, col2 = colorBlue) { }
 
 /**
  * Draws a single color background.
- *
  * @param {Color} col The color of the background.
  */
 function drawBackground(col = colorWhite) { }
 
 /**
  * Draws construction-tape-like stripes. If used inside a level, scrolls from right to left with the beat.
- *
  * @param {Color} [col1=colorPink] Background color.
  * @param {Color} [col2=colorPink* with 20% *colorWhite] Stripe color.
  * @param {number} [angle=rad(135)] The angle of the stripes.
@@ -253,14 +579,12 @@ function drawStripes(col1 = colorPink, col2 = Color.mix(colorPink, colorWhite, 0
 
 /**
  * Draws a square that flashes and changes size with the beat. Only works inside levels.
- *
  * @param {Color} [col=colorPink* with 70% *colorWhite] The color of the square.
  */
 function drawBeatSquare(col = colorPink.mix(colorWhite, 0.7)) { }
 
 /**
  * Same as `DrawBeatSquare`, but flashes in a different pattern. Only works inside levels.
- *
  * @param {Color} col The color of the square.
  */
 function drawBeatAlt(col) { }
@@ -268,7 +592,6 @@ function drawBeatAlt(col) { }
 
 /**
  * Draws regular polygons in a circle around a position.
- *
  * @param {Vec2} pos The position to draw the polygons around.
  * @param {Color} col The color of the polygons.
  * @param {number} len How far away the polygons are from the position.
@@ -282,7 +605,6 @@ function drawTriSquare(pos, col, len, rad, offset = rad(45), amount = 4, sides =
 
 /**
  * Draws stripes radially from the center. (TODO better explanation)
- *
  * @param {Color} col1 The first color.
  * @param {Color} col2 The second color.
  * @param {int} [blades=10] The number of stripes to draw.
@@ -291,7 +613,6 @@ function drawSpin(col1, col2, blades = 10) { }
 
 /**
  * Draws a "fan" of triangles. (TODO better explanation)
- *
  * @param {Vec2} pos The position to center the fan on.
  * @param {Color} col1 The inner color of the triangles.
  * @param {Color} col2 The outer color of the triangles.
@@ -303,7 +624,6 @@ function drawSpinGradient(pos, col1, col2, len = 5, blades = 10, spacing = 2) { 
 
 /**
  * Draws a central layered regular polygon surrounded by smaller "sattelite" polygons. Flashes and rotates with the beat. Only works inside levels.
- *
  * @param {Color} col1 The normal color.
  * @param {Color} col2 The flash color.
  * @param {int} [sides=4] The number of sides of the central polygon.
@@ -319,7 +639,6 @@ function drawSpinShape(col1, col2, sides = 4, rad = 2.5, turnSpeed = rad(19), ra
 
 /**
  * Draws concentric polygons of alternating colors around the center.
- *
  * @param {Color} col1 The first color.
  * @param {Color} col2 The second color.
  * @param {int} [sides=4] How many sides the polygons have.
@@ -330,14 +649,12 @@ function drawShapeBack(col1, col2, sides = 4, spacing = 2.5, angle = rad(90)) { 
 
 /**
  * Draws repeating rotated squares that move towards the center with the beat. Only works inside levels.
- *
  * @param {Color} col The color of the squares.
  */
 function drawFadeShapes(col) { }
 
 /**
  * Draws pinkish squares with trails that move down-left with the beat. Only works inside levels.
- *
  * @param {int} [amount=80] The number of shapes to draw.
  */
 function drawRain(amount = 80) { }
@@ -354,21 +671,18 @@ function drawSkats() { }
 
 /**
  * Draws clouds in the upper half of the screen. Only works inside levels.
- *
  * @param {Color} [col=colorWhite] The color of the clouds.
  */
 function drawClouds(col = colorWhite) { }
 
 /**
  * Draws clouds in the upper half of the screen. Only works inside levels.
- *
  * @param {Color} [col=colorWhite] The color of the clouds.
  */
 function drawLongClouds(col = colorWhite) { }
 
 /**
  * Draws stars in different shapes and sizes that flash with the beat. Only works inside levels.
- *
  * @param {Color} [col=colorWhite] The normal color of the stars.
  * @param {Color} [flash=colorWhite] The flash color of the stars.
  * @param {int} [amount=40] The number of stars to draw.
@@ -378,7 +692,6 @@ function drawStars(col = colorWhite, flash = colorWhite, amount = 40, seed = 1) 
 
 /**
  * Draws triangles that flash with the beat and move down-left. Only works inside levels.
- *
  * @param {Color} [col1=colorWhite] The normal color of the triangles.
  * @param {Color} [col2=colorWhite] The flash color of the triangles.
  * @param {int} [amount=50] The number of triangles to draw.
@@ -388,77 +701,69 @@ function drawTris(col1 = colorWhite, col2 = colorWhite, amount = 50, seed = 1) {
 
 /**
  * Draws a lattice of squares with alternating sizes. The sizes of the squares swap with the beat. Only works inside levels.
- *
  * @param {Color} [col=colorWhite] The color of the squares.
  */
 function drawBounceSquares(col = colorWhite) { }
 
 /**
  * Draws circles in random sizes that move around the screen in random directions. This effect is used for Mono, Oct and Sei.
- *
  * @param {Color} [col=colorWhite] The color of the circles.
- * @param {number} [time=state_time] The circles will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of circles to draw.
  * @param {int} [seed=1] The random seed.
  * @param {number} [minSize=2] The smallest size a circle can be.
  * @param {number} [maxSize=7] The largest size a circle can be.
  * @param {number} [moveSpeed=0.2] The speed at which the circles move.
  */
-function drawCircles(col = colorWhite, time = state_time, amount = 50, seed = 1, minSize = 2, maxSize = 7, moveSpeed = 0.2) { }
+function drawCircles(col = colorWhite, time = state.time, amount = 50, seed = 1, minSize = 2, maxSize = 7, moveSpeed = 0.2) { }
 
 /**
  * Draws triangles in random sizes that point away from the center and move around the screen in random directions. This effect is used for Crawler.
- *
  * @param {Color} [col=colorWhite] The color of the triangles.
- * @param {number} [time=state_time] The triangles will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The triangles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of triangles to draw
  * @param {int} [seed=1] The random seed.
  */
-function drawRadTris(col = colorWhite, time = state_time, amount = 50, seed = 1) { }
+function drawRadTris(col = colorWhite, time = state.time, amount = 50, seed = 1) { }
 
 /**
  * Draws moving circles with a trail of smaller circles ("missiles"). This effect is used for Zenith.
- *
  * @param {Color} [col=colorWhite] The color of the circles.
- * @param {number} [time=state_time] The circles will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of circles to draw (not including the trailing circles).
  * @param {int} [seed=1] The random seed.
  */
-function drawMissiles(col = colorWhite, time = state_time, amount = 50, seed = 1) { }
+function drawMissiles(col = colorWhite, time = state.time, amount = 50, seed = 1) { }
 
 /**
  * Draws squares that fall down while spinning and changing color. This effect is used for Quad.
- *
  * @param {Color} [col1=colorWhite] The initial color of the squares.
  * @param {Color} [col2=colorWhite] The color the squares change to over their lifetime.
- * @param {number} [time=state_time] The squares will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The squares will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of squares to draw.
  */
-function drawFallSquares(col1 = colorWhite, col2 = colorWhite, time = state_time, amount = 50) { }
+function drawFallSquares(col1 = colorWhite, col2 = colorWhite, time = state.time, amount = 50) { }
 
 /**
  * Draws circles that move upwards while becoming smaller and changing color. This effect is used for Oxynoe.
- *
  * @param {Color} [col1=colorWhite] The initial color of the circles.
  * @param {Color} [col2=colorWhite] The color the circles change to.
- * @param {number} [time=state_time] The circles will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=80] The number of circles to draw.
  */
-function drawFlame(col1 = colorWhite, col2 = colorWhite, time = state_time, amount = 80) { }
+function drawFlame(col1 = colorWhite, col2 = colorWhite, time = state.time, amount = 80) { }
 
 /**
  * Draws squares that slowly move around the screen and periodically shrink and grow. This effect is used for Alpha.
- *
  * @param {Color} [col=colorWhite] The color of the squares.
- * @param {number} [time=state_time] The squares will move if you put in a value that changes over time.
+ * @param {number} [time=state.time] The squares will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of squares to draw.
  * @param {int} [seed=2] The random seed.
  */
-function drawSquares(col = colorWhite, time = state_time, amount = 50, seed = 2) { }
+function drawSquares(col = colorWhite, time = state.time, amount = 50, seed = 2) { }
 
 /**
  * Draws a line with rounded endpoints.
- *
  * @param {Vec2} pos The position of the midpoint of the line.
  * @param {number} angle The angle of the line.
  * @param {number} len The length of the line.
@@ -469,7 +774,6 @@ function drawRoundLine(pos, angle, len, color = colorWhite, stroke = 1) { }
 
 /**
  * Draws rounded lines that move around slightly (looks a bit like rays of light).
- *
  * @param {Color} [col=colorWhite] The color of the lines.
  * @param {int} [seed=1] The random seed.
  * @param {int} [amount=30] The number of lines to draw.
@@ -479,7 +783,6 @@ function drawLines(col = colorWhite, seed = 1, amount = 30, angle = rad(45)) { }
 
 /**
  * Draws rounded lines pointing at the center of the screen that move around slightly.
- *
  * @param {Color} [col=colorWhite] The color of the lines.
  * @param {int} [seed=6] The random seed.
  * @param {int} [amount=40] The number of lines to draw.
@@ -491,7 +794,6 @@ function drawRadLinesRound(col = colorWhite, seed = 6, amount = 40, stroke = 0.2
 
 /**
  * Draws circles in random sizes scattered around the center of the screen.
- *
  * @param {Color} [col=colorWhite] The color of the circles.
  * @param {int} [seed=7] The random seed.
  * @param {int} [amount=40] The number of circles to draw.
@@ -501,7 +803,6 @@ function drawRadCircles(col = colorWhite, seed = 7, amount = 40, fin = 0.5) { }
 
 /**
  * Draws rounded lines pointing to a position. The angle between all lines is the same.
- *
  * @param {Vec2} pos The position the lines will point to.
  * @param {Color} col The color of the lines.
  * @param {int} [amount=10] The number of lines to draw.
@@ -513,7 +814,6 @@ function drawSpikes(pos, col = colorWhite, amount = 10, offset = 8, len = 3, ang
 
 /**
  * Draws a gradient across the screen.
- *
  * @param {Color} [col1=colorClear] The color of the bottom left corner.
  * @param {Color} [col2=colorClear] The color of the bottom right corner.
  * @param {Color} [col3=colorClear] The color of the top right corner.
@@ -523,7 +823,6 @@ function drawGradient(col1 = colorClear, col2 = colorClear, col3 = colorClear, c
 
 /**
  * Draws a vertical gradient.
- *
  * @param {Color} [col1=colorClear] The bottom color.
  * @param {Color} [col2=colorClear] The top color.
  */
@@ -531,7 +830,6 @@ function drawVertGradient(col1 = colorClear, col2 = colorClear) { }
 
 /**
  * Draws concentric polygons around the center of the screen that increase in thickness further out.
- *
  * @param {Color} [col=colorWhite] The color of the polygons.
  * @param {number} [offset=0] The offset of the first polygon from the center. Periodic. (TODO explain that better)
  * @param {int} [amount=10] The number of polygons to draw.
@@ -541,28 +839,24 @@ function drawZoom(col = colorWhite, offset = 0, amount = 10, sides = 4) { }
 
 /**
  * The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
- *
  * @param {number} time The screen will move if you put in a value that changes over time.
  */
 function drawFadeOut(time) { }
 
 /**
  * A light blue screen disappears into the bottom right corner. This effect is used to transition between the menu and levels.
- *
  * @param {number} time The circles will move if you put in a value that changes over time. The value should change in reverse (?).
  */
 function drawFadeIn(time) { }
 
 /**
  * Draws many stripes pointing towards the center. Only works inside levels.
- *
  * @param {Color} col The color of the stripes.
  */
 function drawSpace(col) { }
 
 /**
  * Draws the current unit's splash image. Should only be used in unit splash drawing.
- *
  * @param {Vec2} pos Where to draw the unit.
  * @param {Vec2} [scl=vec2(1, 1)] Scale of the unit. 
  * @param {Color} [color=colorWhite] Color of the unit.
@@ -576,7 +870,6 @@ function drawUnit(pos, scl = new Vec2(1, 1), color = colorWhite, part = "") { }
 
 /**
  * Draws a filled quad with a gradient.
- *
  * @param {Vec2} v1 A vertex of the quad.
  * @param {Vec2} v2 A vertex of the quad.
  * @param {Vec2} v3 A vertex of the quad.
@@ -591,7 +884,6 @@ function drawFillQuadGradient(v1, v2, v3, v4, c1, c2, c3, c4, z = 0) { }
 
 /**
  * Draws a filled quad with a single color.
- *
  * @param {Vec2} v1 A vertex of the quad.
  * @param {Vec2} v2 A vertex of the quad.
  * @param {Vec2} v3 A vertex of the quad.
@@ -603,7 +895,6 @@ function drawFillQuad(v1, v2, v3, v4, color, z = 0) { }
 
 /**
  * Draws a filled rectangle.
- *
  * @param {number} x The x coordinate of the bottom left corner.
  * @param {number} y The y coordinate of the bottom left corner.
  * @param {number} w The width of the rectangle.
@@ -623,7 +914,6 @@ function drawFillSquare(pos, radius, color = colorWhite, z = 0) { }
 
 /**
  * Draws a filled triangle with a single color.
- *
  * @param {Vec2} v1 A vertex of the triangle.
  * @param {Vec2} v2 A vertex of the triangle.
  * @param {Vec2} v3 A vertex of the triangle.
@@ -634,7 +924,6 @@ function drawFillTri(v1, v2, v3, color, z = 0) { }
 
 /**
  * Draws a filled triangle with a gradient.
- *
  * @param {Vec2} v1 A vertex of the triangle.
  * @param {Vec2} v2 A vertex of the triangle.
  * @param {Vec2} v3 A vertex of the triangle.
@@ -647,7 +936,6 @@ function drawFillTriGradient(v1, v2, v3, c1, c2, c3, z = 0) { }
 
 /**
  * Draws a filled circle.
- *
  * @param {Vec2} pos The position of the midpoint of the circle.
  * @param {number} rad The radius of the circle.
  * @param {Color} [color=colorWhite] The color of the circle.
@@ -657,7 +945,6 @@ function drawFillCircle(pos, rad, color = colorWhite, z = 0) { }
 
 /**
  * Draws a filled polygon.
- *
  * @param {Vec2} pos The position of the center of the polygon.
  * @param {int} sides The number of sides the polygon has.
  * @param {number} radius The radius of the polygon.
@@ -669,7 +956,6 @@ function drawFillPoly(pos, sides, radius, rotation = 0, color = colorWhite, z = 
 
 /**
  * Draws a regular polygon with a gradient to the middle.
- *
  * @param {Vec2} pos The position of the shape.
  * @param {number} radius The radius of the shape.
  * @param {int} [sides=20] The number of sides the polygon has. With the default value of 20, it looks close to a circle.
@@ -681,7 +967,6 @@ function drawFillLight(pos, radius, sides, centerColor = colorWhite, edgeColor =
 
 /**
  * Draws a line between two points.
- *
  * @param {Vec2} p1 The position of the start point.
  * @param {Vec2} p2 The position of the end point.
  * @param {number} [stroke=px(1)] The thickness of the line.
@@ -693,7 +978,6 @@ function drawLine(p1, p2, stroke = px(1), color = colorWhite, square = true, z =
 
 /**
  * Draws a line from a point at an angle.
- *
  * @param {Vec2} p The position of the start point.
  * @param {number} angle The angle of the line.
  * @param {number} len The length of the line.
@@ -717,7 +1001,6 @@ function drawLineAngleCenter(p, angle, len, stroke = px(1), color = colorWhite, 
 
 /**
  * Draws a rectangle outline.
- *
  * @param {Vec2} pos The position of the bottom left corner of the rectangle.
  * @param {Vec2} size The size of the rectangle as a vector of *(width, height)*.
  * @param {number} [stroke=px(1)] The thickness of the outline.
@@ -729,7 +1012,6 @@ function drawLineRect(pos, size, stroke = px(1), color = colorWhite, z = 0, marg
 
 /**
  * Draws a square outline.
- *
  * @param {Vec2} pos The position of the midpoint.
  * @param {number} rad The radius of the square.
  * @param {number} [stroke=px(1)] The thickness of the outline.
@@ -740,7 +1022,6 @@ function drawLineSquare(pos, rad, stroke = px(1), color = colorWhite, z = 0) { }
 
 /**
  * Draws lines pointing at a target position.
- *
  * @param {Vec2} pos The target position.
  * @param {int} sides The number of lines to draw.
  * @param {number} radius The distance from the target point to the start points of the lines.
@@ -754,7 +1035,6 @@ function drawRadLines(pos, sides, radius, len, stroke = px(1), rotation = 0, col
 
 /**
  * Draws a regular polygon outline.
- *
  * @param {Vec2} pos The position of the center of the polygon.
  * @param {int} sides The number of sides the polygon has.
  * @param {number} radius The radius of the polygon.
@@ -767,7 +1047,6 @@ function drawPoly(pos, sides, radius, rotation = 0, stroke = px(1), color = colo
 
 /**
  * Draws a polygonal ring sector.
- *
  * @param {Vec2} pos The midpoint of the ring.
  * @param {int} sides The number of sides of the ring sector.
  * @param {number} angleFrom The angle where the sector starts.
@@ -782,7 +1061,6 @@ function drawArcRadius(pos, sides, angleFrom, angleTo, radiusFrom, radiusTo, rot
 
 /**
  * Draws a polygonal arc.
- *
  * @param {Vec2} pos The position of the arc.
  * @param {int} sides The number of sides of the arc.
  * @param {number} angleFrom The angle where the arc starts.
@@ -797,7 +1075,6 @@ function drawArc(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = 
 
 /**
  * Draws a polygonal crescent shape.
- *
  * @param {Vec2} pos The midpoint of the shape.
  * @param {int} sides The number of sides of the shape.
  * @param {number} angleFrom The angle where the crescent starts.
@@ -812,7 +1089,6 @@ function drawCrescent(pos, sides, angleFrom, angleTo, radius, rotation = 0, stro
 
 /**
  * Draws a polygon outline.
- *
  * @param {Array} points An array of points to connect into a shape.
  * @param {bool} [wrap=false] Whether the last point should connect to the first point.
  * @param {number} [stroke=px(1)] The width of the outline.
@@ -839,7 +1115,6 @@ function endBloom() { }
 
 /**
  * Creates a wall that blocks bullets and conveyors.
- *
  * @param {Vec2} pos The tile where the wall will appear.
  * @param {string} [sprite="wall"] The sprite to use for the wall.
  * @param {int} [life=10] The time in turns until the wall disappears.
@@ -849,7 +1124,6 @@ function makeWall(pos, sprite = "wall", life = 10, health = 3) { }
 
 /**
  * Damages (usually destroys) bullets, conveyors, etc. on a target tile.
- *
  * @param {Vec2} target The tile to target.
  */
 function damageBlocks(pos) { }
@@ -866,7 +1140,6 @@ function damageBlocks(pos) { }
 
 /**
  * Delays an action by a number of turns. Appears to be slightly bugged. Should only be used in map update scripts.
- *
  * @param {int} delay The number of turns until the callback is executed minus one.
  * @param {makeDelayCallback} callback The function to execute after the delay.
  */
@@ -874,7 +1147,6 @@ function makeDelay(delay, callback) { }
 
 /**
  * Creates a bullet on the playing field. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the bullet.
  * @param {Vec2} dir The distance the bullet moves per turn. The bullet *can* move multiple squares in a direction at once (e.g. with *vec2(1, -2)*).
  * @param {string} [tex="bullet"] The texture of the bullet. (TODO list of values)
@@ -883,7 +1155,6 @@ function makeBullet(pos, dir, tex = "bullet") { }
 
 /**
  * Creates a bullet on the playing field that disappears after a set amount of turns. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the bullet.
  * @param {Vec2} dir The distance the bullet moves per turn.
  * @param {string} [tex="bullet"] The texture of the bullet.
@@ -893,7 +1164,6 @@ function makeTimedBullet(pos, dir, tex = "bullet", life = 3) { }
 
 /**
  * Creates a conveyor on the playing field. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the conveyor.
  * @param {Vec2} dir The distance the conveyor moves per turn.
  * @param {int} [length=2] The number of conveyor belts in a row. Only 1 and 2 work. (TODO Check if that is a bug)
@@ -904,7 +1174,6 @@ function makeConveyor(pos, dir, length = 2, tex = "conveyor", gen = 0) { }
 
 /**
  * Makes a one tile long laser segment. You should probably use `MakeLaser` instead. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the laser segment.
  * @param {Vec2} dir The direction in which the laser points.
  */
@@ -913,7 +1182,6 @@ function makeLaserSegment(pos, dir) { }
 
 /**
  * Creates a router that shoots conveyors. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the router.
  * @param {int} [length=2] The number of conveyors the router creates. Only 1 and 2 work.
  * @param {int} [life=2] The number of turns until the router disappears.
@@ -925,7 +1193,6 @@ function makeRouter(pos, length = 2, life = 2, diag = false, tex = "router", all
 
 /**
  * Creates a sorter on the playing field that shoots conveyors and moves. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the sorter.
  * @param {Vec2} mdir The movement direction of the sorter.
  * @param {int} [moveSpace=2] The number of turns it takes for the sorter to move one tile.
@@ -936,7 +1203,6 @@ function makeSorter(pos, mdir, moveSpace = 2, spawnSpace = 2, length = 1) { }
 
 /**
  * Creates a turret on the playing field that moves and shoots bullets at the player. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the turret.
  * @param {Vec2} face The direction the turret is facing. Also the movement vector of the bullets spawned by the turret.
  * @param {int} [reload=4] The number of turns it takes to reload times two. (TODO check source)
@@ -947,7 +1213,6 @@ function makeTurret(pos, face, reload = 4, life = 8, tex = "duo") { }
 
 /**
  * Creates an Arc turret on the playing field that moves across the screen, bounces from walls and leaves a trail of stationary bullets. Should only be used in map update scripts.
- *
  * @param {Vec2} pos The position of the Arc.
  * @param {Vec2} dir The movement vector of the Arc.
  * @param {string} [tex="arc"] The texture of the Arc.
@@ -958,7 +1223,6 @@ function makeArc(pos, dir, tex = "arc", bounces = 1, life = 3) { }
 
 /**
  * Creates a bullet delayed by one turn.
- *
  * @param {Vec2} pos The position of the bullet.
  * @param {Vec2} dir The distance the bullet moves per turn. 
  * @param {string} [tex=""] The texture of the bullet.
@@ -967,7 +1231,6 @@ function makeDelayBullet(pos, dir, tex = "") { }
 
 /**
  * Creates a bullet delayed by one turn with an indicator at the position the bullet will appear.
- *
  * @param {Vec2} pos The position of the bullet.
  * @param {Vec2} dir The distance the bullet moves per turn.
  * @param {string} [tex=""] The texture of the bullet.
@@ -976,7 +1239,6 @@ function makeDelayBulletWarn(pos, dir, tex = "") { }
 
 /**
  * Shoots 8 bullets from a position in all 8 directions.
- *
  * @param {Vec2} pos The position to shoot the bullets from.
  * @param {string} [tex=""] The texture of the bullets.
  */
@@ -984,7 +1246,6 @@ function makeBulletCircle(pos, tex = "") { }
 
 /**
  * Creates a Lancer turret on the playing field that shoots a laser across the playing field two turns later.
- *
  * @param {Vec2} pos The position where the turret appears.
  * @param {Vec2} dir The direction the turret is pointing in. Only cardinal directions with a magnitude of one work (no diagonal lasers).
  */
@@ -996,21 +1257,18 @@ function makeLaser(pos, dir) { }
 
 /**
  * Creates an explosion effect on a tile.
- *
  * @param {Vec2} pos The position of the tile where the effect will appear.
  */
 function effectExplode(pos) { }
 
 /**
  * Creates a green explosion effect on a tile.
- *
  * @param {Vec2} pos The position of the tile where the effect will appear.
  */
 function effectExplodeHeal(pos) { }
 
 /**
  * Creates a warning effect (white square) on a tile.
- *
  * @param {Vec2} pos The position of the tile where the effect will appear.
  * @param {number} life The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
  */
@@ -1018,7 +1276,6 @@ function effectWarn(pos, life) { }
 
 /**
  * Creates a warning effect (white bullet) on a tile.
- *
  * @param {Vec2} pos The position of the tile where the effect will appear.
  * @param {number} life The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
  * @param {number} rotation The rotation of the effect.
@@ -1027,7 +1284,6 @@ function effectWarnBullet(pos, life, rotation) { }
 
 /**
  * Creates a warning effect (large square) around a tile.
- *
  * @param {Vec2} pos The position of the tile where the effect will appear.
  * @param {number} life The lifetime of the effect. Usually a constant multiplied with *beatSpacing*.
  * @param {number} [rotation=0] The size of the effect. Don't ask.
@@ -1040,9 +1296,14 @@ function effectStrikeWave(pos, life, rotation) { }
 
 /**
  * Changes the BPM of the current map.
- *
  * @param {number} bpm The new BPM the map should have.
  */
 function changeBpm(bpm) { }
+
+/**
+ * Writes a string to the console.
+ * @param {string} message The message to log.
+ */
+function log(message) { }
 
 //#endregion

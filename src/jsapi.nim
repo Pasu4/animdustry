@@ -175,7 +175,7 @@ proc initJsApi*() =
   # Create heap
   ctx = duk_create_heap_default()
 
-  #region Define data types
+  #region Define classes
 
   #region Vec2
 
@@ -305,6 +305,188 @@ proc initJsApi*() =
 
   #endregion
 
+  #region Math
+
+  # class Math
+  ctx.duk_push_global_object()
+  discard ctx.duk_push_string("Math")
+  discard ctx.duk_push_object()
+
+  # abs(float x): float
+  setObjFunc("abs", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.abs.cdouble)
+    return 1
+  ))
+
+  # acos(float x): float
+  setObjFunc("acos", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.arccos.cdouble)
+    return 1
+  ))
+
+  # asin(float x): float
+  setObjFunc("asin", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.arcsin.cdouble)
+    return 1
+  ))
+
+  # atan(float x): float
+  setObjFunc("atan", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.arctan.cdouble)
+    return 1
+  ))
+
+  # atan2(float y, float x): float
+  setObjFunc("atan2", 2, (proc(ctx: DTContext): cint{.stdcall.} =
+    let
+      y = ctx.duk_require_number(0).float
+      x = ctx.duk_require_number(1).float
+    ctx.duk_push_number(arctan2(y, x))
+    return 1
+  ))
+
+  # ceil(float x): float
+  setObjFunc("ceil", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.ceil.cdouble)
+    return 1
+  ))
+
+  # cos(float x): float
+  setObjFunc("cos", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.cos.cdouble)
+    return 1
+  ))
+
+  # cosh(float x): float
+  setObjFunc("cosh", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.cosh.cdouble)
+    return 1
+  ))
+
+  # deg(float x): float
+  setObjFunc("deg", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.deg.cdouble)
+    return 1
+  ))
+
+  # exp(float x): float
+  setObjFunc("exp", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.exp.cdouble)
+    return 1
+  ))
+
+  # sgn(float x): float
+  setObjFunc("sgn", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.sgn.cdouble)
+    return 1
+  ))
+
+  # sqrt(float x): float
+  setObjFunc("sqrt", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.sqrt.cdouble)
+    return 1
+  ))
+
+  # fac(int x): int
+  setObjFunc("fac", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_int(ctx.duk_require_int(0).int.fac.cint)
+    return 1
+  ))
+
+  # floor(float x): float
+  setObjFunc("floor", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.floor.cdouble)
+    return 1
+  ))
+
+  # ln(float x): float
+  setObjFunc("ln", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.ln.cdouble)
+    return 1
+  ))
+
+  # log(float x): float
+  setObjFunc("log", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.log10.cdouble)
+    return 1
+  ))
+
+  # log2(float x): float
+  setObjFunc("log2", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.log2.cdouble)
+    return 1
+  ))
+
+  # max(...args): float
+  setObjFunc("max", -1, (proc(ctx: DTContext): cint{.stdcall.} =
+    var max = ctx.duk_require_number(0).float
+    let top = ctx.duk_get_top()
+    for i in 1..<top:
+      let x = ctx.duk_require_number(i).float
+      max = max(max, x)
+    ctx.duk_push_number(max)
+    return 1
+  ))
+
+  # min(...args): float
+  setObjFunc("min", -1, (proc(ctx: DTContext): cint{.stdcall.} =
+    var min = ctx.duk_require_number(0).float
+    let top = ctx.duk_get_top()
+    for i in 1..<top:
+      let x = ctx.duk_require_number(i).float
+      min = min(min, x)
+    ctx.duk_push_number(min)
+    return 1
+  ))
+
+  # rad(float x): float
+  setObjFunc("rad", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.rad.cdouble)
+    return 1
+  ))
+
+  # pow(float x, float y): float
+  setObjFunc("pow", 2, (proc(ctx: DTContext): cint{.stdcall.} =
+    let
+      x = ctx.duk_require_number(0).float
+      y = ctx.duk_require_number(1).float
+    ctx.duk_push_number(x.pow(y))
+    return 1
+  ))
+
+  # sin(float x): float
+  setObjFunc("sin", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.sin.cdouble)
+    return 1
+  ))
+
+  # sinh(float x): float
+  setObjFunc("sinh", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.sinh.cdouble)
+    return 1
+  ))
+
+  # tan(float x): float
+  setObjFunc("tan", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.tan.cdouble)
+    return 1
+  ))
+
+  # tanh(float x): float
+  setObjFunc("tanh", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.tanh.cdouble)
+    return 1
+  ))
+
+  ctx.duk_def_prop(-3,
+    DUK_DEFPROP_HAVE_VALUE or
+    DUK_DEFPROP_HAVE_WRITABLE
+  )
+
+  ctx.duk_pop()
+
+  #endregion
+
   #endregion
 
   #region Global constants
@@ -334,7 +516,7 @@ proc initJsApi*() =
   
   # px(x: float): int
   setGlobalFunc("px", 1, (proc(ctx: DTContext): cint{.stdcall.} =
-    ctx.duk_push_number(ctx.duk_require_number(0).float32.px.cdouble) # return argv[0].px
+    ctx.duk_push_number(ctx.duk_require_int(0).int.px.cdouble) # return argv[0].px
     return 1
   ))
 
@@ -354,12 +536,6 @@ proc initJsApi*() =
       offset = ctx.duk_get_number_default(1, 0).float
       res = vec2(0f, (fau.time + offset).sin(scl, 0.14f) - 0.14f)
     pushVec2(res)
-    return 1
-  ))
-
-  # rad(x: float): float
-  setGlobalFunc("rad", 1, (proc(ctx: DTContext): cint{.stdcall.} =
-    ctx.duk_push_number(ctx.duk_require_number(0).float32.rad.cdouble) # return argv[0].rad
     return 1
   ))
 
@@ -1318,7 +1494,7 @@ proc initJsApi*() =
       curTime = 60.0 / state.currentBpm
       baseTurn = state.secs / baseTime
     state.turnOffset = (baseTime - curTime) * baseTurn / curTime + baseTurn - state.turn
-    
+
     return 0
   ))
 
