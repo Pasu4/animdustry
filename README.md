@@ -35,4 +35,8 @@ music used:
 
 [JavaScript API reference](/doc/jsdoc/index.html)
 
+[JavaScript example mod](https://github.com/Pasu4/animdustry-mod-template/)
+
 [JSON documentation and API reference](/doc/doc_json.md) (Legacy)
+
+[JSON example mod](https://github.com/Pasu4/animdustry-mod-template/tree/legacy)
