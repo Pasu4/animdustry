@@ -27,7 +27,8 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>// Functions and classes in this file are only for highlighting purposes.
-// This file is not executed by the mod loader.
+// This file is not to be executed by the mod loader.
+// The file name should be "__api.js" to be ignored by the mod loader.
 
 //#region Classes
 
@@ -231,197 +232,6 @@ class Color {
     static yellow;
 }
 
-class Math {
-    /**
-     * The absolute value of `x`.
-     * @param {number} x The number to get the absolute value of.
-     * @returns {number} The absolute value of `x`.
-     */
-    static abs(x) { }
-
-    /**
-     * The arccosine of `x`.
-     * @param {number} x The number to get the arccosine of.
-     * @returns {number} The arccosine of `x`.
-     */
-    static acos(x) { }
-
-    /**
-     * The arcsine of `x`.
-     * @param {number} x The number to get the arcsine of.
-     * @returns {number} The arcsine of `x`.
-     */
-    static asin(x) { }
-
-    /**
-     * The arctangent of `x`.
-     * @param {number} x The number to get the arctangent of.
-     * @returns {number} The arctangent of `x`.
-     */
-    static atan(x) { }
-
-    /**
-     * The arctangent of `y / x`.
-     * @param {number} x The x coordinate.
-     * @param {number} y The y coordinate.
-     * @returns {number} The arctangent of `y / x`.
-     */
-    static atan2(y, x) { }
-
-    /**
-     * The smallest integer greater than or equal to `x`.
-     * @param {number} x The number to ceil.
-     * @returns {number} The smallest integer greater than or equal to `x`.
-     */
-    static ceil(x) { }
-
-    /**
-     * The cosine of `x`.
-     * @param {number} x The number to get the cosine of.
-     * @returns {number} The cosine of `x`.
-     */
-    static cos(x) { }
-
-    /**
-     * The hyperbolic cosine of `x`.
-     * @param {number} x The number to get the hyperbolic cosine of.
-     * @returns {number} The hyperbolic cosine of `x`.
-     */
-    static cosh(x) { }
-
-    /**
-     * Converts `x` from radians to degrees.
-     * @param {number} x The number to convert.
-     * @returns {number} `x` in degrees.
-     */
-    static deg(x) { }
-
-    /**
-     * The exponential of `x`.
-     * @param {number} x The number to get the exponential of.
-     * @returns {number} The exponential of `x`.
-     */
-    static exp(x) { }
-
-    /**
-     * The sign of `x`.
-     * @param {number} x The number to get the sign of.
-     * @returns {number} The sign of `x`.
-     */
-    static sgn(x) { }
-
-    /**
-     * The square root of `x`.
-     * @param {number} x The number to get the square root of.
-     * @returns {number} The square root of `x`.
-     */
-    static sqrt(x) { }
-
-    /**
-     * The factorial of `x`.
-     * @param {number} x The number to get the factorial of.
-     * @returns {number} The factorial of `x`.
-     */
-    static fac(x) { }
-
-    /**
-     * The largest integer less than or equal to `x`.
-     * @param {number} x The number to floor.
-     * @returns {number} The largest integer less than or equal to `x`.
-     */
-    static floor(x) { }
-
-    /**
-     * The natural logarithm of `x`.
-     * @param {number} x The number to get the natural logarithm of.
-     * @returns {number} The natural logarithm of `x`.
-     */
-    static ln(x) { }
-
-    /**
-     * The base 10 logarithm of `x`.
-     * @param {number} x The number to get the base 10 logarithm of.
-     * @returns {number} The base 10 logarithm of `x`.
-     */
-    static log(x) { }
-
-    /**
-     * The base 2 logarithm of `x`.
-     * @param {number} x The number to get the base 2 logarithm of.
-     * @returns {number} The base 2 logarithm of `x`.
-     */
-    static log2(x) { }
-
-    /**
-     * The maximum value out of all arguments.
-     * @param {...number} args The numbers to compare.
-     * @returns {number} The maximum value.
-     */
-    static max(...args) { }
-
-    /**
-     * The minimum value out of all arguments.
-     * @param {...number} args The numbers to compare.
-     * @returns {number} The minimum value.
-     */
-    static min(...args) { }
-
-    /**
-     * Converts `x` from degrees to radians.
-     * @param {number} x The number to convert.
-     * @returns {number} `x` in radians.
-     */
-    static rad(x) { }
-
-    /**
-     * `x` raised to the power of `y`.
-     * @param {number} x The base.
-     * @param {number} y The exponent.
-     * @returns {number} `x` raised to the power of `y`.
-     */
-    static pow(x, y) { }
-
-    /**
-     * The sine of `x`.
-     * @param {number} x The number to get the sine of.
-     * @returns {number} The sine of `x`.
-     */
-    static sin(x) { }
-
-    /**
-     * The hyperbolic sine of `x`.
-     * @param {number} x The number to get the hyperbolic sine of.
-     * @returns {number} The hyperbolic sine of `x`.
-     */
-    static sinh(x) { }
-
-    /**
-     * The tangent of `x`.
-     * @param {number} x The number to get the tangent of.
-     * @returns {number} The tangent of `x`.
-     */
-    static tan(x) { }
-
-    /**
-     * The hyperbolic tangent of `x`.
-     * @param {number} x The number to get the hyperbolic tangent of.
-     * @returns {number} The hyperbolic tangent of `x`.
-     */
-    static tanh(x) { }
-
-    /**
-     * The constant pi.
-     * @readonly
-     */
-    static PI = 3.141592653589793;
-
-    /**
-     * The constant e (Euler's number).
-     * @readonly
-     */
-    static E = 2.718281828459045;
-}
-
 //#endregion
 
 //#region Objects
@@ -570,9 +380,9 @@ function hoverOffset(scl = 0.65, offset = 0) { }
  * @param {Vec2} pos The position of the spectrum.
  * @param {number} [radius=px(90)] The inner radius of the spectrum.
  * @param {number} [length=8] The length of the spectrum bars.
- * @param {Color} [color=colorWhite] The color of the spectrum.
+ * @param {Color} [color=Color.white] The color of the spectrum.
  */
-function drawFft(pos, radius = px(90), length = 8, color = colorWhite) { }
+function drawFft(pos, radius = px(90), length = 8, color = Color.white) { }
 
 /**
  * Draws the playing field with diagonal highlighted tiles that move with the beat. Should only be used inside levels.
@@ -586,30 +396,30 @@ function drawTilesFft() { }
 
 /**
  * Draws the playing field with tiles highlighted in a repeating square pattern. Should only be used inside levels.
- * @param {Color} [col1=colorWhite] The color of the normal tiles.
- * @param {Color} [col2=colorBlue] The color of the highlighted tiles.
+ * @param {Color} [col1=Color.white] The color of the normal tiles.
+ * @param {Color} [col2=Color.blue] The color of the highlighted tiles.
  */
-function drawTilesSquare(col1 = colorWhite, col2 = colorBlue) { }
+function drawTilesSquare(col1 = Color.white, col2 = Color.blue) { }
 
 /**
  * Draws a single color background.
  * @param {Color} col The color of the background.
  */
-function drawBackground(col = colorWhite) { }
+function drawBackground(col = Color.white) { }
 
 /**
  * Draws construction-tape-like stripes. If used inside a level, scrolls from right to left with the beat.
- * @param {Color} [col1=colorPink] Background color.
- * @param {Color} [col2=colorPink* with 20% *colorWhite] Stripe color.
+ * @param {Color} [col1=Color.pink] Background color.
+ * @param {Color} [col2=Color.mix(Color.pink, Color.white, 0.2)] Stripe color.
  * @param {number} [angle=rad(135)] The angle of the stripes.
  */
-function drawStripes(col1 = colorPink, col2 = Color.mix(colorPink, colorWhite, 0.2), angle = rad(135)) { }
+function drawStripes(col1 = Color.pink, col2 = Color.mix(Color.pink, Color.white, 0.2), angle = rad(135)) { }
 
 /**
  * Draws a square that flashes and changes size with the beat. Only works inside levels.
- * @param {Color} [col=colorPink* with 70% *colorWhite] The color of the square.
+ * @param {Color} [col=Color.mix(Color.pink, Color.white, 0.7)] The color of the square.
  */
-function drawBeatSquare(col = colorPink.mix(colorWhite, 0.7)) { }
+function drawBeatSquare(col = Color.mix(Color.pink, Color.white, 0.7)) { }
 
 /**
  * Same as `DrawBeatSquare`, but flashes in a different pattern. Only works inside levels.
@@ -699,43 +509,43 @@ function drawSkats() { }
 
 /**
  * Draws clouds in the upper half of the screen. Only works inside levels.
- * @param {Color} [col=colorWhite] The color of the clouds.
+ * @param {Color} [col=Color.white] The color of the clouds.
  */
-function drawClouds(col = colorWhite) { }
+function drawClouds(col = Color.white) { }
 
 /**
  * Draws clouds in the upper half of the screen. Only works inside levels.
- * @param {Color} [col=colorWhite] The color of the clouds.
+ * @param {Color} [col=Color.white] The color of the clouds.
  */
-function drawLongClouds(col = colorWhite) { }
+function drawLongClouds(col = Color.white) { }
 
 /**
  * Draws stars in different shapes and sizes that flash with the beat. Only works inside levels.
- * @param {Color} [col=colorWhite] The normal color of the stars.
- * @param {Color} [flash=colorWhite] The flash color of the stars.
+ * @param {Color} [col=Color.white] The normal color of the stars.
+ * @param {Color} [flash=Color.white] The flash color of the stars.
  * @param {int} [amount=40] The number of stars to draw.
  * @param {int} [seed=1] The random seed.
  */
-function drawStars(col = colorWhite, flash = colorWhite, amount = 40, seed = 1) { }
+function drawStars(col = Color.white, flash = Color.white, amount = 40, seed = 1) { }
 
 /**
  * Draws triangles that flash with the beat and move down-left. Only works inside levels.
- * @param {Color} [col1=colorWhite] The normal color of the triangles.
- * @param {Color} [col2=colorWhite] The flash color of the triangles.
+ * @param {Color} [col1=Color.white] The normal color of the triangles.
+ * @param {Color} [col2=Color.white] The flash color of the triangles.
  * @param {int} [amount=50] The number of triangles to draw.
  * @param {int} [seed=1] The random seed.
  */
-function drawTris(col1 = colorWhite, col2 = colorWhite, amount = 50, seed = 1) { }
+function drawTris(col1 = Color.white, col2 = Color.white, amount = 50, seed = 1) { }
 
 /**
  * Draws a lattice of squares with alternating sizes. The sizes of the squares swap with the beat. Only works inside levels.
- * @param {Color} [col=colorWhite] The color of the squares.
+ * @param {Color} [col=Color.white] The color of the squares.
  */
-function drawBounceSquares(col = colorWhite) { }
+function drawBounceSquares(col = Color.white) { }
 
 /**
  * Draws circles in random sizes that move around the screen in random directions. This effect is used for Mono, Oct and Sei.
- * @param {Color} [col=colorWhite] The color of the circles.
+ * @param {Color} [col=Color.white] The color of the circles.
  * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of circles to draw.
  * @param {int} [seed=1] The random seed.
@@ -743,91 +553,91 @@ function drawBounceSquares(col = colorWhite) { }
  * @param {number} [maxSize=7] The largest size a circle can be.
  * @param {number} [moveSpeed=0.2] The speed at which the circles move.
  */
-function drawCircles(col = colorWhite, time = state.time, amount = 50, seed = 1, minSize = 2, maxSize = 7, moveSpeed = 0.2) { }
+function drawCircles(col = Color.white, time = state.time, amount = 50, seed = 1, minSize = 2, maxSize = 7, moveSpeed = 0.2) { }
 
 /**
  * Draws triangles in random sizes that point away from the center and move around the screen in random directions. This effect is used for Crawler.
- * @param {Color} [col=colorWhite] The color of the triangles.
+ * @param {Color} [col=Color.white] The color of the triangles.
  * @param {number} [time=state.time] The triangles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of triangles to draw
  * @param {int} [seed=1] The random seed.
  */
-function drawRadTris(col = colorWhite, time = state.time, amount = 50, seed = 1) { }
+function drawRadTris(col = Color.white, time = state.time, amount = 50, seed = 1) { }
 
 /**
  * Draws moving circles with a trail of smaller circles ("missiles"). This effect is used for Zenith.
- * @param {Color} [col=colorWhite] The color of the circles.
+ * @param {Color} [col=Color.white] The color of the circles.
  * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of circles to draw (not including the trailing circles).
  * @param {int} [seed=1] The random seed.
  */
-function drawMissiles(col = colorWhite, time = state.time, amount = 50, seed = 1) { }
+function drawMissiles(col = Color.white, time = state.time, amount = 50, seed = 1) { }
 
 /**
  * Draws squares that fall down while spinning and changing color. This effect is used for Quad.
- * @param {Color} [col1=colorWhite] The initial color of the squares.
- * @param {Color} [col2=colorWhite] The color the squares change to over their lifetime.
+ * @param {Color} [col1=Color.white] The initial color of the squares.
+ * @param {Color} [col2=Color.white] The color the squares change to over their lifetime.
  * @param {number} [time=state.time] The squares will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of squares to draw.
  */
-function drawFallSquares(col1 = colorWhite, col2 = colorWhite, time = state.time, amount = 50) { }
+function drawFallSquares(col1 = Color.white, col2 = Color.white, time = state.time, amount = 50) { }
 
 /**
  * Draws circles that move upwards while becoming smaller and changing color. This effect is used for Oxynoe.
- * @param {Color} [col1=colorWhite] The initial color of the circles.
- * @param {Color} [col2=colorWhite] The color the circles change to.
+ * @param {Color} [col1=Color.white] The initial color of the circles.
+ * @param {Color} [col2=Color.white] The color the circles change to.
  * @param {number} [time=state.time] The circles will move if you put in a value that changes over time.
  * @param {int} [amount=80] The number of circles to draw.
  */
-function drawFlame(col1 = colorWhite, col2 = colorWhite, time = state.time, amount = 80) { }
+function drawFlame(col1 = Color.white, col2 = Color.white, time = state.time, amount = 80) { }
 
 /**
  * Draws squares that slowly move around the screen and periodically shrink and grow. This effect is used for Alpha.
- * @param {Color} [col=colorWhite] The color of the squares.
+ * @param {Color} [col=Color.white] The color of the squares.
  * @param {number} [time=state.time] The squares will move if you put in a value that changes over time.
  * @param {int} [amount=50] The number of squares to draw.
  * @param {int} [seed=2] The random seed.
  */
-function drawSquares(col = colorWhite, time = state.time, amount = 50, seed = 2) { }
+function drawSquares(col = Color.white, time = state.time, amount = 50, seed = 2) { }
 
 /**
  * Draws a line with rounded endpoints.
  * @param {Vec2} pos The position of the midpoint of the line.
  * @param {number} angle The angle of the line.
  * @param {number} len The length of the line.
- * @param {Color} [color=colorWhite] The color of the line.
+ * @param {Color} [color=Color.white] The color of the line.
  * @param {number} [stroke=1] The thickness of the line.
  */
-function drawRoundLine(pos, angle, len, color = colorWhite, stroke = 1) { }
+function drawRoundLine(pos, angle, len, color = Color.white, stroke = 1) { }
 
 /**
  * Draws rounded lines that move around slightly (looks a bit like rays of light).
- * @param {Color} [col=colorWhite] The color of the lines.
+ * @param {Color} [col=Color.white] The color of the lines.
  * @param {int} [seed=1] The random seed.
  * @param {int} [amount=30] The number of lines to draw.
  * @param {number} [angle=rad(45)] The angle at which to draw the lines.
  */
-function drawLines(col = colorWhite, seed = 1, amount = 30, angle = rad(45)) { }
+function drawLines(col = Color.white, seed = 1, amount = 30, angle = rad(45)) { }
 
 /**
  * Draws rounded lines pointing at the center of the screen that move around slightly.
- * @param {Color} [col=colorWhite] The color of the lines.
+ * @param {Color} [col=Color.white] The color of the lines.
  * @param {int} [seed=6] The random seed.
  * @param {int} [amount=40] The number of lines to draw.
  * @param {number} [stroke=0.25] The thickness of the lines.
  * @param {number} [posScl=1] How far away the lines are from the center on average. A higher value means the lines are further away.
  * @param {number} [lenScl=1] How long the lines are.
  */
-function drawRadLinesRound(col = colorWhite, seed = 6, amount = 40, stroke = 0.25, posScl = 1, lenScl = 1) { }
+function drawRadLinesRound(col = Color.white, seed = 6, amount = 40, stroke = 0.25, posScl = 1, lenScl = 1) { }
 
 /**
  * Draws circles in random sizes scattered around the center of the screen.
- * @param {Color} [col=colorWhite] The color of the circles.
+ * @param {Color} [col=Color.white] The color of the circles.
  * @param {int} [seed=7] The random seed.
  * @param {int} [amount=40] The number of circles to draw.
  * @param {number} [fin=0.5] How far away the circles are from the center on average. Also scales the circles.
  */
-function drawRadCircles(col = colorWhite, seed = 7, amount = 40, fin = 0.5) { }
+function drawRadCircles(col = Color.white, seed = 7, amount = 40, fin = 0.5) { }
 
 /**
  * Draws rounded lines pointing to a position. The angle between all lines is the same.
@@ -838,32 +648,32 @@ function drawRadCircles(col = colorWhite, seed = 7, amount = 40, fin = 0.5) { }
  * @param {number} [len=3] The length of the line.
  * @param {number} [angleOffset=0] Additional rotation around the target position applied to each line.
  */
-function drawSpikes(pos, col = colorWhite, amount = 10, offset = 8, len = 3, angleOffset = 0) { }
+function drawSpikes(pos, col = Color.white, amount = 10, offset = 8, len = 3, angleOffset = 0) { }
 
 /**
  * Draws a gradient across the screen.
- * @param {Color} [col1=colorClear] The color of the bottom left corner.
- * @param {Color} [col2=colorClear] The color of the bottom right corner.
- * @param {Color} [col3=colorClear] The color of the top right corner.
- * @param {Color} [col4=colorClear] The color of the top left corner.
+ * @param {Color} [col1=Color.clear] The color of the bottom left corner.
+ * @param {Color} [col2=Color.clear] The color of the bottom right corner.
+ * @param {Color} [col3=Color.clear] The color of the top right corner.
+ * @param {Color} [col4=Color.clear] The color of the top left corner.
  */
-function drawGradient(col1 = colorClear, col2 = colorClear, col3 = colorClear, col4 = colorClear) { }
+function drawGradient(col1 = Color.clear, col2 = Color.clear, col3 = Color.clear, col4 = Color.clear) { }
 
 /**
  * Draws a vertical gradient.
- * @param {Color} [col1=colorClear] The bottom color.
- * @param {Color} [col2=colorClear] The top color.
+ * @param {Color} [col1=Color.clear] The bottom color.
+ * @param {Color} [col2=Color.clear] The top color.
  */
-function drawVertGradient(col1 = colorClear, col2 = colorClear) { }
+function drawVertGradient(col1 = Color.clear, col2 = Color.clear) { }
 
 /**
  * Draws concentric polygons around the center of the screen that increase in thickness further out.
- * @param {Color} [col=colorWhite] The color of the polygons.
+ * @param {Color} [col=Color.white] The color of the polygons.
  * @param {number} [offset=0] The offset of the first polygon from the center. Periodic. (TODO explain that better)
  * @param {int} [amount=10] The number of polygons to draw.
  * @param {int} [sides=4] The number of sides the polygon will have.
  */
-function drawZoom(col = colorWhite, offset = 0, amount = 10, sides = 4) { }
+function drawZoom(col = Color.white, offset = 0, amount = 10, sides = 4) { }
 
 /**
  * The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
@@ -887,10 +697,10 @@ function drawSpace(col) { }
  * Draws the current unit's splash image. Should only be used in unit splash drawing.
  * @param {Vec2} pos Where to draw the unit.
  * @param {Vec2} [scl=vec2(1, 1)] Scale of the unit. 
- * @param {Color} [color=colorWhite] Color of the unit.
+ * @param {Color} [color=Color.white] Color of the unit.
  * @param {string} [part=""] Suffix of the texture file to draw (e.g. *"-glow"* to draw *"mono-glow.png"*).
  */
-function drawUnit(pos, scl = new Vec2(1, 1), color = colorWhite, part = "") { }
+function drawUnit(pos, scl = new Vec2(1, 1), color = Color.white, part = "") { }
 
 //#endregion
 
@@ -927,18 +737,18 @@ function drawFillQuad(v1, v2, v3, v4, color, z = 0) { }
  * @param {number} y The y coordinate of the bottom left corner.
  * @param {number} w The width of the rectangle.
  * @param {number} h The height of the rectangle.
- * @param {Color} [color=colorWhite] The color of the rectangle.
+ * @param {Color} [color=Color.white] The color of the rectangle.
  * @param {number} [z=0] The z layer of the rectangle.
  */
-function drawFillRect(x, y, w, h, color = colorWhite, z = 0) { }
+function drawFillRect(x, y, w, h, color = Color.white, z = 0) { }
 
 /**
  * @param {Vec2} pos The position of the midpoint of the square.
  * @param {number} radius The radius of the square (half the side length).
- * @param {Color} [color=colorWhite] The color of the square.
+ * @param {Color} [color=Color.white] The color of the square.
  * @param {number} [z=0] The z layer of the square.
  */
-function drawFillSquare(pos, radius, color = colorWhite, z = 0) { }
+function drawFillSquare(pos, radius, color = Color.white, z = 0) { }
 
 /**
  * Draws a filled triangle with a single color.
@@ -946,7 +756,7 @@ function drawFillSquare(pos, radius, color = colorWhite, z = 0) { }
  * @param {Vec2} v2 A vertex of the triangle.
  * @param {Vec2} v3 A vertex of the triangle.
  * @param {Color} color The color of the triangle.
- * @param {number} [z=0] The z layer of the.
+ * @param {number} [z=0] The z layer of the triangle.
  */
 function drawFillTri(v1, v2, v3, color, z = 0) { }
 
@@ -966,10 +776,10 @@ function drawFillTriGradient(v1, v2, v3, c1, c2, c3, z = 0) { }
  * Draws a filled circle.
  * @param {Vec2} pos The position of the midpoint of the circle.
  * @param {number} rad The radius of the circle.
- * @param {Color} [color=colorWhite] The color of the circle.
+ * @param {Color} [color=Color.white] The color of the circle.
  * @param {number} [z=0] The z layer of the circle.
  */
-function drawFillCircle(pos, rad, color = colorWhite, z = 0) { }
+function drawFillCircle(pos, rad, color = Color.white, z = 0) { }
 
 /**
  * Draws a filled polygon.
@@ -977,32 +787,32 @@ function drawFillCircle(pos, rad, color = colorWhite, z = 0) { }
  * @param {int} sides The number of sides the polygon has.
  * @param {number} radius The radius of the polygon.
  * @param {number} [rotation=0] The rotation of the polygon.
- * @param {Color} [color=colorWhite] The color of the polygon.
+ * @param {Color} [color=Color.white] The color of the polygon.
  * @param {number} [z=0] The z layer of the polygon.
  */
-function drawFillPoly(pos, sides, radius, rotation = 0, color = colorWhite, z = 0) { }
+function drawFillPoly(pos, sides, radius, rotation = 0, color = Color.white, z = 0) { }
 
 /**
  * Draws a regular polygon with a gradient to the middle.
  * @param {Vec2} pos The position of the shape.
  * @param {number} radius The radius of the shape.
  * @param {int} [sides=20] The number of sides the polygon has. With the default value of 20, it looks close to a circle.
- * @param {Color} [centerColor=colorWhite] The color of the shape at the center.
- * @param {Color} [edgeColor=colorWhite] The color of the shape at the edge.
+ * @param {Color} [centerColor=Color.white] The color of the shape at the center.
+ * @param {Color} [edgeColor=Color.white] The color of the shape at the edge.
  * @param {number} [z=0] The z layer of the shape.
  */
-function drawFillLight(pos, radius, sides, centerColor = colorWhite, edgeColor = colorWhite, z = 0) { }
+function drawFillLight(pos, radius, sides, centerColor = Color.white, edgeColor = Color.white, z = 0) { }
 
 /**
  * Draws a line between two points.
  * @param {Vec2} p1 The position of the start point.
  * @param {Vec2} p2 The position of the end point.
  * @param {number} [stroke=px(1)] The thickness of the line.
- * @param {Color} [color=colorWhite] The color of the line.
+ * @param {Color} [color=Color.white] The color of the line.
  * @param {bool} [square=true] ???
  * @param {number} [z=0] The z layer of the line.
  */
-function drawLine(p1, p2, stroke = px(1), color = colorWhite, square = true, z = 0) { }
+function drawLine(p1, p2, stroke = px(1), color = Color.white, square = true, z = 0) { }
 
 /**
  * Draws a line from a point at an angle.
@@ -1010,43 +820,43 @@ function drawLine(p1, p2, stroke = px(1), color = colorWhite, square = true, z =
  * @param {number} angle The angle of the line.
  * @param {number} len The length of the line.
  * @param {number} [stroke=px(1)] The thickness of the line.
- * @param {Color} [color=colorWhite] The color of the line.
+ * @param {Color} [color=Color.white] The color of the line.
  * @param {bool} [square=true] ???
  * @param {number} [z=0] The z layer of the line.
  */
-function drawLineAngle(p, angle, len, stroke = px(1), color = colorWhite, square = true, z = 0) { }
+function drawLineAngle(p, angle, len, stroke = px(1), color = Color.white, square = true, z = 0) { }
 
 /**
  * @param {Vec2} p The position of the midpoint.
  * @param {number} angle The angle of the line.
  * @param {number} len The length of the line.
  * @param {number} [stroke=px(1)] The thickness of the line.
- * @param {Color} [color=colorWhite] The color of the line.
+ * @param {Color} [color=Color.white] The color of the line.
  * @param {bool} [square=true] ???
  * @param {number} [z=0] The z layer of the line.
  */
-function drawLineAngleCenter(p, angle, len, stroke = px(1), color = colorWhite, square = true, z = 0) { }
+function drawLineAngleCenter(p, angle, len, stroke = px(1), color = Color.white, square = true, z = 0) { }
 
 /**
  * Draws a rectangle outline.
  * @param {Vec2} pos The position of the bottom left corner of the rectangle.
  * @param {Vec2} size The size of the rectangle as a vector of *(width, height)*.
  * @param {number} [stroke=px(1)] The thickness of the outline.
- * @param {Color} [color=colorWhite] The color of the outline.
+ * @param {Color} [color=Color.white] The color of the outline.
  * @param {number} [z=0] The z layer of the rectangle.
  * @param {number} [margin=0] Seems to make the rectangle smaller.
  */
-function drawLineRect(pos, size, stroke = px(1), color = colorWhite, z = 0, margin = 0) { }
+function drawLineRect(pos, size, stroke = px(1), color = Color.white, z = 0, margin = 0) { }
 
 /**
  * Draws a square outline.
  * @param {Vec2} pos The position of the midpoint.
  * @param {number} rad The radius of the square.
  * @param {number} [stroke=px(1)] The thickness of the outline.
- * @param {Color} [color=colorWhite] The color of the outline.
+ * @param {Color} [color=Color.white] The color of the outline.
  * @param {number} [z=0] The z layer of the square.
  */
-function drawLineSquare(pos, rad, stroke = px(1), color = colorWhite, z = 0) { }
+function drawLineSquare(pos, rad, stroke = px(1), color = Color.white, z = 0) { }
 
 /**
  * Draws lines pointing at a target position.
@@ -1056,10 +866,10 @@ function drawLineSquare(pos, rad, stroke = px(1), color = colorWhite, z = 0) { }
  * @param {number} len The length of the lines.
  * @param {number} [stroke=px(1)] The thickness of the outline.
  * @param {number} [rotation=0]
- * @param {Color} [color=colorWhite] The color of the lines.
+ * @param {Color} [color=Color.white] The color of the lines.
  * @param {number} [z=0] The z layer of the lines.
  */
-function drawRadLines(pos, sides, radius, len, stroke = px(1), rotation = 0, color = colorWhite, z = 0) { }
+function drawRadLines(pos, sides, radius, len, stroke = px(1), rotation = 0, color = Color.white, z = 0) { }
 
 /**
  * Draws a regular polygon outline.
@@ -1068,10 +878,10 @@ function drawRadLines(pos, sides, radius, len, stroke = px(1), rotation = 0, col
  * @param {number} radius The radius of the polygon.
  * @param {number} [rotation=0] The rotation of the polygon.
  * @param {number} [stroke=px(1)] The line thickness of the polygon.
- * @param {Color} [color=colorWhite] The color of the polygon.
+ * @param {Color} [color=Color.white] The color of the polygon.
  * @param {number} [z=0] The z layer of the polygon.
  */
-function drawPoly(pos, sides, radius, rotation = 0, stroke = px(1), color = colorWhite, z = 0) { }
+function drawPoly(pos, sides, radius, rotation = 0, stroke = px(1), color = Color.white, z = 0) { }
 
 /**
  * Draws a polygonal ring sector.
@@ -1082,10 +892,10 @@ function drawPoly(pos, sides, radius, rotation = 0, stroke = px(1), color = colo
  * @param {number} radiusFrom The inner radius of the ring.
  * @param {number} radiusTo The outer radius of the ring.
  * @param {number} [rotation=0] The rotation of the sector.
- * @param {Color} [color=colorWhite] The color of the ring.
+ * @param {Color} [color=Color.white] The color of the ring.
  * @param {number} [z=0] The z layer of the ring.
  */
-function drawArcRadius(pos, sides, angleFrom, angleTo, radiusFrom, radiusTo, rotation = 0, color = colorWhite, z = 0) { }
+function drawArcRadius(pos, sides, angleFrom, angleTo, radiusFrom, radiusTo, rotation = 0, color = Color.white, z = 0) { }
 
 /**
  * Draws a polygonal arc.
@@ -1096,10 +906,10 @@ function drawArcRadius(pos, sides, angleFrom, angleTo, radiusFrom, radiusTo, rot
  * @param {number} radius The radius of the arc.
  * @param {number} [rotation=0] The rotation of the arc.
  * @param {number} [stroke=px(1)] The thickness of the outline.
- * @param {Color} [color=colorWhite] The color of the outline.
+ * @param {Color} [color=Color.white] The color of the outline.
  * @param {number} [z=0] The z layer of the polygon.
  */
-function drawArc(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = px(1), color = colorWhite, z = 0) { }
+function drawArc(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = px(1), color = Color.white, z = 0) { }
 
 /**
  * Draws a polygonal crescent shape.
@@ -1110,20 +920,20 @@ function drawArc(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = 
  * @param {number} radius The radius of the shape.
  * @param {number} [rotation=0] The rotation of the shape.
  * @param {number} [stroke=px(1)] The width of the thickest part of the crescent.
- * @param {Color} [color=colorWhite] The color of the outline.
+ * @param {Color} [color=Color.white] The color of the outline.
  * @param {number} [z=0] The z layer of the shape.
  */
-function drawCrescent(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = px(1), color = colorWhite, z = 0) { }
+function drawCrescent(pos, sides, angleFrom, angleTo, radius, rotation = 0, stroke = px(1), color = Color.white, z = 0) { }
 
 /**
  * Draws a polygon outline.
  * @param {Array} points An array of points to connect into a shape.
  * @param {bool} [wrap=false] Whether the last point should connect to the first point.
  * @param {number} [stroke=px(1)] The width of the outline.
- * @param {Color} [color=colorWhite] The color of the shape.
+ * @param {Color} [color=Color.white] The color of the shape.
  * @param {number} [z=0] The z layer of the shape.
  */
-function drawShape(points, wrap = false, stroke = px(1), color = colorWhite, z = 0) { }
+function drawShape(points, wrap = false, stroke = px(1), color = Color.white, z = 0) { }
 
 /**
  * Patterns will be drawn with bloom enabled until `endBloom()` is called. Only works in unit splash drawing.
@@ -1350,7 +1160,7 @@ function log(message) { }
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 21 2024 18:45:39 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Apr 21 2024 19:51:22 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
