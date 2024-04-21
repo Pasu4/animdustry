@@ -383,9 +383,9 @@ function drawBackground(col = Color.white) { }
  * Draws construction-tape-like stripes. If used inside a level, scrolls from right to left with the beat.
  * @param {Color} [col1=Color.pink] Background color.
  * @param {Color} [col2=Color.mix(Color.pink, Color.white, 0.2)] Stripe color.
- * @param {number} [angle=rad(135)] The angle of the stripes.
+ * @param {number} [angle=Math.rad(135)] The angle of the stripes.
  */
-function drawStripes(col1 = Color.pink, col2 = Color.mix(Color.pink, Color.white, 0.2), angle = rad(135)) { }
+function drawStripes(col1 = Color.pink, col2 = Color.mix(Color.pink, Color.white, 0.2), angle = Math.rad(135)) { }
 
 /**
  * Draws a square that flashes and changes size with the beat. Only works inside levels.
@@ -406,12 +406,12 @@ function drawBeatAlt(col) { }
  * @param {Color} col The color of the polygons.
  * @param {number} len How far away the polygons are from the position.
  * @param {number} rad The size of the polygons.
- * @param {number} [offset=rad(45)] Additional rotation around the target position applied to each polygon.
+ * @param {number} [offset=Math.rad(45)] Additional rotation around the target position applied to each polygon.
  * @param {int} [amount=4] The number of polygons to draw.
  * @param {int} [sides=3] How many sides each polygon has.
- * @param {number} [shapeOffset=rad(0)] Additional rotation applied to each polygon around its own center.
+ * @param {number} [shapeOffset=Math.rad(0)] Additional rotation applied to each polygon around its own center.
  */
-function drawTriSquare(pos, col, len, rad, offset = rad(45), amount = 4, sides = 3, shapeOffset = rad(0)) { }
+function drawTriSquare(pos, col, len, rad, offset = Math.rad(45), amount = 4, sides = 3, shapeOffset = Math.rad(0)) { }
 
 /**
  * Draws stripes radially from the center. (TODO better explanation)
@@ -438,14 +438,14 @@ function drawSpinGradient(pos, col1, col2, len = 5, blades = 10, spacing = 2) { 
  * @param {Color} col2 The flash color.
  * @param {int} [sides=4] The number of sides of the central polygon.
  * @param {number} [rad=2.5] The radius of the central shape.
- * @param {number} [turnSpeed=rad(19)] By how much the central shape rotates every beat.
+ * @param {number} [turnSpeed=Math.rad(19)] By how much the central shape rotates every beat.
  * @param {int} [rads=6] The number of sattelite shapes.
  * @param {int} [radsides=4] The number of sides of the sattelite polygons.
  * @param {number} [radOff=7] How far away the sattelite shapes orbit.
  * @param {number} [radrad=1.3] The radius of the sattelite shapes.
  * @param {number} [radrotscl=0.25] By how much the sattelite shapes will orbit relative to the central shape's rotation. The sattelites orbit in the opposite direction as the central shape spins.
  */
-function drawSpinShape(col1, col2, sides = 4, rad = 2.5, turnSpeed = rad(19), rads = 6, radsides = 4, radOff = 7, radrad = 1.3, radrotscl = 0.25) { }
+function drawSpinShape(col1, col2, sides = 4, rad = 2.5, turnSpeed = Math.rad(19), rads = 6, radsides = 4, radOff = 7, radrad = 1.3, radrotscl = 0.25) { }
 
 /**
  * Draws concentric polygons of alternating colors around the center.
@@ -453,9 +453,9 @@ function drawSpinShape(col1, col2, sides = 4, rad = 2.5, turnSpeed = rad(19), ra
  * @param {Color} col2 The second color.
  * @param {int} [sides=4] How many sides the polygons have.
  * @param {number} [spacing=2.5] The distance between each polygon "ring".
- * @param {number} [angle=rad(90)] The angle of the polygon.
+ * @param {number} [angle=Math.rad(90)] The angle of the polygon.
  */
-function drawShapeBack(col1, col2, sides = 4, spacing = 2.5, angle = rad(90)) { }
+function drawShapeBack(col1, col2, sides = 4, spacing = 2.5, angle = Math.rad(90)) { }
 
 /**
  * Draws repeating rotated squares that move towards the center with the beat. Only works inside levels.
@@ -587,9 +587,9 @@ function drawRoundLine(pos, angle, len, color = Color.white, stroke = 1) { }
  * @param {Color} [col=Color.white] The color of the lines.
  * @param {int} [seed=1] The random seed.
  * @param {int} [amount=30] The number of lines to draw.
- * @param {number} [angle=rad(45)] The angle at which to draw the lines.
+ * @param {number} [angle=Math.rad(45)] The angle at which to draw the lines.
  */
-function drawLines(col = Color.white, seed = 1, amount = 30, angle = rad(45)) { }
+function drawLines(col = Color.white, seed = 1, amount = 30, angle = Math.rad(45)) { }
 
 /**
  * Draws rounded lines pointing at the center of the screen that move around slightly.
