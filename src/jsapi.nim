@@ -87,7 +87,7 @@ template setObjectProperty(name: string, writable: bool, body: untyped) =
   ctx.duk_def_prop(-3, flags)               # define property
 
 template setObjInt(name: string, value: int, writable = true) =
-  setGlobalProperty(name, writable, ctx.duk_push_int(value.cint))
+  setObjectProperty(name, writable, ctx.duk_push_int(value.cint))
 
 template setObjNumber(name: string, value: float, writable = true) =
   setObjectProperty(name, writable, ctx.duk_push_number(value))
