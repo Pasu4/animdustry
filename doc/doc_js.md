@@ -1,6 +1,3 @@
-> [!Warning]
-> The contents of this document are not yet updated.
-
 # Documentation
 
 ## Folder structure
@@ -11,14 +8,14 @@ A mod is a folder containing files. This folder must be placed in the `mods` fol
 - Linux: `~/.config/animdustry/mods`
 - Android: `/storage/emulated/0/Android/data/io.anuke.animdustry/files/mods`
 
-If the folder does not exist, you can create it, otherwise it will be created automatically on first startup of the mod loader.
+If the folder does not exist, you can create it manually, otherwise it will be created automatically on first startup of the mod loader.
 
 The folder structure of a mod is as follows:
 
 ```
 modfolder
-├── mod.json
 ├── credits.txt
+├── mod.json
 ├── maps
 │   └── exampleMap.json
 ├── music
@@ -26,6 +23,7 @@ modfolder
 ├── sprites
 │   └── exampleSprite.png
 ├── scripts
+│   ├── __api.js
 │   ├── exampleScript.js
 │   └── init.js
 ├── units
@@ -58,7 +56,7 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 ```json
 {
     "name": "The name of your mod",
-    "namespace": "example",
+    "namespace": "exampleNamespace",
     "author": "You",
     "description": "Description of your mod",
     "enabled": true,
@@ -68,12 +66,26 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 ```
 
 - **name:** The name of your mod.
-- **namespace:** The namespace of your mod. Used to organize procedures.
+- **namespace:** The namespace of your mod. Must be a valid JavaScript variable name. An object with this name will be automatically created in global JavaScript context.
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
 - **enabled:** Whether the mod should be loaded. Defaults to `true`.
 - **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Defaults to `false`.
 - **legacy:** Whether this mod is using the legacy JSON API. Should be `false` if you are making a JavaScript mod. Defaults to `false`.
+
+## Scripts
+
+All JavaScript files inside the `scripts` folder (not recursive) are executed by the mod loader when loading your mod.
+If it contains a file called `init.js`, that file is executed first.
+All other files are executed in arbitrary order.
+Additionally, if a file is named `__api.js`, it is ignored by the mod loader, this is useful for highlighting in code editors.
+You can download the `__api.js` file from the latest release of the mod loader.
+
+Since all mods run in the same context, it is recommended that you use your namespace for function definitions.
+Otherwise, variables and functions defined in the global context might be overridden or cause errors.
+
+Since mods are loaded in an arbitrary order, you should not rely upon functions defined by other mods to be available in `init.js`.
+Unit and map functions can rely on this, as all mods are loaded by the time they are called.
 
 ## Custom Units
 
@@ -86,15 +98,7 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
     "subtitle": "lorem ipsum",
     "abilityDesc": "dolor sit amet",
     "abilityReload": 4,
-    "unmoving": false,
-    "draw": [
-        {"type": "SetVec2", "name": "pos", "value": "basePos - vec2(0, 0.5) + _hoverOffset * 0.5"},
-        {"type": "DrawUnit", "pos": "pos - shadowOffset", "scl": "getScl(0.165)", "color": "shadowColor"},
-        {"type": "DrawUnit", "pos": "pos", "scl": "getScl(0.165)"}
-    ],
-    "abilityProc": [
-
-    ]
+    "unmoving": false
 }
 ```
 
@@ -104,10 +108,42 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 - **abilityDesc:** A description of the unit's ability, displayed in the bottom right corner. May also be used for other descriptions.
 - **abilityReload:** How many turns it takes for the unit's ability to activate.
 - **unmoving:** If the unit can move. Only used by Boulder in the base game. May be omitted.
-- **draw:** An array of draw calls to execute each time the unit splash is drawn. More about draw calls in the chapter [API Calls](#api-calls).
-- **abilityProc:** An array of function calls to execute when the unit's ability is activated.
 
 To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
+
+## Unit scripting
+
+The mod loader expects two functions in your namespace object, a `_draw` and an `_ability` function.
+The name of these functions must be in the form `{unit name}_draw` and `{unit name}_ability` respectively.
+
+The `_draw` function draws the unit's splash image.
+This is used when you click on a unit in the main menu or roll it with the gacha system.
+It takes a single `Vec2` argument, which is the base position of the unit's splash image on the screen.
+The [`hoverOffset()`](jsdoc/global.html#hoverOffset) function should be used here to make the unit hover, and the [`getScl()`](jsdoc/global.html#getScl) function should be used to make the unit 'pop out' when it is rolled with the gacha system.
+
+```js
+exampleNamespace.exampleUnit_draw = function(basePos) {
+    pos = Vec2.add(Vec2.sub(basePos, new Vec2(0, 0.5)), Vec2.scale(hoverOffset(), 0.5));
+    drawUnit(Vec2.sub(pos, shadowOffset), getScl(0.165), Color.shadow);
+    drawUnit(pos, getScl(0.165));
+};
+```
+
+The `_ability` function is used to activate the unit's ability during the game.
+It is called every time the unit moves to a new tile on the playing field.
+The game does *not* check automatically whether the ability has recharged, this is checked using the `moves` variable.
+The function takes three arguments: The number of successful moves the player has made, the current position of the player as an integer vector, and the last move direction of the player as an integer vector.
+
+```js
+exampleNamespace.exampleUnit_ability = function(moves, gridPosition, lastMove) {
+    if(moves % 4 == 0) {
+        for(i = 0; i < d8.length; i++) {
+            effectExplode(Vec2.add(gridPosition, Vec2.scale(d8[i], 2)));
+            damageBlocks(Vec2.add(gridPosition, Vec2.scale(d8[i], 2)));
+        }
+    }
+}
+```
 
 ## Custom Maps
 
@@ -115,7 +151,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 
 ```json
 {
-    "name": "boss1",
+    "name": "exampleMap",
     "songName": "Anuke - Boss 1",
     "music": "boss1",
     "bpm": 100.0,
@@ -123,23 +159,7 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
     "maxHits": 10,
     "copperAmount": 8,
     "fadeColor": "fa874c",
-    "alwaysUnlocked": true,
-    "drawPixel": [
-        {"type": "DrawStripes", "col1": "#19191c", "col2": "#ab8711"},
-        {"type": "DrawBeatSquare", "col": "#f25555"}
-    ],
-    "draw": [
-        {"type": "DrawTiles"}
-    ],
-    "update": [
-        {"type": "Condition", "condition": "state_newTurn", "then": [
-            {"type": "Turns", "fromTurn": 7, "toTurn": 23, "interval": 4, "body": [
-                {"type": "Formation", "name": "d4edge", "iterator": "v", "body": [
-                    {"type": "MakeDelayBulletWarn", "pos": "playerPos + v * 2", "dir": "-v"}
-                ]}
-            ]}
-        ]}
-    ]
+    "alwaysUnlocked": true
 }
 ```
 
@@ -151,67 +171,53 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 - **maxHits:** How often the player needs to be hit to fail the map.
 - **copperAmount:** The amount of copper the player will receive upon beating the level. How much copper the player actually gets is determined by how well they did in the level and if they have beaten the level before.
 - **fadeColor:** (TODO test)
-- **alwaysUnlocked:** If true, the map can be played without unlocking all previous maps. Optional.
-- **drawPixel:** Script that draws the background.
-- **draw:** Script that draws the playing field.
-- **update:** Script that spawns enemies, obstacles, etc.
+- **alwaysUnlocked:** If true, the map can be played without unlocking all previous maps. Optional, defaults to false.
 
-## Procedures
+## Map scripting
 
-Procedures are used the same way as [API calls](#api-calls). They are placed as JSON or Hjson files in the *procedures* folder. They are called by putting the name of the procedure into the *type* field. Parameters are passed the same way as well. An example of a procedure:
+For each map, three functions must be defined in the mod's namespace, the `_drawPixel` function, the `_draw` function and the `_update` function. Like the unit functions, these must be in the format `{map name}_drawPixel`, `{map name}_draw` and `{map name}_update`.
 
-```json
-{
-    "name": "Example",
-    "parameters": [
-        {"name": "_param1", "default": 1.0},
-        {"name": "_param2"},
-        {"name": "_col1", "default": "#ff0000"}
-    ],
-    "script": [
-        {"type": "Comment", "comment": "Useful function here."}
-    ]
+The `_drawPixel` function is used to draw a map's background.
+
+```js
+exampleNamespace.exampleMap_drawPixel = function() {
+    drawStripes(Color.parse("#19191c"), Color.parse("#ab8711"));
+    drawBeatSquare(Color.parse("#f25555"));
 }
 ```
 
-- **name:** The name the procedure is referenced with.
-- **parameters:** The parameters the procedure accepts.
-- **script:** An array of calls that is executed when the procedure is called.
+The `_draw` function is used to draw the playing field.
 
-This procedure would be called from another script like so:
-
-```json
-{"type": "Example", "_param1": 2.0, "_param2": 42.0}
-```
-
-You can also call procedures from another mod. To do that, you have to qualify the procedure you want to call with the namespace of the mod it is from, like so:
-
-```json
-{"type": "utils::Example", "_param1": 2.0, "_param2": 42.0}
-```
-
-The parameters of the called procedure are stored as global variables, which means they are accessible from outside the procedure. Since all variables are global, even those used internally can be accessed (this way you can make a return value).
-
-> [!IMPORTANT]
-> For technical reasons, color literals passed as parameters to a procedure **must** be prefixed with the `#` character!
-
-A procedure can also call another procedure, even itself recursively. Keep in mind though that since all variables are global, this might overwrite other variables used in the procedure.
-
-Procedures may have the same name as API calls, but the only way to call them then is by qualifying them with their namespace.
-
-The `Return` call always jumps to the end of the current procedure.
-
-### Init procedure
-
-If the mod contains a procedure with the name `Init` (case-sensitive), it is automatically called with default arguments when loading the mod. Use it to set constants or initialize variables for use in other scripts. Example:
-
-```json
-{
-    "name": "Init",
-    "script": [
-        {"type": "SetColor", "name": "colorWClear", "value": "#ffffff00"},
-
-        {"type": "SetFloat", "name": "objFade", "value": 0}
-    ]
+```js
+exampleNamespace.exampleMap_draw = function() {
+    drawTiles();
 }
+```
+
+The `_update` function is used for spawning enemies / obstacles on the playing field.
+Since it is called every frame, `state.newTurn` should be used to check for the start of a beat.
+
+```js
+exampleNamespace.exampleMap_update = function() {
+    if(state.newTurn && state.turn >= 7 && state.turn < 23 && state.turn % 4 == 3) {
+        for(i = 0; i < d4edge.length; i++) {
+            makeDelayBulletWarn(Vec2.add(playerPos, Vec2.scale(d4edge[i], 2)), Vec2.neg(d4edge[i]));
+        }
+    }
+}
+```
+
+## credits.txt
+
+A `credits.txt` file should be placed at the root of your mod folder.
+It can be used to give credit for music, art and other mentions.
+The contents of this file will be added to the in-game credits.
+If no `credits.txt` file is found, the following will be added instead (`name` and `author` are replaced with the respective entries in `mod.json`):
+
+```
+- {name} -
+
+Made by: {author}
+
+(Auto-generated credits)
 ```

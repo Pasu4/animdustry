@@ -6,13 +6,41 @@
 
 /**
  * The maximum coordinate of a tile. The top-rightmost tile has the coordinate *(mapSize, mapSize)*.
+ * @type {int}
  */
 const mapSize = 6;
 
 /**
  * The standard offset of a unit's shadow. Used for drawing unit splashes.
+ * @type {Vec2}
  */
 const shadowOffset = new Vec2(0.3);
+
+/**
+ * Contains directional vectors in all four cardinal directions.
+ * @type {Vec2[]}
+ */
+const d4 = [new Vec2(0)]; // placeholder
+/**
+ * Contains directional vectors in all four cardinal directions plus the middle.
+ * @type {Vec2[]}
+ */
+const d4mid = [new Vec2(0)]; // placeholder
+/**
+ * Contains directional vectors in all four diagonal directions.
+ * @type {Vec2[]}
+ */
+const d4edge = [new Vec2(0)]; // placeholder
+/**
+ * Contains directional vectors in all diagonal and cardinal directions.
+ * @type {Vec2[]}
+ */
+const d8 = [new Vec2(0)]; // placeholder
+/**
+ * Contains directional vectors in all diagonal and cardinal directions plus the middle.
+ * @type {Vec2[]}
+ */
+const d8mid = [new Vec2(0)]; // placeholder
 
 //#endregion
 
@@ -224,6 +252,7 @@ class Color {
 
 /**
  * The current state of the game.
+ * @type {Object}
  * @readonly
  * @property {number} secs - Smoothed position of the music track in seconds.
  * @property {number} lastSecs - Last "discrete" music track position, internally used.
@@ -377,6 +406,20 @@ function getScl(base = 0.175) { }
  * @param {number} offset The vertical offset of the hover effect.
  */
 function hoverOffset(scl = 0.65, offset = 0) { }
+
+/**
+ * Converts `x` from degrees to radians.
+ * @param {number} x The value to convert.
+ * @returns {number} The value in radians.
+ */
+function rad(x) { }
+
+/**
+ * Converts `x` from radians to degrees.
+ * @param {number} x The value to convert.
+ * @returns {number} The value in degrees.
+ */
+function deg(x) { }
 
 //#endregion
 

@@ -539,6 +539,18 @@ proc initJsApi*() =
     return 1
   ))
 
+  # rad(deg: float): float
+  setGlobalFunc("rad", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.rad.cdouble) # return argv[0].rad
+    return 1
+  ))
+
+  # deg(rad: float): float
+  setGlobalFunc("deg", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_number(ctx.duk_require_number(0).float.deg.cdouble) # return argv[0].deg
+    return 1
+  ))
+
   #endregion
 
   #region Pattern functions
