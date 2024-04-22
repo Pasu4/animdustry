@@ -252,7 +252,6 @@ class Color {
 
 /**
  * The current state of the game.
- * @type {Object}
  * @readonly
  * @property {number} secs - Smoothed position of the music track in seconds.
  * @property {number} lastSecs - Last "discrete" music track position, internally used.
