@@ -69,9 +69,9 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 - **namespace:** The namespace of your mod. Must be a valid JavaScript variable name. An object with this name will be automatically created in global JavaScript context.
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
-- **enabled:** Whether the mod should be loaded. Defaults to `true`.
-- **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Defaults to `false`.
-- **legacy:** Whether this mod is using the legacy JSON API. Should be `false` if you are making a JavaScript mod. Defaults to `false`.
+- **enabled:** Whether the mod should be loaded. Optional, defaults to `true`.
+- **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Optional, defaults to `false`.
+- **legacy:** Whether this mod is using the legacy JSON API. Should be `false` if you are making a JavaScript mod. Optional, defaults to `false`.
 
 ## Scripts
 
@@ -107,7 +107,7 @@ Unit scripts describe how a unit is drawn and how it interacts with the game. To
 - **subtitle:** The subtitle, displayed below the title in smaller letters. Usually used for a short description of the unit.
 - **abilityDesc:** A description of the unit's ability, displayed in the bottom right corner. May also be used for other descriptions.
 - **abilityReload:** How many turns it takes for the unit's ability to activate.
-- **unmoving:** If the unit can move. Only used by Boulder in the base game. May be omitted.
+- **unmoving:** If the unit can move. Only used by Boulder in the base game. Optional, defaults to false.
 
 To add a splash image to your unit, place an image file with the same name as your unit into the `unitSplashes` folder. To add in-game sprites of your unit, place the files `example.png` and `example-hit.png` in the `unitSprites` folder (replace "example" with the name of your unit). Those two files must exist for the unit to display properly. Additionally, an `example-angery.png` (not a typo) and `example-happy.png` file can be placed in the folder as well. The `-angery` sprite is displayed when the player misses a beat, and the `-happy` sprite is displayed one second before a level ends.
 

@@ -18,9 +18,11 @@ template pushVec2(v: Vec2, writable = true) =
 
 proc getVec2(idx: cint): Vec2 =
   discard ctx.duk_get_prop_string(idx, "x")
-  let x = ctx.duk_to_number(-1).float
+  let x = ctx.duk_get_number(-1).float
+  ctx.duk_pop()
   discard ctx.duk_get_prop_string(idx, "y")
-  let y = ctx.duk_to_number(-1).float
+  let y = ctx.duk_get_number(-1).float
+  ctx.duk_pop()
   return vec2(x, y)
 
 template pushColor(c: Color, writable = true) =
