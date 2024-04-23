@@ -70,7 +70,7 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
 - **enabled:** Whether the mod should be loaded. Optional, defaults to `true`.
-- **debug:** Whether the mod is in debug mode. Debug mode activates some features that are useful for debugging. Optional, defaults to `false`.
+- **debug:** Whether the mod is in debug mode. Debug mode allows to temporarily overwrite state variables for debugging. Optional, defaults to `false`.
 - **legacy:** Whether this mod is using the legacy JSON API. Should be `false` if you are making a JavaScript mod. Optional, defaults to `false`.
 
 ## Scripts
@@ -221,3 +221,13 @@ Made by: {author}
 
 (Auto-generated credits)
 ```
+
+## Limitation
+
+The mod loader's JavaScript engine is based on [Duktape](https://duktape.org/).
+This comes with a few limitations:
+
+- Users cannot define classes. Instead, Duktape treats all functions as classes (which means all functions can, in theory, be called with `new`).
+- User-defined functions cannot have default/optional arguments.
+- The `let` keyword is not supported in Duktape.
+- `for...of` loops are not supported in Duktape. Either use a `for...in` or `for` loop.
