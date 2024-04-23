@@ -41,7 +41,10 @@ proc loadMods* =
           modLegacy = modNode{"legacy"}.getBool(false) # Legacy mods use JSON scripts instead of JavaScript
 
           if not modEnabled: continue
-          debugMode = debugMode or modDebug
+          if modLegacy:
+            jsonapi.debugMode = jsonapi.debugMode or modDebug
+          else:
+            jsapi.debugMode = jsapi.debugMode or modDebug
           
           # TODO do something with description
         except JsonParsingError, HjsonParsingError, KeyError:

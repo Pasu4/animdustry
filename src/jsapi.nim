@@ -8,6 +8,7 @@ type JavaScriptError* = object of CatchableError
 var
   ctx: DTContext
   callbackId = 0
+  debugMode* = false
 
 #region QOL functions
 
@@ -110,17 +111,23 @@ template setObjFunc(name: string, argc: int, f: DTCFunction) =
   setObjectProperty(name, false, (discard ctx.duk_push_c_function(f, argc)))
 
 # Property getters
-template getObjInt(idx: int, name: string): int =
-  discard ctx.duk_get_prop_string(idx, name)
-  return ctx.duk_to_int(-1)
+proc getObjInt(idx: int, name: string): int =
+  discard ctx.duk_get_prop_string(idx.cint, name)
+  let res = ctx.duk_get_int(-1)
+  ctx.duk_pop()
+  return res
 
-template getObjNumber(idx: int, name: string): float =
-  discard ctx.duk_get_prop_string(idx, name)
-  return ctx.duk_to_number(-1).float
+proc getObjNumber(idx: int, name: string): float =
+  discard ctx.duk_get_prop_string(idx.cint, name)
+  let res = ctx.duk_get_number(-1).float
+  ctx.duk_pop()
+  return res
 
-template getObjString(idx: int, name: string): string =
-  discard ctx.duk_get_prop_string(idx, name)
-  return ctx.duk_to_string(-1)
+proc getObjString(idx: int, name: string): string =
+  discard ctx.duk_get_prop_string(idx.cint, name)
+  let res = $ctx.duk_get_string(-1)
+  ctx.duk_pop()
+  return res
 
 # Global property setters
 template setGlobalProperty(name: string, writable: bool, body: untyped) =
@@ -167,6 +174,29 @@ template setGlobalVec2iArray(name: string, values: seq[Vec2i], writable = true) 
 ## f: The function to push
 template setGlobalFunc(name: string, argc: int, f: DTCFunction) =
   setGlobalProperty(name, false, (discard ctx.duk_push_c_function(f, argc)))
+
+template callNamespaceFunc(namespace: string, name: string, argc: int, body: untyped) =
+  # Get function
+  discard ctx.duk_get_global_string(namespace)
+  discard ctx.duk_get_prop_string(-1, name)
+  if ctx.duk_check_type(-1, DUK_TYPE_OBJECT) != 1:
+    echo "Error in script ", namespace, ".", name, ":"
+    echo "Function not found"
+    ctx.duk_pop_2()
+    return
+  ctx.duk_dup(-2)
+
+  # Push arguments
+  body
+
+  # Call function
+  let err = ctx.duk_pcall_method(argc)
+  if err != 0:
+    echo "Error in script ", namespace, ".", name, ":"
+    echo ctx.duk_safe_to_string(-1)
+
+  # Pop namespace and return value
+  ctx.duk_pop_2()
 
 #endregion
 
@@ -1516,27 +1546,27 @@ proc initJsApi*() =
 
 proc updateJs*() =
   # Set state
+  # Allow writing only in debug mode
   discard ctx.duk_get_global_string("state")
-  setObjNumber( "secs",       state.secs,            false)
-  setObjNumber( "lastSecs",   state.lastSecs,        false)
-  setObjNumber( "time",       state.time,            false)
-  setObjNumber( "globalTime", fau.time,              false)
-  setObjNumber( "rawBeat",    state.rawBeat,         false)
-  setObjNumber( "moveBeat",   state.moveBeat,        false)
-  setObjBoolean("newTurn",    state.newTurn,         false)
-  setObjNumber( "hitTime",    state.hitTime,         false)
-  setObjNumber( "healTime",   state.healTime,        false)
-  setObjInt(    "points",     state.points,          false)
-  setObjInt(    "turn",       state.turn,            false)
-  setObjInt(    "hits",       state.hits,            false)
-  setObjInt(    "totalHits",  state.totalHits,       false)
-  setObjInt(    "misses",     state.misses,          false)
-  setObjNumber( "currentBpm", state.currentBpm,      false)
+  setObjNumber( "secs",       state.secs,       debugMode)
+  setObjNumber( "lastSecs",   state.lastSecs,   debugMode)
+  setObjNumber( "time",       state.time,       debugMode)
+  setObjNumber( "globalTime", fau.time,         debugMode)
+  setObjNumber( "rawBeat",    state.rawBeat,    debugMode)
+  setObjNumber( "moveBeat",   state.moveBeat,   debugMode)
+  setObjBoolean("newTurn",    state.newTurn,    debugMode)
+  setObjNumber( "hitTime",    state.hitTime,    debugMode)
+  setObjNumber( "healTime",   state.healTime,   debugMode)
+  setObjInt(    "points",     state.points,     debugMode)
+  setObjInt(    "turn",       state.turn,       debugMode)
+  setObjInt(    "hits",       state.hits,       debugMode)
+  setObjInt(    "totalHits",  state.totalHits,  debugMode)
+  setObjInt(    "misses",     state.misses,     debugMode)
+  setObjNumber( "currentBpm", state.currentBpm, debugMode)
 
-  setObjVec2("playerPos", vec2(state.playerPos), false)
-  setObjNumber("beatSpacing", 1.0 / (state.currentBpm / 60.0), false)
+  setObjVec2("playerPos", vec2(state.playerPos), debugMode)
+  setObjNumber("beatSpacing", 1.0 / (state.currentBpm / 60.0), debugMode)
   ctx.duk_pop()
-
 
 proc addNamespace*(name: string) =
   discard ctx.duk_push_object()
@@ -1547,25 +1577,8 @@ proc getScriptJs*(namespace, name: string): (proc()) =
     return (proc() =
       updateJs()
 
-      # Get function
-      discard ctx.duk_get_global_string(namespace)      # get namespace
-      discard ctx.duk_get_prop_string(-1, name)         # get function
-      if ctx.duk_check_type(-1, DUK_TYPE_OBJECT) != 1:  # verify that it is a function
-        echo "Error in script ", namespace, ".", name, ":"
-        echo "Function not found"
-        ctx.duk_pop_2()                                 # pop namespace and function
-        return
-      ctx.duk_dup(-2)                                   # duplicate namespace as this
-
-      # Call function
-      let err = ctx.duk_pcall_method(0)                 # call function
-      if err != 0:
-        echo "Error in script ", namespace, ".", name, ":"
-        echo ctx.duk_safe_to_string(-1)
-      
-      # Pop namespace and return value
-      # TODO Test if this fails
-      ctx.duk_pop_2()
+      callNamespaceFunc(namespace, name, 0):
+        discard
     )
 
 proc getUnitDrawJs*(namespace, name: string): (proc(unit: Unit, basePos: Vec2)) =
@@ -1575,27 +1588,8 @@ proc getUnitDrawJs*(namespace, name: string): (proc(unit: Unit, basePos: Vec2)) 
 
       currentUnit = unit
 
-      # Get function
-      discard ctx.duk_get_global_string(namespace)
-      discard ctx.duk_get_prop_string(-1, name)
-      if ctx.duk_check_type(-1, DUK_TYPE_OBJECT) != 1:
-        echo "Error in script ", namespace, ".", name, ":"
-        echo "Function not found"
-        ctx.duk_pop_2()
-        return
-      ctx.duk_dup(-2)
-
-      # Push arguments
-      pushVec2(basePos)
-
-      # Call function
-      let err = ctx.duk_pcall_method(1)
-      if err != 0:
-        echo "Error in script ", namespace, ".", name, ":"
-        echo ctx.duk_safe_to_string(-1)
-
-      # Pop namespace and return value
-      ctx.duk_pop_2()
+      callNamespaceFunc(namespace, name, 1):
+        pushVec2(basePos)
     )
 
 proc getUnitAbilityJs*(namespace, name: string): (proc(entity: EntityRef, moves: int)) =
@@ -1608,25 +1602,10 @@ proc getUnitAbilityJs*(namespace, name: string): (proc(entity: EntityRef, moves:
         lastMove = fetchLastMove(entity)
       currentEntityRef = entity
 
-      # Get function
-      discard ctx.duk_get_global_string(namespace)
-      discard ctx.duk_get_prop_string(-1, name)
-      ctx.duk_require_function(-1)
-      ctx.duk_dup(-2)
-
-      # Push arguments
-      ctx.duk_push_int(moves.cint)
-      pushVec2(vec2(gridPosition))
-      pushVec2(vec2(lastMove))
-
-      # Call function
-      let err = ctx.duk_pcall_method(3)
-      if err != 0:
-        echo "Error in script ", namespace, ".", name, ":"
-        echo ctx.duk_safe_to_string(-1)
-
-      # Pop namespace and return value
-      ctx.duk_pop_2()
+      callNamespaceFunc(namespace, name, 3):
+        ctx.duk_push_int(moves.cint)
+        pushVec2(vec2(gridPosition))
+        pushVec2(vec2(lastMove))
     )
 
 proc evalScriptJs*(script: string) =
