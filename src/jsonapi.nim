@@ -14,7 +14,7 @@ var
   colorTable = initTable[string, Color]()       # Holds color variables
   isBreaking = false                            # Flow control: break
   isReturning = false                           # Flow control: return
-  currentNamespace*: string                     # Current namespace for resolving procedures
+  # currentNamespace*: string                     # Current namespace for resolving procedures
   procedures* = initTable[string, Procedure]()  # Holds user-defined procedures
   debugMode* = false                            # Whether the mod is in debug mode
 

@@ -1,5 +1,5 @@
 import os, vars, types, strformat, core, fau/assets, std/json, std/strutils, std/tables
-import jsonapi, jsapi, patterns, hjson
+import jsonapi, jsapi, apivars, patterns, hjson
 
 let
   dataDir = getSaveDir("animdustry")
@@ -10,6 +10,7 @@ let
       dataDir / "mods/"
 var
   modErrorLog*: string
+  modPaths*: Table[string, string]
 
 template modError(filePath) =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
@@ -39,6 +40,8 @@ proc loadMods* =
           modAuthor = modNode["author"].getStr()
           currentNamespace = modNode["namespace"].getStr()
           modLegacy = modNode{"legacy"}.getBool(false) # Legacy mods use JSON scripts instead of JavaScript
+
+          modPaths[currentNamespace] = modPath
 
           if not modEnabled: continue
           if modLegacy:
@@ -104,6 +107,9 @@ proc loadMods* =
             procedures[currentNamespace & "::Init"].script()
         elif dirExists(scriptPath):
           #region Load scripts
+          # Update API
+          updateJs(currentNamespace)
+
           # First, check if a 'init.js' file exists
           var filePath = scriptPath / "init.js"
           if fileExists(filePath):

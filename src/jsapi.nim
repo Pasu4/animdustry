@@ -1544,7 +1544,9 @@ proc initJsApi*() =
 
   #endregion
 
-proc updateJs*() =
+proc updateJs*(namespace: string) =
+  currentNamespace = namespace
+
   # Set state
   # Allow writing only in debug mode
   discard ctx.duk_get_global_string("state")
@@ -1573,18 +1575,18 @@ proc addNamespace*(name: string) =
   discard ctx.duk_put_global_string(name)
 
 proc getScriptJs*(namespace, name: string): (proc()) =
-  capture name:
+  capture namespace, name:
     return (proc() =
-      updateJs()
+      updateJs(namespace)
 
       callNamespaceFunc(namespace, name, 0):
         discard
     )
 
 proc getUnitDrawJs*(namespace, name: string): (proc(unit: Unit, basePos: Vec2)) =
-  capture name:
+  capture namespace, name:
     return (proc(unit: Unit, basePos: Vec2) =
-      updateJs()
+      updateJs(namespace)
 
       currentUnit = unit
 
@@ -1593,9 +1595,9 @@ proc getUnitDrawJs*(namespace, name: string): (proc(unit: Unit, basePos: Vec2)) 
     )
 
 proc getUnitAbilityJs*(namespace, name: string): (proc(entity: EntityRef, moves: int)) =
-  capture name:
+  capture namespace, name:
     return (proc(entity: EntityRef, moves: int) =
-      updateJs()
+      updateJs(namespace)
 
       let
         gridPosition = fetchGridPosition(entity)

@@ -12,9 +12,13 @@ let
   }.toTable
 
 var
-  currentUnit*: Unit                             # The current unit
-  currentEntityRef*: EntityRef                   # The current EntityRef (for abilityProc)
+  customTextures*: Table[string, Texture]       # Custom textures for bullets, enemies, etc.
+  currentNamespace*: string                     # For loading custom textures (LEGACY: resolving procedures)
 
+  currentUnit*: Unit                            # The current unit
+  currentEntityRef*: EntityRef                  # The current EntityRef (for abilityProc)
+
+var
   # Procs from main
   # I unfortunately see no better way to do this.
   drawBloomA*, drawBloomB*: proc() # Draws bloom (it's unfortunate but what can you do)
@@ -48,6 +52,9 @@ var
   apiEffectWarn*: proc(pos: Vec2, life: float32)
   apiEffectWarnBullet*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
   apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
+
+  getTexture*: proc(unit: Unit, name: string = ""): Texture
+  musicTime*: proc(): float
 
 # Export bloom procs
 proc exportBloom*(bloomA: proc(), bloomB: proc()) =
@@ -90,6 +97,9 @@ template exportProcs* =
   apivars.apiEffectWarn = proc(pos: Vec2, life: float32) = effectWarn(pos, life = life)
   apivars.apiEffectWarnBullet = proc(pos: Vec2, life: float32, rotation: float32) = effectWarnBullet(pos, life = life, rotation = rotation)
   apivars.apiEffectStrikeWave = proc(pos: Vec2, life: float32, rotation: float32) = effectStrikeWave(pos, life = life, rotation = rotation)
+
+  apivars.getTexture = getTexture
+  apivars.musicTime = musicTime
   
 template drawBloom*(body: untyped) =
   drawBloomA()
@@ -138,21 +148,21 @@ proc apiMixColor*(col1, col2: Color, alpha: float32, mode: string = "mix"): Colo
     return col1.mix(col2, alpha)
 
 #region Procs copied to avoid circular dependency
-proc getTexture*(unit: Unit, name: string = ""): Texture =
-  ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
-  if not unit.textures.hasKey(name):
-    let tex =
-      if not unit.isModded:
-        echo "Loading asset ", "textures/" & unit.name & name & ".png"
-        loadTextureAsset("textures/" & unit.name & name & ".png")
-      else:
-        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
-        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
-    tex.filter = tfLinear
-    unit.textures[name] = tex
-    return tex
-  return unit.textures[name]
+# proc getTexture*(unit: Unit, name: string = ""): Texture =
+#   ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
+#   if not unit.textures.hasKey(name):
+#     let tex =
+#       if not unit.isModded:
+#         echo "Loading asset ", "textures/" & unit.name & name & ".png"
+#         loadTextureAsset("textures/" & unit.name & name & ".png")
+#       else:
+#         echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+#         loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
+#     tex.filter = tfLinear
+#     unit.textures[name] = tex
+#     return tex
+#   return unit.textures[name]
 
-proc musicTime*(): float = state.secs
+# proc musicTime*(): float = state.secs
 
 #endregion
