@@ -28,12 +28,12 @@ music used:
 
 # Documentation
 
-[JavaScript documentation](/doc/doc_js.md)
+[JavaScript documentation](https://pasu4.github.io/animdustry/doc/doc_js.md)
 
-[JavaScript API reference](/doc/jsdoc/index.html)
+[JavaScript API reference](https://pasu4.github.io/animdustry/doc/jsdoc/index.html)
 
 [JavaScript example mod](https://github.com/Pasu4/animdustry-mod-template/)
 
-[JSON documentation and API reference](/doc/doc_json.md) (Legacy)
+[JSON documentation and API reference](https://pasu4.github.io/animdustry/doc/doc_json.md) (Legacy)
 
 [JSON example mod](https://github.com/Pasu4/animdustry-mod-template/tree/legacy)
