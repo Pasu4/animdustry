@@ -1542,6 +1542,16 @@ proc initJsApi*() =
     return 0
   ))
 
+  # importSprite(name: string, namespace: string, alias = name)
+  setGlobalFunc("importSprite", 3, (proc(ctx: DTContext): cint{.stdcall.} =
+    let
+      name = $ctx.duk_get_string(0)
+      namespace = $ctx.duk_get_string(1)
+      alias = $ctx.duk_get_string_default(2, name.cstring)
+    apiImportCustomTexture(namespace, name, currentNamespace, alias)
+    return 0
+  ))
+
   #endregion
 
 proc updateJs*(namespace: string) =

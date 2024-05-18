@@ -1193,4 +1193,12 @@ function changeBpm(bpm) { }
  */
 function log(message) { }
 
+/**
+ * Imports a sprite from another mod so that it can be used in the current mod.
+ * @param {string} name The name of the sprite in the source mod.
+ * @param {string} namespace The namepace of the mod the sprite is from.
+ * @param {string} [alias=name] The name the sprite will have in the current mod.
+ */
+function importSprite(name, namespace, alias = name) { }
+
 //#endregion

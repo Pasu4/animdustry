@@ -186,15 +186,36 @@ proc getGameTexture*(unit: Unit, name: string = ""): Texture =
   return unit.textures[key]
 
 # For modded bullets, enemies, etc.
-proc getCustomTexture*(namespace: string, name: string): Texture =
+proc getCustomTexture*(namespace: string, name: string, file = name): Texture =
   let key = &"{namespace}_{name}"
   if not customTextures.hasKey(key):
-    echo "Loading file ", modPaths[namespace] / "sprites" / name & ".png"
+    echo "Loading file ", modPaths[namespace] / "sprites" / name & ".png (key ", key, ")"
     let tex = loadTextureFile(modPaths[namespace] / "sprites" / name & ".png")
     tex.filter = tfNearest
     customTextures[key] = tex
     return tex
+  if key notin customTextures:
+    echo "Error: Texture not found for ", key
+    return "error".patch.texture
   return customTextures[key]
+
+# import a texture from another mod
+proc importCustomTexture*(sourceNamespace: string, sourceName: string, targetNamespace: string, targetName: string) =
+  let
+    sourceKey = &"{sourceNamespace}_{sourceName}"
+    targetKey = &"{targetNamespace}_{targetName}"
+  if not customTextures.hasKey(sourceKey):
+    # load the texture from file
+    echo "Importing texture ", sourceKey, " from ", sourceNamespace, " to ", targetKey, " in ", targetNamespace
+    if sourceNamespace notin modPaths:
+      echo "Error: Mod path not found for ", sourceNamespace
+      return
+    let tex = loadTextureFile(modPaths[sourceNamespace] / "sprites" / sourceName & ".png")
+    tex.filter = tfNearest
+    customTextures[targetKey] = tex
+  else:
+    # copy buffered texture
+    customTextures[targetKey] = customTextures[sourceKey]
 
 proc rollUnit*(): Unit =
   #very low chance, as it is annoying

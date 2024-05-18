@@ -18,6 +18,8 @@ template modError(filePath) =
   continue
 
 proc loadMods* =
+  var mainScriptPaths: Table[string, string] # Table of JS main scripts
+
   echo "Loading mods from ", modDir
   if dirExists(modDir):
     for kind, modPath in walkDir(modDir): # Walk through mods
@@ -130,6 +132,12 @@ proc loadMods* =
                 evalScriptJs(script)
               except JavaScriptError:
                 modError(filePath)
+
+          # Check if a 'main.js' file exists
+          filePath = scriptPath / "main.js"
+          if fileExists(filePath):
+            # Add to list of main scripts
+            mainScriptPaths[currentNamespace] = filePath
           #endregion
 
         # Units
@@ -224,6 +232,17 @@ proc loadMods* =
           # Auto-generate credits
           creditsText &= &"\n- {modName} -\n\nMade by: {modAuthor}\n\n(Auto-generated credits)\n\n------\n"
 
+    # Execute main scripts
+    echo "Running main scripts"
+    for namespace, filepath in mainScriptPaths:
+      currentNamespace = namespace
+      let script = readFile(filePath)
+      echo "Executing ", filePath
+      try:
+        evalScriptJs(script)
+      except JavaScriptError:
+        modError(filePath)
+    
     echo "Finished loading mods."
     echo "Unit count: ", allUnits.len
     echo "Unlockable: ", unlockableUnits.len

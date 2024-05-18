@@ -44,6 +44,7 @@ var
 
   apiAddPoints*: proc(amount = 1)
   apiDamageBlocks*: proc(target: Vec2i)
+  apiImportCustomTexture*: proc(sourceName: string, sourceNamespace: string, targetName: string, targetNamespace: string)
 
   #apiEffectExplode*: proc(pos: Vec2, rotation = 0.0'f32, color = colorWhite, life = 0.4'f32, size = 0.0'f32, parent = NO_ENTITY_REF)
   apiEffectExplode*: proc(pos: Vec2)
@@ -90,6 +91,7 @@ template exportProcs* =
   # Other
   apivars.apiAddPoints = addPoints
   apivars.apiDamageBlocks = damageBlocks
+  apivars.apiImportCustomTexture = importCustomTexture
 
   # Effects (evil post-compile-time signature apparently)
   apivars.apiEffectExplode = proc(pos: Vec2) = effectExplode(pos)

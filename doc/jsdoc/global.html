@@ -19392,6 +19392,233 @@ up and down periodically. Only usable in the context of unit splash drawing.</p>
     
 
     
+    <h4 class="name" id="importSprite"><span class="type-signature"></span>importSprite<span class="signature">(name, namespace, alias<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Imports a sprite from another mod so that it can be used in the current mod.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The name of the sprite in the source mod.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>namespace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The namepace of the mod the sprite is from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>alias</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    name
+                
+                </td>
+            
+
+            <td class="description last"><p>The name the sprite will have in the current mod.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">api.js</a>, <a href="api.js.html#line1202">line 1202</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="log"><span class="type-signature"></span>log<span class="signature">(message)</span><span class="type-signature"></span></h4>
     
 
@@ -20403,7 +20630,7 @@ up and down periodically. Only usable in the context of unit splash drawing.</p>
                 </td>
             
 
-            <td class="description last"><p>The number of conveyor belts in a row. Only 1 and 2 work. (TODO Check if that is a bug)</p></td>
+            <td class="description last"><p>The number of conveyor belts in a row. Only 1 and 2 work.</p></td>
         </tr>
 
     
@@ -20442,7 +20669,7 @@ up and down periodically. Only usable in the context of unit splash drawing.</p>
                 </td>
             
 
-            <td class="description last"><p>The texture of the conveyor.</p></td>
+            <td class="description last"><p>The texture of the conveyor. Does not work with a length of 2.</p></td>
         </tr>
 
     
@@ -20481,7 +20708,7 @@ up and down periodically. Only usable in the context of unit splash drawing.</p>
                 </td>
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Unknown.</p></td>
         </tr>
 
     
@@ -23406,13 +23633,13 @@ up and down periodically. Only usable in the context of unit splash drawing.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#d4">d4</a></li><li><a href="global.html#d4edge">d4edge</a></li><li><a href="global.html#d4mid">d4mid</a></li><li><a href="global.html#d8">d8</a></li><li><a href="global.html#d8mid">d8mid</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#deg">deg</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#mapSize">mapSize</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#rad">rad</a></li><li><a href="global.html#shadowOffset">shadowOffset</a></li><li><a href="global.html#state">state</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#d4">d4</a></li><li><a href="global.html#d4edge">d4edge</a></li><li><a href="global.html#d4mid">d4mid</a></li><li><a href="global.html#d8">d8</a></li><li><a href="global.html#d8mid">d8mid</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#deg">deg</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#importSprite">importSprite</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#mapSize">mapSize</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#rad">rad</a></li><li><a href="global.html#shadowOffset">shadowOffset</a></li><li><a href="global.html#state">state</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Apr 22 2024 09:41:26 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat May 18 2024 21:01:51 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

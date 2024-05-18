@@ -25,7 +25,8 @@ modfolder
 ├── scripts
 │   ├── __api.js
 │   ├── exampleScript.js
-│   └── init.js
+│   ├── init.js
+│   └── main.js
 ├── units
 │   └── exampleUnit.json
 ├── unitSplashes
@@ -76,7 +77,8 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 ## Scripts
 
 All JavaScript files inside the `scripts` folder (not recursive) are executed by the mod loader when loading your mod.
-If it contains a file called `init.js`, that file is executed first.
+If it contains a file named `init.js`, that file is executed first.
+If it contains a file named `main.js`, it is executed once all non-main files of all other mods have been executed.
 All other files are executed in arbitrary order.
 Additionally, if a file is named `__api.js`, it is ignored by the mod loader, this is useful for highlighting in code editors.
 You can download the `__api.js` file from the latest release of the mod loader.
@@ -172,6 +174,139 @@ Map scripts describe a playable level in the game. To add a custom map to the ga
 - **copperAmount:** The amount of copper the player will receive upon beating the level. How much copper the player actually gets is determined by how well they did in the level and if they have beaten the level before.
 - **fadeColor:** (TODO test)
 - **alwaysUnlocked:** If true, the map can be played without unlocking all previous maps. Optional, defaults to false.
+
+## Sprites
+
+PNG files in the `sprites` directory of your mod can be used in functions like `makeBullet` to make bullets, enemies, etc. with custom sprites.
+To do this, use the path of the file from the `sprites` directory without the file extension.
+For example, the file `/sprites/exampleSprite.png` would be used with `"exampleSprite"`.
+
+To use sprites from another mod, you have to use the `importSprite` function.
+For ease of use, a mod can provide a method to do this automatically, for example:
+
+```js
+exampleNamespace.importSprites() {
+    // Import `/sprites/exampleSprite.png` into the calling namespace
+    importSprite("exampleSprite", "exampleNamespace");
+}
+```
+
+**Important:** `importSprite` always imports into the currently active mod's namespace. That means that if you call a function from a different mod that uses sprites, you must import all sprites used in that function into your mod's namespace.
+
+
+
+Some sprites are included with the base game. These are:
+
+<details>
+<summary>Normal</summary>
+
+![arrow](../assets-raw/sprites/arrow.png) arrow,
+![beach](../assets-raw/sprites/beach.png) beach,
+![big-copper](../assets-raw/sprites/big-copper.png) big-copper,
+![circle](../assets-raw/sprites/circle.png) circle,
+![ckat](../assets-raw/sprites/ckat.png) ckat,
+![cloud1](../assets-raw/sprites/cloud1.png) cloud1,
+![cloud2](../assets-raw/sprites/cloud2.png) cloud2,
+![cloud3](../assets-raw/sprites/cloud3.png) cloud3,
+![cloud4](../assets-raw/sprites/cloud4.png) cloud4,
+![error](../assets-raw/sprites/error.png) error,
+![explode0](../assets-raw/sprites/explode0.png) explode0,
+![explode1](../assets-raw/sprites/explode1.png) explode1,
+![explode2](../assets-raw/sprites/explode2.png) explode2,
+![explode3](../assets-raw/sprites/explode3.png) explode3,
+![explode4](../assets-raw/sprites/explode4.png) explode4,
+![hit0](../assets-raw/sprites/hit0.png) hit0,
+![hit1](../assets-raw/sprites/hit1.png) hit1,
+![hit2](../assets-raw/sprites/hit2.png) hit2,
+![hit3](../assets-raw/sprites/hit3.png) hit3,
+![hit4](../assets-raw/sprites/hit4.png) hit4,
+![hit5](../assets-raw/sprites/hit5.png) hit5,
+![laser](../assets-raw/sprites/laser.png) laser,
+![longcloud1](../assets-raw/sprites/longcloud1.png) longcloud1,
+![longcloud2](../assets-raw/sprites/longcloud2.png) longcloud2,
+![longcloud3](../assets-raw/sprites/longcloud3.png) longcloud3,
+![longcloud4](../assets-raw/sprites/longcloud4.png) longcloud4,
+![longcloud5](../assets-raw/sprites/longcloud5.png) longcloud5,
+![petal](../assets-raw/sprites/petal.png) petal,
+![reload](../assets-raw/sprites/reload.png) reload,
+![shadow](../assets-raw/sprites/shadow.png) shadow,
+![smoke0](../assets-raw/sprites/smoke0.png) smoke0,
+![smoke1](../assets-raw/sprites/smoke1.png) smoke1,
+![smoke2](../assets-raw/sprites/smoke2.png) smoke2,
+![smoke3](../assets-raw/sprites/smoke3.png) smoke3,
+![smoke4](../assets-raw/sprites/smoke4.png) smoke4,
+![smoke5](../assets-raw/sprites/smoke5.png) smoke5,
+![star1](../assets-raw/sprites/star1.png) star1,
+![star2](../assets-raw/sprites/star2.png) star2,
+![star3](../assets-raw/sprites/star3.png) star3,
+![sun](../assets-raw/sprites/sun.png) sun,
+![tile](../assets-raw/sprites/tile.png) tile,
+![wall](../assets-raw/sprites/wall.png) wall,
+
+</details>
+
+<details>
+<summary>Outlined</summary>
+
+These sprites are outlined in white.
+
+![arc](../assets-raw/sprites/outlined/arc.png) arc,
+![bullet-blue](../assets-raw/sprites/outlined/bullet-blue.png) bullet-blue,
+![bullet-pink](../assets-raw/sprites/outlined/bullet-pink.png) bullet-pink,
+![bullet-purple](../assets-raw/sprites/outlined/bullet-purple.png) bullet-purple,
+![bullet-tri](../assets-raw/sprites/outlined/bullet-tri.png) bullet-tri,
+![bullet](../assets-raw/sprites/outlined/bullet.png) bullet,
+![conveyor](../assets-raw/sprites/outlined/conveyor.png) conveyor,
+![copper](../assets-raw/sprites/outlined/copper.png) copper,
+![duo](../assets-raw/sprites/outlined/duo.png) duo,
+![fail](../assets-raw/sprites/outlined/fail.png) fail,
+![headphones](../assets-raw/sprites/outlined/headphones.png) headphones,
+![health](../assets-raw/sprites/outlined/health.png) health,
+![info](../assets-raw/sprites/outlined/info.png) info,
+![junction](../assets-raw/sprites/outlined/junction.png) junction,
+![lancer](../assets-raw/sprites/outlined/lancer.png) lancer,
+![lancer2](../assets-raw/sprites/outlined/lancer2.png) lancer2,
+![mine](../assets-raw/sprites/outlined/mine.png) mine,
+![overflow-gate](../assets-raw/sprites/outlined/overflow-gate.png) overflow-gate,
+![pause](../assets-raw/sprites/outlined/pause.png) pause,
+![play](../assets-raw/sprites/outlined/play.png) play,
+![progress-tick](../assets-raw/sprites/outlined/progress-tick.png) progress-tick,
+![progress](../assets-raw/sprites/outlined/progress.png) progress,
+![router](../assets-raw/sprites/outlined/router.png) router,
+![settings](../assets-raw/sprites/outlined/settings.png) settings,
+![shield](../assets-raw/sprites/outlined/shield.png) shield,
+![skat](../assets-raw/sprites/outlined/skat.png) skat,
+![sorter](../assets-raw/sprites/outlined/sorter.png) sorter,
+![unit-alpha-happy](../assets-raw/sprites/outlined/unit-alpha-happy.png) unit-alpha-happy,
+![unit-alpha-hit](../assets-raw/sprites/outlined/unit-alpha-hit.png) unit-alpha-hit,
+![unit-alpha](../assets-raw/sprites/outlined/unit-alpha.png) unit-alpha,
+![unit-boulder-hit](../assets-raw/sprites/outlined/unit-boulder-hit.png) unit-boulder-hit,
+![unit-boulder](../assets-raw/sprites/outlined/unit-boulder.png) unit-boulder,
+![unit-crawler-angery](../assets-raw/sprites/outlined/unit-crawler-angery.png) unit-crawler-angery,
+![unit-crawler-hit](../assets-raw/sprites/outlined/unit-crawler-hit.png) unit-crawler-hit,
+![unit-crawler](../assets-raw/sprites/outlined/unit-crawler.png) unit-crawler,
+![unit-mono-happy](../assets-raw/sprites/outlined/unit-mono-happy.png) unit-mono-happy,
+![unit-mono-hit](../assets-raw/sprites/outlined/unit-mono-hit.png) unit-mono-hit,
+![unit-mono](../assets-raw/sprites/outlined/unit-mono.png) unit-mono,
+![unit-oct-angery](../assets-raw/sprites/outlined/unit-oct-angery.png) unit-oct-angery,
+![unit-oct-hit](../assets-raw/sprites/outlined/unit-oct-hit.png) unit-oct-hit,
+![unit-oct](../assets-raw/sprites/outlined/unit-oct.png) unit-oct,
+![unit-oxynoe-hit](../assets-raw/sprites/outlined/unit-oxynoe-hit.png) unit-oxynoe-hit,
+![unit-oxynoe](../assets-raw/sprites/outlined/unit-oxynoe.png) unit-oxynoe,
+![unit-quad-hit](../assets-raw/sprites/outlined/unit-quad-hit.png) unit-quad-hit,
+![unit-quad](../assets-raw/sprites/outlined/unit-quad.png) unit-quad,
+![unit-sei-hit](../assets-raw/sprites/outlined/unit-sei-hit.png) unit-sei-hit,
+![unit-sei](../assets-raw/sprites/outlined/unit-sei.png) unit-sei,
+![unit-zenith-angery](../assets-raw/sprites/outlined/unit-zenith-angery.png) unit-zenith-angery,
+![unit-zenith-hit](../assets-raw/sprites/outlined/unit-zenith-hit.png) unit-zenith-hit,
+![unit-zenith](../assets-raw/sprites/outlined/unit-zenith.png) unit-zenith,
+![warn](../assets-raw/sprites/outlined/warn.png) warn,
+![wave0](../assets-raw/sprites/outlined/wave0.png) wave0,
+![wave1](../assets-raw/sprites/outlined/wave1.png) wave1,
+![wave2](../assets-raw/sprites/outlined/wave2.png) wave2,
+![wave3](../assets-raw/sprites/outlined/wave3.png) wave3
+
+</details>
 
 ## Map scripting
 

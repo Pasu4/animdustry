@@ -10,6 +10,12 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "jsdoc",
+      "type": "shell",
+      "command": "jsdoc -c doc/conf.json -d doc/jsdoc doc/api.js",
+      "problemMatcher": []
     }
   ]
 }
