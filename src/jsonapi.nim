@@ -570,7 +570,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     of "DrawSpace":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc() = patSpace(getColor(col)))
+        procs.add(proc() = patSpace(getColor(col), musicTime()))
 
     of "DrawUnit":
       let

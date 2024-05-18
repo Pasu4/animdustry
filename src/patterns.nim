@@ -497,7 +497,7 @@ proc patFadeIn*(time: float32) =
 
 var spaceShader*: Shader
 
-template patSpace*(col: Color) =
+template patSpace*(col: Color, in_time: float) =
   if spaceShader.isNil:
     spaceShader = newShader(
       screenspaceVertex,
@@ -570,7 +570,7 @@ template patSpace*(col: Color) =
   drawFlush()
   fau.quad.render(spaceShader, meshParams(buffer = fau.batch.buffer, blend = blendNormal)):
     resolution = fau.cam.size
-    time = musicTime() / 6f
+    time = in_time / 6f
     power = 0f
     color = col
 

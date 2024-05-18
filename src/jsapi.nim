@@ -210,7 +210,7 @@ proc initJsApi*() =
   # Create heap
   ctx = duk_create_heap_default()
 
-  #region Define classes
+  # Class definitions
 
   #region Vec2
 
@@ -522,7 +522,7 @@ proc initJsApi*() =
 
   #endregion
 
-  #endregion
+  # Function definitions
 
   #region Global constants
   
@@ -970,11 +970,12 @@ proc initJsApi*() =
     return 0
   ))
 
-  # drawSpace(col: Color)
-  setGlobalFunc("drawSpace", 1, (proc(ctx: DTContext): cint{.stdcall.} =
+  # drawSpace(col: Color, time: float = state.secs)
+  setGlobalFunc("drawSpace", 2, (proc(ctx: DTContext): cint{.stdcall.} =
     let
       col = getColor(0)
-    patSpace(col)
+      time = ctx.duk_get_number_default(1, state.secs)
+    patSpace(col, time)
     return 0
   ))
 

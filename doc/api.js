@@ -726,21 +726,22 @@ function drawZoom(col = Color.white, offset = 0, amount = 10, sides = 4) { }
 
 /**
  * The screen becomes light blue from the top left corner. This effect is used to transition between the menu and levels.
- * @param {number} time The screen will move if you put in a value that changes over time.
+ * @param {number} time The effect will move if you put in a value that changes over time.
  */
 function drawFadeOut(time) { }
 
 /**
  * A light blue screen disappears into the bottom right corner. This effect is used to transition between the menu and levels.
- * @param {number} time The circles will move if you put in a value that changes over time. The value should change in reverse (?).
+ * @param {number} time The effect will move if you put in a value that changes over time. The value should change in reverse (?).
  */
 function drawFadeIn(time) { }
 
 /**
  * Draws many stripes pointing towards the center. Only works inside levels.
  * @param {Color} col The color of the stripes.
+ * @param {number} [time=state.secs] The stripes will move if you put in a value that changes over time.
  */
-function drawSpace(col) { }
+function drawSpace(col, time) { }
 
 /**
  * Draws the current unit's splash image. Should only be used in unit splash drawing.

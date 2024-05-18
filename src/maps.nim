@@ -517,7 +517,7 @@ template createMaps* =
       patStars((%"46cdd2").withA(0.4f), (%"50e2b5").withA(1f), 70, 2)
 
       patSpinShape(%"1e1b36", %"393b5c")
-      patSpace(%"1e1b36")
+      patSpace(%"1e1b36", musicTime())
     ),
     draw: (proc() =
       patTilesSquare(%"b4b2ff", %"50e2b5")
