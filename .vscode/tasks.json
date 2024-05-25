@@ -5,6 +5,9 @@
       "label": "debug",
       "type": "shell",
       "command": "nimble debug",
+      "windows":{
+        "command": "start wsl {PATH=~/.nimble/bin:/usr/bin; nimble debug}"
+      },
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -12,10 +15,41 @@
       }
     },
     {
+      "label": "deploy",
+      "type": "shell",
+      "command": "./build.sh",
+      "windows": {
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; ./build.sh",
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "nimble run",
+      "windows": {
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; nimble run",
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "run (no recompile)",
+      "type": "shell",
+      "command": "nimble run",
+      "windows": {
+        "command": "wsl build/main",
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
       "label": "jsdoc",
       "type": "shell",
       "command": "jsdoc -c doc/conf.json -d doc/jsdoc doc/api.js",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "group": "build"
     }
   ]
 }
