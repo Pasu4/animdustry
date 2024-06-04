@@ -1,5 +1,5 @@
-import sequtils, tables, os
-import core, vars, fau/[fmath, color], pkg/polymorph
+import sequtils, tables
+import core, fau/[fmath, color], pkg/polymorph
 import types
 
 let

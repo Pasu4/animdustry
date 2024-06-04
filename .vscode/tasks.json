@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "nimble debug",
       "windows":{
-        "command": "start wsl {PATH=~/.nimble/bin:/usr/bin; nimble debug}"
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; nimble debug"
       },
       "problemMatcher": [],
       "group": {
@@ -19,7 +19,7 @@
       "type": "shell",
       "command": "./build.sh",
       "windows": {
-        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; ./build.sh",
+        "command": "wsl ./build.sh",
       },
       "problemMatcher": [],
       "group": "build"
@@ -30,6 +30,24 @@
       "command": "nimble run",
       "windows": {
         "command": "wsl PATH=~/.nimble/bin:/usr/bin`; nimble run",
+        "problemMatcher": {
+          "owner": "nim",
+          "fileLocation": [
+            "relative",
+            "C:/"
+          ],
+          "pattern":[
+            {
+              "regexp": "^/mnt/c/(.+)\\((\\d+), (\\d+)\\) (.+?): (.+)$",
+              "file": 1,
+              "location": 2,
+              "line": 3,
+              "column": 4,
+              "severity": 4,
+              "message": 5
+            }
+          ]
+        }
       },
       "problemMatcher": [],
       "group": "build"

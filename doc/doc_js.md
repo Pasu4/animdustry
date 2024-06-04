@@ -60,6 +60,11 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
     "namespace": "exampleNamespace",
     "author": "You",
     "description": "Description of your mod",
+    "version": "1.0.0",
+    "dependencies": [
+        "exampleDependency"
+    ],
+    "tags": ["template", "example"],
     "enabled": true,
     "debug": false,
     "legacy": false
@@ -67,9 +72,12 @@ A `mod.json` or `mod.hjson` file must be placed in the root folder of the mod. I
 ```
 
 - **name:** The name of your mod.
-- **namespace:** The namespace of your mod. Must be a valid JavaScript variable name. An object with this name will be automatically created in global JavaScript context.
+- **namespace:** The namespace of your mod. Must be a valid JavaScript variable name. An object with this name will be automatically created in global JavaScript context. Must not match the namespace of any other mod.
 - **author:** The main author of the mod. Other mentions can be placed in *credits.txt*.
 - **description:** The description of your mod. Currently does absolutely nothing.
+- **version:** The version of your mod. It is recommended to use [Semantic Versioning](https://semver.org/).
+- **dependencies:** A list of the namespaces of mods which must be installed for your mod to work.
+- **tags:** A list of tags that your mod will be searchable by. [Some tags have a specific meaning.](#tags)
 - **enabled:** Whether the mod should be loaded. Optional, defaults to `true`.
 - **debug:** Whether the mod is in debug mode. Debug mode allows to temporarily overwrite state variables for debugging. Optional, defaults to `false`.
 - **legacy:** Whether this mod is using the legacy JSON API. Should be `false` if you are making a JavaScript mod. Optional, defaults to `false`.
@@ -200,111 +208,111 @@ Some sprites are included with the base game. These are:
 <details>
 <summary>Normal</summary>
 
-![arrow](../assets-raw/sprites/arrow.png) arrow,
-![beach](../assets-raw/sprites/beach.png) beach,
-![big-copper](../assets-raw/sprites/big-copper.png) big-copper,
-![circle](../assets-raw/sprites/circle.png) circle,
-![ckat](../assets-raw/sprites/ckat.png) ckat,
-![cloud1](../assets-raw/sprites/cloud1.png) cloud1,
-![cloud2](../assets-raw/sprites/cloud2.png) cloud2,
-![cloud3](../assets-raw/sprites/cloud3.png) cloud3,
-![cloud4](../assets-raw/sprites/cloud4.png) cloud4,
-![error](../assets-raw/sprites/error.png) error,
-![explode0](../assets-raw/sprites/explode0.png) explode0,
-![explode1](../assets-raw/sprites/explode1.png) explode1,
-![explode2](../assets-raw/sprites/explode2.png) explode2,
-![explode3](../assets-raw/sprites/explode3.png) explode3,
-![explode4](../assets-raw/sprites/explode4.png) explode4,
-![hit0](../assets-raw/sprites/hit0.png) hit0,
-![hit1](../assets-raw/sprites/hit1.png) hit1,
-![hit2](../assets-raw/sprites/hit2.png) hit2,
-![hit3](../assets-raw/sprites/hit3.png) hit3,
-![hit4](../assets-raw/sprites/hit4.png) hit4,
-![hit5](../assets-raw/sprites/hit5.png) hit5,
-![laser](../assets-raw/sprites/laser.png) laser,
-![longcloud1](../assets-raw/sprites/longcloud1.png) longcloud1,
-![longcloud2](../assets-raw/sprites/longcloud2.png) longcloud2,
-![longcloud3](../assets-raw/sprites/longcloud3.png) longcloud3,
-![longcloud4](../assets-raw/sprites/longcloud4.png) longcloud4,
-![longcloud5](../assets-raw/sprites/longcloud5.png) longcloud5,
-![petal](../assets-raw/sprites/petal.png) petal,
-![reload](../assets-raw/sprites/reload.png) reload,
-![shadow](../assets-raw/sprites/shadow.png) shadow,
-![smoke0](../assets-raw/sprites/smoke0.png) smoke0,
-![smoke1](../assets-raw/sprites/smoke1.png) smoke1,
-![smoke2](../assets-raw/sprites/smoke2.png) smoke2,
-![smoke3](../assets-raw/sprites/smoke3.png) smoke3,
-![smoke4](../assets-raw/sprites/smoke4.png) smoke4,
-![smoke5](../assets-raw/sprites/smoke5.png) smoke5,
-![star1](../assets-raw/sprites/star1.png) star1,
-![star2](../assets-raw/sprites/star2.png) star2,
-![star3](../assets-raw/sprites/star3.png) star3,
-![sun](../assets-raw/sprites/sun.png) sun,
-![tile](../assets-raw/sprites/tile.png) tile,
-![wall](../assets-raw/sprites/wall.png) wall,
+<img src="../assets-raw/sprites/arrow.png"> arrow,
+<img src="../assets-raw/sprites/beach.png"> beach,
+<img src="../assets-raw/sprites/big-copper.png"> big-copper,
+<img src="../assets-raw/sprites/circle.png"> circle,
+<img src="../assets-raw/sprites/ckat.png"> ckat,
+<img src="../assets-raw/sprites/cloud1.png"> cloud1,
+<img src="../assets-raw/sprites/cloud2.png"> cloud2,
+<img src="../assets-raw/sprites/cloud3.png"> cloud3,
+<img src="../assets-raw/sprites/cloud4.png"> cloud4,
+<img src="../assets-raw/sprites/error.png"> error,
+<img src="../assets-raw/sprites/explode0.png"> explode0,
+<img src="../assets-raw/sprites/explode1.png"> explode1,
+<img src="../assets-raw/sprites/explode2.png"> explode2,
+<img src="../assets-raw/sprites/explode3.png"> explode3,
+<img src="../assets-raw/sprites/explode4.png"> explode4,
+<img src="../assets-raw/sprites/hit0.png"> hit0,
+<img src="../assets-raw/sprites/hit1.png"> hit1,
+<img src="../assets-raw/sprites/hit2.png"> hit2,
+<img src="../assets-raw/sprites/hit3.png"> hit3,
+<img src="../assets-raw/sprites/hit4.png"> hit4,
+<img src="../assets-raw/sprites/hit5.png"> hit5,
+<img src="../assets-raw/sprites/laser.png"> laser,
+<img src="../assets-raw/sprites/longcloud1.png"> longcloud1,
+<img src="../assets-raw/sprites/longcloud2.png"> longcloud2,
+<img src="../assets-raw/sprites/longcloud3.png"> longcloud3,
+<img src="../assets-raw/sprites/longcloud4.png"> longcloud4,
+<img src="../assets-raw/sprites/longcloud5.png"> longcloud5,
+<img src="../assets-raw/sprites/petal.png"> petal,
+<img src="../assets-raw/sprites/reload.png"> reload,
+<img src="../assets-raw/sprites/shadow.png"> shadow,
+<img src="../assets-raw/sprites/smoke0.png"> smoke0,
+<img src="../assets-raw/sprites/smoke1.png"> smoke1,
+<img src="../assets-raw/sprites/smoke2.png"> smoke2,
+<img src="../assets-raw/sprites/smoke3.png"> smoke3,
+<img src="../assets-raw/sprites/smoke4.png"> smoke4,
+<img src="../assets-raw/sprites/smoke5.png"> smoke5,
+<img src="../assets-raw/sprites/star1.png"> star1,
+<img src="../assets-raw/sprites/star2.png"> star2,
+<img src="../assets-raw/sprites/star3.png"> star3,
+<img src="../assets-raw/sprites/sun.png"> sun,
+<img src="../assets-raw/sprites/tile.png"> tile,
+<img src="../assets-raw/sprites/wall.png"> wall
 
 </details>
 
 <details>
 <summary>Outlined</summary>
 
-These sprites are outlined in white.
+These sprites are outlined.
 
-![arc](../assets-raw/sprites/outlined/arc.png) arc,
-![bullet-blue](../assets-raw/sprites/outlined/bullet-blue.png) bullet-blue,
-![bullet-pink](../assets-raw/sprites/outlined/bullet-pink.png) bullet-pink,
-![bullet-purple](../assets-raw/sprites/outlined/bullet-purple.png) bullet-purple,
-![bullet-tri](../assets-raw/sprites/outlined/bullet-tri.png) bullet-tri,
-![bullet](../assets-raw/sprites/outlined/bullet.png) bullet,
-![conveyor](../assets-raw/sprites/outlined/conveyor.png) conveyor,
-![copper](../assets-raw/sprites/outlined/copper.png) copper,
-![duo](../assets-raw/sprites/outlined/duo.png) duo,
-![fail](../assets-raw/sprites/outlined/fail.png) fail,
-![headphones](../assets-raw/sprites/outlined/headphones.png) headphones,
-![health](../assets-raw/sprites/outlined/health.png) health,
-![info](../assets-raw/sprites/outlined/info.png) info,
-![junction](../assets-raw/sprites/outlined/junction.png) junction,
-![lancer](../assets-raw/sprites/outlined/lancer.png) lancer,
-![lancer2](../assets-raw/sprites/outlined/lancer2.png) lancer2,
-![mine](../assets-raw/sprites/outlined/mine.png) mine,
-![overflow-gate](../assets-raw/sprites/outlined/overflow-gate.png) overflow-gate,
-![pause](../assets-raw/sprites/outlined/pause.png) pause,
-![play](../assets-raw/sprites/outlined/play.png) play,
-![progress-tick](../assets-raw/sprites/outlined/progress-tick.png) progress-tick,
-![progress](../assets-raw/sprites/outlined/progress.png) progress,
-![router](../assets-raw/sprites/outlined/router.png) router,
-![settings](../assets-raw/sprites/outlined/settings.png) settings,
-![shield](../assets-raw/sprites/outlined/shield.png) shield,
-![skat](../assets-raw/sprites/outlined/skat.png) skat,
-![sorter](../assets-raw/sprites/outlined/sorter.png) sorter,
-![unit-alpha-happy](../assets-raw/sprites/outlined/unit-alpha-happy.png) unit-alpha-happy,
-![unit-alpha-hit](../assets-raw/sprites/outlined/unit-alpha-hit.png) unit-alpha-hit,
-![unit-alpha](../assets-raw/sprites/outlined/unit-alpha.png) unit-alpha,
-![unit-boulder-hit](../assets-raw/sprites/outlined/unit-boulder-hit.png) unit-boulder-hit,
-![unit-boulder](../assets-raw/sprites/outlined/unit-boulder.png) unit-boulder,
-![unit-crawler-angery](../assets-raw/sprites/outlined/unit-crawler-angery.png) unit-crawler-angery,
-![unit-crawler-hit](../assets-raw/sprites/outlined/unit-crawler-hit.png) unit-crawler-hit,
-![unit-crawler](../assets-raw/sprites/outlined/unit-crawler.png) unit-crawler,
-![unit-mono-happy](../assets-raw/sprites/outlined/unit-mono-happy.png) unit-mono-happy,
-![unit-mono-hit](../assets-raw/sprites/outlined/unit-mono-hit.png) unit-mono-hit,
-![unit-mono](../assets-raw/sprites/outlined/unit-mono.png) unit-mono,
-![unit-oct-angery](../assets-raw/sprites/outlined/unit-oct-angery.png) unit-oct-angery,
-![unit-oct-hit](../assets-raw/sprites/outlined/unit-oct-hit.png) unit-oct-hit,
-![unit-oct](../assets-raw/sprites/outlined/unit-oct.png) unit-oct,
-![unit-oxynoe-hit](../assets-raw/sprites/outlined/unit-oxynoe-hit.png) unit-oxynoe-hit,
-![unit-oxynoe](../assets-raw/sprites/outlined/unit-oxynoe.png) unit-oxynoe,
-![unit-quad-hit](../assets-raw/sprites/outlined/unit-quad-hit.png) unit-quad-hit,
-![unit-quad](../assets-raw/sprites/outlined/unit-quad.png) unit-quad,
-![unit-sei-hit](../assets-raw/sprites/outlined/unit-sei-hit.png) unit-sei-hit,
-![unit-sei](../assets-raw/sprites/outlined/unit-sei.png) unit-sei,
-![unit-zenith-angery](../assets-raw/sprites/outlined/unit-zenith-angery.png) unit-zenith-angery,
-![unit-zenith-hit](../assets-raw/sprites/outlined/unit-zenith-hit.png) unit-zenith-hit,
-![unit-zenith](../assets-raw/sprites/outlined/unit-zenith.png) unit-zenith,
-![warn](../assets-raw/sprites/outlined/warn.png) warn,
-![wave0](../assets-raw/sprites/outlined/wave0.png) wave0,
-![wave1](../assets-raw/sprites/outlined/wave1.png) wave1,
-![wave2](../assets-raw/sprites/outlined/wave2.png) wave2,
-![wave3](../assets-raw/sprites/outlined/wave3.png) wave3
+<img src="../assets-raw/sprites/outlined/arc.png"> arc,
+<img src="../assets-raw/sprites/outlined/bullet-blue.png"> bullet-blue,
+<img src="../assets-raw/sprites/outlined/bullet-pink.png"> bullet-pink,
+<img src="../assets-raw/sprites/outlined/bullet-purple.png"> bullet-purple,
+<img src="../assets-raw/sprites/outlined/bullet-tri.png"> bullet-tri,
+<img src="../assets-raw/sprites/outlined/bullet.png"> bullet,
+<img src="../assets-raw/sprites/outlined/conveyor.png"> conveyor,
+<img src="../assets-raw/sprites/outlined/copper.png"> copper,
+<img src="../assets-raw/sprites/outlined/duo.png"> duo,
+<img src="../assets-raw/sprites/outlined/fail.png"> fail,
+<img src="../assets-raw/sprites/outlined/headphones.png"> headphones,
+<img src="../assets-raw/sprites/outlined/health.png"> health,
+<img src="../assets-raw/sprites/outlined/info.png"> info,
+<img src="../assets-raw/sprites/outlined/junction.png"> junction,
+<img src="../assets-raw/sprites/outlined/lancer.png"> lancer,
+<img src="../assets-raw/sprites/outlined/lancer2.png"> lancer2,
+<img src="../assets-raw/sprites/outlined/mine.png"> mine,
+<img src="../assets-raw/sprites/outlined/overflow-gate.png"> overflow-gate,
+<img src="../assets-raw/sprites/outlined/pause.png"> pause,
+<img src="../assets-raw/sprites/outlined/play.png"> play,
+<img src="../assets-raw/sprites/outlined/progress-tick.png"> progress-tick,
+<img src="../assets-raw/sprites/outlined/progress.png"> progress,
+<img src="../assets-raw/sprites/outlined/router.png"> router,
+<img src="../assets-raw/sprites/outlined/settings.png"> settings,
+<img src="../assets-raw/sprites/outlined/shield.png"> shield,
+<img src="../assets-raw/sprites/outlined/skat.png"> skat,
+<img src="../assets-raw/sprites/outlined/sorter.png"> sorter,
+<img src="../assets-raw/sprites/outlined/unit-alpha-happy.png"> unit-alpha-happy,
+<img src="../assets-raw/sprites/outlined/unit-alpha-hit.png"> unit-alpha-hit,
+<img src="../assets-raw/sprites/outlined/unit-alpha.png"> unit-alpha,
+<img src="../assets-raw/sprites/outlined/unit-boulder-hit.png"> unit-boulder-hit,
+<img src="../assets-raw/sprites/outlined/unit-boulder.png"> unit-boulder,
+<img src="../assets-raw/sprites/outlined/unit-crawler-angery.png"> unit-crawler-angery,
+<img src="../assets-raw/sprites/outlined/unit-crawler-hit.png"> unit-crawler-hit,
+<img src="../assets-raw/sprites/outlined/unit-crawler.png"> unit-crawler,
+<img src="../assets-raw/sprites/outlined/unit-mono-happy.png"> unit-mono-happy,
+<img src="../assets-raw/sprites/outlined/unit-mono-hit.png"> unit-mono-hit,
+<img src="../assets-raw/sprites/outlined/unit-mono.png"> unit-mono,
+<img src="../assets-raw/sprites/outlined/unit-oct-angery.png"> unit-oct-angery,
+<img src="../assets-raw/sprites/outlined/unit-oct-hit.png"> unit-oct-hit,
+<img src="../assets-raw/sprites/outlined/unit-oct.png"> unit-oct,
+<img src="../assets-raw/sprites/outlined/unit-oxynoe-hit.png"> unit-oxynoe-hit,
+<img src="../assets-raw/sprites/outlined/unit-oxynoe.png"> unit-oxynoe,
+<img src="../assets-raw/sprites/outlined/unit-quad-hit.png"> unit-quad-hit,
+<img src="../assets-raw/sprites/outlined/unit-quad.png"> unit-quad,
+<img src="../assets-raw/sprites/outlined/unit-sei-hit.png"> unit-sei-hit,
+<img src="../assets-raw/sprites/outlined/unit-sei.png"> unit-sei,
+<img src="../assets-raw/sprites/outlined/unit-zenith-angery.png"> unit-zenith-angery,
+<img src="../assets-raw/sprites/outlined/unit-zenith-hit.png"> unit-zenith-hit,
+<img src="../assets-raw/sprites/outlined/unit-zenith.png"> unit-zenith,
+<img src="../assets-raw/sprites/outlined/warn.png"> warn,
+<img src="../assets-raw/sprites/outlined/wave0.png"> wave0,
+<img src="../assets-raw/sprites/outlined/wave1.png"> wave1,
+<img src="../assets-raw/sprites/outlined/wave2.png"> wave2,
+<img src="../assets-raw/sprites/outlined/wave3.png"> wave3
 
 </details>
 
@@ -366,3 +374,21 @@ This comes with a few limitations:
 - User-defined functions cannot have default/optional arguments.
 - The `let` keyword is not supported in Duktape.
 - `for...of` loops are not supported in Duktape. Either use a `for...in` or `for` loop.
+
+## Publishing
+
+To publish a mod, it needs to be in a public GitHub repository and have the topic `animdustry-mod`.
+
+The namespace of your mod must be unique across all mods.
+If two mods have the same namespace, the mod that was created first has priority, the other mod will not be added.
+
+For now, the only way to download mods is manually downloading it from its repository on GitHub, unzipping it, and placing it in the `mods` folder.
+For convenience, you can find a list of mods with download links [here](https://github.com/Pasu4/animdustry-mods/blob/master/mods.md).
+Once the mod browser is implemented, it will be possible to install mods directly
+
+### Tags
+
+**Note:** Tags will be used for the mod browser, which is not implemented yet.
+
+Tags are keywords that make it easier to find your mod in the mod browser.
+There are also some special tags
