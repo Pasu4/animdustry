@@ -9,4 +9,3 @@ android/src
 android/.gradle
 android/.cxx
 src/giftest.nim
-/build.sh

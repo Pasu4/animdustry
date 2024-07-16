@@ -3,7 +3,7 @@ import std/[tables, sequtils, algorithm, macros, options, random, math, strforma
 import pkg/polymorph
 import types, vars, saveio, patterns, maps, sugar, units
 import std/os
-import mods, jsonapi
+import mods, apivars, jsonapi, jsapi
 
 include components
 include fx
@@ -185,6 +185,38 @@ proc getGameTexture*(unit: Unit, name: string = ""): Texture =
     return tex
   return unit.textures[key]
 
+# For modded bullets, enemies, etc.
+proc getCustomTexture*(namespace: string, name: string, file = name): Texture =
+  let key = &"{namespace}_{name}"
+  if not customTextures.hasKey(key):
+    echo "Loading file ", modPaths[namespace] / "sprites" / name & ".png (key ", key, ")"
+    let tex = loadTextureFile(modPaths[namespace] / "sprites" / name & ".png")
+    tex.filter = tfNearest
+    customTextures[key] = tex
+    return tex
+  if key notin customTextures:
+    echo "Error: Texture not found for ", key
+    return "error".patch.texture
+  return customTextures[key]
+
+# import a texture from another mod
+proc importCustomTexture*(sourceNamespace: string, sourceName: string, targetNamespace: string, targetName: string) =
+  let
+    sourceKey = &"{sourceNamespace}_{sourceName}"
+    targetKey = &"{targetNamespace}_{targetName}"
+  if not customTextures.hasKey(sourceKey):
+    # load the texture from file
+    echo "Importing texture ", sourceKey, " from ", sourceNamespace, " to ", targetKey, " in ", targetNamespace
+    if sourceNamespace notin modPaths:
+      echo "Error: Mod path not found for ", sourceNamespace
+      return
+    let tex = loadTextureFile(modPaths[sourceNamespace] / "sprites" / sourceName & ".png")
+    tex.filter = tfNearest
+    customTextures[targetKey] = tex
+  else:
+    # copy buffered texture
+    customTextures[targetKey] = customTextures[sourceKey]
+
 proc rollUnit*(): Unit =
   #very low chance, as it is annoying
   if chance(1f / 100f):
@@ -293,7 +325,7 @@ makeSystem("core", []):
     createUnits()
 
     exportProcs()
-    initJsonApi(
+    exportBloom(
       (proc() =
         drawBuffer(sysDraw.bloom.buffer)
       ),
@@ -302,6 +334,8 @@ makeSystem("core", []):
         sysDraw.bloom.blit(params = meshParams(blend = blendNormal))
       )
     )
+    initJsonApi()
+    initJsApi()
 
     loadMods()
 
@@ -851,25 +885,44 @@ makeSystem("drawSquish", [Pos, DrawSquish, Velocity, Snek, Scaled]):
     item.snek.fade += fau.delta / 0.5f
     let f = item.snek.fade.clamp
 
-    draw(item.drawSquish.sprite.patch,
-      item.pos.vec, 
-      rotation = item.velocity.vec.vec2.angle,
-      scl = vec2(1f, 1f - state.moveBeat * 0.3f) * item.scaled.scl,
-      mixcolor = state.map.fadeColor.withA(1f - f)
-    )
+    if item.drawSquish.sprite.patch.exists:
+      draw(item.drawSquish.sprite.patch,
+        item.pos.vec, 
+        rotation = item.velocity.vec.vec2.angle,
+        scl = vec2(1f, 1f - state.moveBeat * 0.3f) * item.scaled.scl,
+        mixcolor = state.map.fadeColor.withA(1f - f)
+      )
+    else:
+      draw(getCustomTexture(currentNamespace, item.drawSquish.sprite),
+        item.pos.vec, 
+        rotation = item.velocity.vec.vec2.angle,
+        scl = vec2(1f, 1f - state.moveBeat * 0.3f) * item.scaled.scl,
+        mixcolor = state.map.fadeColor.withA(1f - f)
+      )
 
 makeSystem("drawSpin", [Pos, DrawSpin, Scaled]):
   all:
-    proc spinSprite(patch: Patch, pos: Vec2, scl: Vec2, rot: float32) =
-      let r = rot.mod 90f.rad
-      draw(patch, pos, rotation = r, scl = scl)
-      draw(patch, pos, rotation = r - 90f.rad, color = rgba(1f, 1f, 1f, r / 90f.rad), scl = scl)
+    if item.drawSpin.sprite.patch.exists:
+      proc spinSprite(patch: Patch, pos: Vec2, scl: Vec2, rot: float32) =
+        let r = rot.mod 90f.rad
+        draw(patch, pos, rotation = r, scl = scl)
+        draw(patch, pos, rotation = r - 90f.rad, color = rgba(1f, 1f, 1f, r / 90f.rad), scl = scl)
 
-    spinSprite(item.drawSpin.sprite.patch, item.pos.vec, vec2(1f + state.moveBeat.pow(3f) * 0.2f) * item.scaled.scl, 90f.rad * state.moveBeat.pow(6f))
+      spinSprite(item.drawSpin.sprite.patch, item.pos.vec, vec2(1f + state.moveBeat.pow(3f) * 0.2f) * item.scaled.scl, 90f.rad * state.moveBeat.pow(6f))
+    else:
+      proc spinSprite(tex: Texture, pos: Vec2, scl: Vec2, rot: float32) =
+        let r = rot.mod 90f.rad
+        draw(tex, pos, rotation = r, scl = scl)
+        draw(tex, pos, rotation = r - 90f.rad, color = rgba(1f, 1f, 1f, r / 90f.rad), scl = scl)
+
+      spinSprite(getCustomTexture(currentNamespace, item.drawSpin.sprite), item.pos.vec, vec2(1f + state.moveBeat.pow(3f) * 0.2f) * item.scaled.scl, 90f.rad * state.moveBeat.pow(6f))
 
 makeSystem("drawBounce", [Pos, DrawBounce, Scaled]):
   all:
-    draw(item.drawBounce.sprite.patch, item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
+    if item.drawBounce.sprite.patch.exists:
+      draw(item.drawBounce.sprite.patch, item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
+    else:
+      draw(getCustomTexture(currentNameSpace, item.drawBounce.sprite), item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
 
 makeSystem("drawLaser", [Pos, DrawLaser, Scaled]):
   all:
@@ -921,7 +974,11 @@ makeSystem("drawBullet", [Pos, DrawBullet, Velocity, Scaled]):
     let sprite = 
       if item.drawBullet.sprite.len == 0: "bullet"
       else: item.drawBullet.sprite
-    draw(sprite.patch, item.pos.vec, z = zlayer(item), rotation = item.velocity.vec.vec2.angle, mixColor = colorWhite.withA(state.moveBeat.pow(5f)), scl = item.scaled.scl.vec2#[, scl = vec2(1f - moveBeat.pow(7f) * 0.3f, 1f + moveBeat.pow(7f) * 0.3f)]#)
+
+    if sprite.patch.exists:
+      draw(sprite.patch, item.pos.vec, z = zlayer(item), rotation = item.velocity.vec.vec2.angle, mixColor = colorWhite.withA(state.moveBeat.pow(5f)), scl = item.scaled.scl.vec2#[, scl = vec2(1f - moveBeat.pow(7f) * 0.3f, 1f + moveBeat.pow(7f) * 0.3f)]#)
+    else:
+      draw(getCustomTexture(currentNamespace, sprite), item.pos.vec, z = zlayer(item), rotation = item.velocity.vec.vec2.angle, mixColor = colorWhite.withA(state.moveBeat.pow(5f)), scl = item.scaled.scl.vec2)
 
 include menus
 

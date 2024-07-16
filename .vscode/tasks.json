@@ -5,11 +5,69 @@
       "label": "debug",
       "type": "shell",
       "command": "nimble debug",
+      "windows":{
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; nimble debug"
+      },
       "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "deploy",
+      "type": "shell",
+      "command": "./build.sh",
+      "windows": {
+        "command": "wsl ./build.sh",
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "nimble run",
+      "windows": {
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; nimble run",
+        "problemMatcher": {
+          "owner": "nim",
+          "fileLocation": [
+            "relative",
+            "C:/"
+          ],
+          "pattern":[
+            {
+              "regexp": "^/mnt/c/(.+)\\((\\d+), (\\d+)\\) (.+?): (.+)$",
+              "file": 1,
+              "location": 2,
+              "line": 3,
+              "column": 4,
+              "severity": 4,
+              "message": 5
+            }
+          ]
+        }
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "run (no recompile)",
+      "type": "shell",
+      "command": "nimble run",
+      "windows": {
+        "command": "wsl build/main",
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "jsdoc",
+      "type": "shell",
+      "command": "jsdoc -c doc/conf.json -d doc/jsdoc doc/api.js",
+      "problemMatcher": [],
+      "group": "build"
     }
   ]
 }

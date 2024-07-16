@@ -11,6 +11,12 @@ requires("https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEA
 requires("msgpack4nim == 0.4.4")
 requires("mathexpr >= 1.3.2")
 requires("https://github.com/Pasu4/hjson-nim >= 1.0.3")
+requires("nimgen")
+requires("c2nim")
+# This is re-downloaded on every install for some reason
+# TODO Fix
+# requires("https://github.com/Daedalus11069/duktape-nim >= 0.1.0")
+requires("duktape >= 0.1.0")
 
 import strformat, os, json, sequtils
 
