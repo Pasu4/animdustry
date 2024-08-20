@@ -16,7 +16,7 @@ let
 var
   modErrorLog*: string
   modPaths*: Table[string, string]
-  modList*: seq[ModListEntry]
+  modList*: JsonNode
   modListLoaded* = false
 
 template modError(filePath) =
@@ -26,6 +26,7 @@ template modError(filePath) =
 
 # Downloads a json file from the latest release of the repository.
 # If there is no latest release, downloads from head.
+# TODO Use mod repo
 proc downloadJsonFromGithub(client: HttpClient, repo, filepath: string, specificRef = ""): JsonNode =
   let
     parsedUri = parseUri(repo)
@@ -59,12 +60,45 @@ proc loadModList* =
   if modListLoaded:
     return
   modListLoaded = true
+
   # Fetch mods from their repositories
   var client = newHttpClient()
   try:
     echo "Fetching mod list"
-    let modListJson = client.downloadJsonFromGithub("https://github.com/Pasu4/animdustry", "mod-list.json", "HEAD")
-    for m in modListJson["mods"].getElems():
+    # var modListJson
+    # TODO Remove once I have internet
+    modList = parseJson("""
+    {
+      "updated": "2024-06-05T12:46:48Z",
+      "mods": [
+        {
+          "name": "Crux",
+          "namespace": "crux",
+          "author": "Pasu4",
+          "description": "Adds a map to the game. Work in progress.",
+          "version": "0.1.0",
+          "tags": [
+            "map"
+          ],
+          "debug": false,
+          "enabled": true,
+          "repoName": "Pasu4/crux-mod",
+          "repoOwner": "Pasu4",
+          "repoUrl": "https://github.com/Pasu4/crux-mod",
+          "downloadUrl": "https://api.github.com/repos/Pasu4/crux-mod/zipball",
+          "creationDate": "2024-01-31T10:53:28Z",
+          "lastUpdate": "2024-05-31T09:37:40Z"
+        }
+      ],
+      "problems": {}
+    }
+    """)
+    # Duplicate 9 times for testing
+    for i in 0..9:
+      modList["mods"].add(modList["mods"].getElems()[0])
+    #[
+    modList = client.downloadJsonFromGithub("https://github.com/Pasu4/animdustry-mods", "mod-list.json", "HEAD")
+    for m in modList["mods"].getElems():
       try:
         echo "Fetching ", m["id"].getStr(), " from ", m["repo"].getStr()
         let
@@ -85,6 +119,7 @@ proc loadModList* =
       #   echo "Error parsing mod \"", m["id"].getStr(), "\": ", getCurrentExceptionMsg()
       except HttpRequestError, ProtocolError:
         echo getCurrentExceptionMsg()
+    ]#
   finally:
     client.close()
 

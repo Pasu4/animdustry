@@ -1,4 +1,7 @@
-import mods
+import mods, json, strformat
+
+var
+  modPage = 0
 
 makeSystem("drawUI", []):
   fields:
@@ -441,16 +444,16 @@ makeSystem("drawUI", []):
 
     let buttonSize = 1.5f
 
-    if button(rectCenter(screen.topRight - vec2(buttonSize/2f), vec2(buttonSize)), icon = "info".patchConst):
+    if button(rect(screen.topRight + vec2(-buttonSize), vec2(buttonSize)), icon = "info".patchConst):
       safeTransition:
         creditsPan = 0f
         mode = gmCredits
     
-    if button(rectCenter(screen.topLeft - vec2(-buttonSize/2f, buttonSize/2f), vec2(buttonSize)), icon = "settings".patchConst):
+    if button(rect(screen.topLeft + vec2(0, -buttonSize), vec2(buttonSize)), icon = "settings".patchConst):
       safeTransition:
         mode = gmSettings
 
-    if button(rectCenter(screen.topLeft - vec2(-buttonSize*1.5f, buttonSize/2f), vec2(buttonSize)), icon = "book".patchConst):
+    if button(rect(screen.topLeft + vec2(buttonSize, -buttonSize), vec2(buttonSize * 1.5f, buttonSize)), text = "Mods"):
       safeTransition:
         loadModList()
         mode = gmModBrowser
@@ -676,14 +679,64 @@ makeSystem("drawUI", []):
     patVertGradient(%"57639a")
 
     titleFont.draw("M O D S", screen - rect(vec2(), vec2(0f, 4f.px)), align = daTop)
+    defaultFont.draw("Last updated: " & modList["updated"].getStr(), screen - rect(vec2(), vec2(0f, 20f.px)), align = daTop)
 
-    for i, m in modList:
-      let modRect = rectCenter(0f, screen.top - 4f - i * 4f, 15f, 3f)
+    # Calculate mod slots
+    var
+      slotSize = vec2(5, 3) # => 5, 3
+      slotMargin = vec2(1, 1) # => 1, 1
+      slotDist = slotSize + slotMargin # => 6, 4
+      screenMarginTop = 3f
+      screenMarginBottom = bottomMargin + 2f # Assume bottomMargion is 0 => 2
+      screenMarginLeft = 2f
+      screenMarginRight = 2f
+      screenMarginTotal = vec2(screenMarginLeft + screenMarginRight, screenMarginTop + screenMarginBottom)  # left + right, top + bottom => 8, 5
+      centerX = screen.centerX - screenMarginLeft + screenMarginRight # => 16 - 2 + 2 = 16
+      slotCount = vec2i( # Assume screen.size is 32, 17
+        max(1, (screen.w - screenMarginTotal.x - slotSize.x) / slotDist.x).int + 1, # => (32 - 8 - 5) / 6 + 1 = 3
+        max(1, (screen.h - screenMarginTotal.y - slotSize.y) / slotDist.y).int + 1 # => (17 - 5 - 3) / 4 + 1 = 3
+      )
+      slotOrigin = vec2(
+        centerX - (slotCount.x * slotDist.x - slotMargin.x) / 2f,
+        screen.top - screenMarginTop - slotSize.y
+      )
+      # modCount = modList.len
+      modCount = 100 # Debug
+      slotsPerPage = slotCount.x * slotCount.y
+      pageCount = modCount div slotsPerPage + 1
+
+    # Debug
+    if true:
+      # Draw margins
+      fillRect(rect(screen.x, screen.top - screenMarginTop, screen.w, screenMarginTop), color = colorRed.withA(0.5f))
+      fillRect(rect(screen.botLeft, screen.w, screenMarginBottom), color = colorRed.withA(0.5f))
+      fillRect(rect(screen.botLeft, screenMarginLeft, screen.h), color = colorRed.withA(0.5f))
+      fillRect(rect(screen.botRight - vec2(screenMarginRight, 0f), screenMarginRight, screen.h), color = colorRed.withA(0.5f))
+      fillRect(rect(centerX - 0.5f, screen.y + screenMarginBottom, 1f, (screen.h - screenMarginTotal.y)), color = colorBlue.withA(0.5f))
+
+    # Draw mod slots
+    # for i, m in modList["mods"].getElems():
+    for i in (modPage * slotsPerPage)..<min(modCount, (modPage + 1) * slotsPerPage):
+      let
+        # m = modList["mods"].getElems()[i]
+        modRect = rect(
+          slotOrigin.x + ((i mod slotsPerPage) mod slotCount.x) * slotDist.x,
+          slotOrigin.y - ((i mod slotsPerPage) div slotCount.x) * slotDist.y,
+          slotSize
+        )
       fillRect(modRect, color = colorBlack.withA(0.5f))
       lineRect(modRect, stroke = 2f.px, color = colorWhite)
+      # defaultFont.draw(&"{i}", modRect.center, align = daCenter)
+      defaultFont.draw("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc luctus aliquet. Nullam nec purus nec nunc luctus aliquet.", modRect.xy, bounds = modRect.wh, align = daTopLeft, color = colorWhite, scale = fau.pixelScl * 0.5f)
+
+    # Page change buttons
+    if modPage > 0             and (button(rectCenter(screen.centerX - 2f, screen.y + 1f + bottomMargin, 1.5f, 1f), "<") or keyPageup.tapped):
+      modPage -= 1
+    if modPage < pageCount - 1 and (button(rectCenter(screen.centerX + 2f, screen.y + 1f + bottomMargin, 1.5f, 1f), ">") or keyPagedown.tapped):
+      modPage += 1
 
     # Return to main menu
-    if button(rectCenter(screen.x + 2f, screen.y + 1f  + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
+    if button(rectCenter(screen.x + 2f, screen.y + 1f + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
       safeTransition:
         soundBack.play()
         mode = gmMenu
