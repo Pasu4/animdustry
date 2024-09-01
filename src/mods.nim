@@ -1,10 +1,26 @@
-import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri]
-import jsonapi, jsapi, apivars, patterns, hjson
+import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri, asyncdispatch]
+import zippy/ziparchives
+import jsonapi, jsapi, apivars, patterns, hjson, semver
 
-type ModListEntry = object
-  name*, id*, namespace*, repo*: string
-  wip* = false
-  dependencies*: seq[string]
+type InstalledMod = object
+  namespace*: string
+  version*: SemVer
+  enabled*: bool
+
+type RemoteMod = object
+  name*: string
+  namespace*: string
+  author*: string
+  description*: string
+  version*: SemVer
+  tags*: seq[string]
+  debug*: bool
+  repoName*: string
+  repoOwner*: string
+  repoUrl*: string
+  downloadUrl*: string
+  creationDate*: string
+  lastUpdate*: string
 
 let
   dataDir = getSaveDir("animdustry")
@@ -17,7 +33,13 @@ var
   modErrorLog*: string
   modPaths*: Table[string, string]
   modList*: JsonNode
+  installedModList*: seq[InstalledMod]
+  remoteModList*: seq[RemoteMod]
   modListLoaded* = false
+  modListLastUpdated*: string
+  activeDownload*: Future[void] = asyncdispatch.all[void]() # Initialized as completed
+  downloadFailed*: bool = false
+  restartRequired* = false
 
 template modError(filePath) =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
@@ -85,7 +107,7 @@ proc loadModList* =
           "repoName": "Pasu4/crux-mod",
           "repoOwner": "Pasu4",
           "repoUrl": "https://github.com/Pasu4/crux-mod",
-          "downloadUrl": "https://api.github.com/repos/Pasu4/crux-mod/zipball",
+          "downloadUrl": "https://github.com/Pasu4/crux-mod/archive/master.zip",
           "creationDate": "2024-01-31T10:53:28Z",
           "lastUpdate": "2024-05-31T09:37:40Z"
         }
@@ -120,6 +142,26 @@ proc loadModList* =
       except HttpRequestError, ProtocolError:
         echo getCurrentExceptionMsg()
     ]#
+
+    modListLastUpdated = modList["updated"].getStr()
+
+    # Convert to mod list
+    for m in modList["mods"].getElems():
+      remoteModList.add(RemoteMod(
+        name:         m["name"].getStr(),
+        namespace:    m["namespace"].getStr(),
+        author:       m["author"].getStr(),
+        description:  m["description"].getStr(),
+        version:      m["version"].getStr().newSemVer("0.0.0"),
+        tags:         m["tags"].getElems().map(proc(j: JsonNode): string = j.getStr()),
+        debug:        m["debug"].getBool(),
+        repoName:     m["repoName"].getStr(),
+        repoOwner:    m["repoOwner"].getStr(),
+        repoUrl:      m["repoUrl"].getStr(),
+        downloadUrl:  m["downloadUrl"].getStr(),
+        creationDate: m["creationDate"].getStr(),
+        lastUpdate:   m["lastUpdate"].getStr(),
+      ))
   finally:
     client.close()
 
@@ -150,6 +192,11 @@ proc loadMods* =
           modLegacy = modNode{"legacy"}.getBool(false) # Legacy mods use JSON scripts instead of JavaScript
 
           modPaths[currentNamespace] = modPath
+
+          installedModList.add(InstalledMod(
+            namespace: currentNamespace,
+            version: modNode["version"].getStr().newSemVer("0.0.0")
+          ))
 
           if not modEnabled: continue
           if modLegacy:
@@ -360,3 +407,64 @@ proc loadMods* =
   # Finish credits
   creditsText = &"Your mod folder: {modDir}\n\n" & creditsText
   creditsText &= "\n" & creditsTextEnd
+
+proc downloadMod*(m: RemoteMod) {.async.} =
+  downloadFailed = false
+  restartRequired = true
+  let client = newHttpClient()
+
+  echo "Starting download of ", m.name
+
+  try:
+    let
+      tempPath = dataDir / "temp"
+
+    # Download zip file
+    if dirExists(tempPath):
+      removeDir(tempPath)
+    createDir(tempPath)
+
+    echo "Downloading from ", m.downloadUrl
+    let
+      response = client.get(m.downloadUrl)
+      content = response.body()
+    echo "Writing to ", tempPath / "temp.zip"
+    writeFile(tempPath / "temp.zip", content)
+
+    # Extract file
+    echo "Extracting..."
+    extractAll(tempPath / "temp.zip", tempPath / "extracted")
+    
+    # Delete old mod folder if it exists
+    if dirExists(modDir / m.namespace):
+      echo "Deleting old mod folder..."
+      removeDir(modDir / m.namespace)
+    
+    # Move extracted file to mod folder
+    for kind, path in walkDir(tempPath / "extracted"):
+      echo "Moving downloaded mod to ", modDir / m.namespace, "..."
+      moveDir(path, modDir / m.namespace) # The extracted file's name does not matter
+      break # Only one file is expected
+
+    # Update installed mod list
+    var found = false
+    for i in 0..installedModList.high:
+      if installedModList[i].namespace == m.namespace:
+        installedModList[i].version = m.version
+        found = true
+        break
+    if not found:
+      installedModList.add(InstalledMod(
+        namespace: m.namespace,
+        version: m.version,
+        enabled: true
+      ))
+
+  except:
+    downloadFailed = true
+    echo "Error downloading mod: ", getCurrentExceptionMsg()
+
+  finally:
+    client.close()
+
+  echo "Download finished."

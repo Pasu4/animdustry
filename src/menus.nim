@@ -1,7 +1,9 @@
-import mods, json, strformat
+import json, strformat, strutils, asyncdispatch
+import mods, semver
 
 var
   modPage = 0
+  selectedModIndex = -1
 
 makeSystem("drawUI", []):
   fields:
@@ -679,7 +681,7 @@ makeSystem("drawUI", []):
     patVertGradient(%"57639a")
 
     titleFont.draw("M O D S", screen - rect(vec2(), vec2(0f, 4f.px)), align = daTop)
-    defaultFont.draw("Last updated: " & modList["updated"].getStr(), screen - rect(vec2(), vec2(0f, 20f.px)), align = daTop)
+    defaultFont.draw("Last updated: " & modListLastUpdated, screen - rect(vec2(), vec2(0f, 20f.px)), align = daTop)
 
     # Calculate mod slots
     var
@@ -700,8 +702,8 @@ makeSystem("drawUI", []):
         centerX - (slotCount.x * slotDist.x - slotMargin.x) / 2f,
         screen.top - screenMarginTop - slotSize.y
       )
-      # modCount = modList.len
-      modCount = 100 # Debug
+      modCount = remoteModList.len
+      # modCount = 100 # Debug
       slotsPerPage = slotCount.x * slotCount.y
       pageCount = modCount div slotsPerPage + 1
 
@@ -724,10 +726,26 @@ makeSystem("drawUI", []):
           slotOrigin.y - ((i mod slotsPerPage) div slotCount.x) * slotDist.y,
           slotSize
         )
-      fillRect(modRect, color = colorBlack.withA(0.5f))
-      lineRect(modRect, stroke = 2f.px, color = colorWhite)
+      # fillRect(modRect, color = colorBlack.withA(0.5f))
+      # lineRect(modRect, stroke = 2f.px, color = colorWhite)
+      if(button(modRect)):
+        selectedModIndex = i
+        safeTransition:
+          mode = gmModInfo
       # defaultFont.draw(&"{i}", modRect.center, align = daCenter)
-      defaultFont.draw("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc luctus aliquet. Nullam nec purus nec nunc luctus aliquet.", modRect.xy, bounds = modRect.wh, align = daTopLeft, color = colorWhite, scale = fau.pixelScl * 0.5f)
+
+      let
+        textMargin = 3.px
+        titleHeight = 5.px
+
+      titleFont.draw(
+        remoteModList[i].name,
+        vec2(modRect.x + textMargin, modrect.top - textMargin - titleHeight), bounds = vec2(modrect.w - textMargin * 2f, titleHeight), align = daTopLeft, color = colorWhite, scale = fau.pixelScl * 0.5f
+      )
+      defaultFont.draw(
+        remoteModList[i].description,
+        modRect.xy + vec2(textMargin), bounds = modRect.wh - vec2(textMargin * 2f, textMargin * 3f + titleHeight), align = daTopLeft, color = colorWhite, scale = fau.pixelScl * 0.5f
+      )
 
     # Page change buttons
     if modPage > 0             and (button(rectCenter(screen.centerX - 2f, screen.y + 1f + bottomMargin, 1.5f, 1f), "<") or keyPageup.tapped):
@@ -736,10 +754,66 @@ makeSystem("drawUI", []):
       modPage += 1
 
     # Return to main menu
-    if button(rectCenter(screen.x + 2f, screen.y + 1f + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
+    if not restartRequired and button(rectCenter(screen.x + 2f, screen.y + 1f + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
       safeTransition:
         soundBack.play()
         mode = gmMenu
+
+    if restartRequired:
+      defaultFont.draw("Restart required to apply mods", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite.mix(colorRed, sin(fau.time * 2f) * 0.5f + 0.5f))
+  
+  elif mode == gmModInfo:
+    patStripes(%"accce3", %"57639a")
+    patVertGradient(%"57639a")
+
+    let
+      m = remoteModList[selectedModIndex]
+      titleKerned = m.name.join(" ")
+      propCol = "8ca9e8"
+      tags = m.tags.join(", ")
+      bodyWidth = 300.px
+      bodyRect = rect(screen.centerX - bodyWidth / 2f, screen.y + bottomMargin, bodyWidth, screen.h - 40.px - bottomMargin)
+
+    titleFont.draw(titleKerned, screen - rect(vec2(), vec2(0f, 4f.px)), align = daTop)
+
+    defaultFont.draw(
+      m.description & "\n\n" &
+      # [] resets the color
+      &"[#{propCol}]Author:[] {m.author}\n" &
+      &"[#{propCol}]Version:[] {$m.version}\n" &
+      &"[#{propCol}]Tags:[] {tags}\n" &
+      &"[#{propCol}]Created:[] {m.creationDate}\n" &
+      &"[#{propCol}]Last Updated:[] {m.lastUpdate}",
+      bodyRect, align = daTopLeft, scale = fau.pixelScl, markup = true
+    )
+
+    # Install / update button
+    let
+      installed = m.namespace in installedModList.map(x => x.namespace)
+      buttonText = if installed: "Update" else: "Install"
+      upToDate = installed and m.version <= installedModList.filter(x => x.namespace == m.namespace)[0].version
+      # Should only show the button if the mod is not installed or the remote version is newer
+      showButton = activeDownload.finished and (not installed or not upToDate)
+    if showButton and button(rectCenter(screen.centerX, screen.y + 1f + bottomMargin, 3f, 1f), buttonText):
+      activeDownload = downloadMod(m)
+
+    # Downloading text
+    if not activeDownload.finished:
+      defaultFont.draw("Downloading...", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
+
+    # Download failed text
+    if downloadFailed:
+      defaultFont.draw("Download failed", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite.mix(colorRed, sin(fau.time * 2f) * 0.5f + 0.5f))
+
+    # Up to date text
+    if upToDate:
+      defaultFont.draw("Up to date", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
+
+    # Return to mod browser
+    if activeDownload.finished and button(rectCenter(screen.x + 2f, screen.y + 1f + bottomMargin, 3f, 1f), "Back") or keyEscape.tapped:
+      safeTransition:
+        soundBack.play()
+        mode = gmModBrowser
 
   drawFlush()
 

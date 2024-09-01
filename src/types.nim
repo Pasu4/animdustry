@@ -89,7 +89,9 @@ type Gamemode* = enum
   #error message when mods fail to load
   gmModError,
   #mod browser
-  gmModBrowser
+  gmModBrowser,
+  #mod info
+  gmModInfo
 
 type GameState* = object
   #may be nil, TODO make optional?
