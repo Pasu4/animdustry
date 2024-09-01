@@ -1579,6 +1579,7 @@ proc updateJs*(namespace: string) =
 
   setObjVec2("playerPos", vec2(state.playerPos), debugMode)
   setObjNumber("beatSpacing", 1.0 / (state.currentBpm / 60.0), debugMode)
+  setObjNumber("smoothTurn", state.turn.float - state.moveBeat + 1f, debugMode)
   ctx.duk_pop()
 
 proc addNamespace*(name: string) =

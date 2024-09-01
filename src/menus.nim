@@ -707,14 +707,12 @@ makeSystem("drawUI", []):
       slotsPerPage = slotCount.x * slotCount.y
       pageCount = modCount div slotsPerPage + 1
 
-    # Debug
-    if true:
-      # Draw margins
-      fillRect(rect(screen.x, screen.top - screenMarginTop, screen.w, screenMarginTop), color = colorRed.withA(0.5f))
-      fillRect(rect(screen.botLeft, screen.w, screenMarginBottom), color = colorRed.withA(0.5f))
-      fillRect(rect(screen.botLeft, screenMarginLeft, screen.h), color = colorRed.withA(0.5f))
-      fillRect(rect(screen.botRight - vec2(screenMarginRight, 0f), screenMarginRight, screen.h), color = colorRed.withA(0.5f))
-      fillRect(rect(centerX - 0.5f, screen.y + screenMarginBottom, 1f, (screen.h - screenMarginTotal.y)), color = colorBlue.withA(0.5f))
+    # DEBUG Draw margins
+    # fillRect(rect(screen.x, screen.top - screenMarginTop, screen.w, screenMarginTop), color = colorRed.withA(0.5f))
+    # fillRect(rect(screen.botLeft, screen.w, screenMarginBottom), color = colorRed.withA(0.5f))
+    # fillRect(rect(screen.botLeft, screenMarginLeft, screen.h), color = colorRed.withA(0.5f))
+    # fillRect(rect(screen.botRight - vec2(screenMarginRight, 0f), screenMarginRight, screen.h), color = colorRed.withA(0.5f))
+    # fillRect(rect(centerX - 0.5f, screen.y + screenMarginBottom, 1f, (screen.h - screenMarginTotal.y)), color = colorBlue.withA(0.5f))
 
     # Draw mod slots
     # for i, m in modList["mods"].getElems():

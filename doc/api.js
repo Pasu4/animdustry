@@ -291,7 +291,7 @@ var state = {
      */
     time,
     /**
-     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused.
      * @type {number}
      * @readonly
      */
@@ -374,6 +374,12 @@ var state = {
      * @readonly
      */
     beatSpacing,
+    /**
+     * The current interpolated beat.
+     * @type {number}
+     * @readonly
+     */
+    smoothTurn
 }
 
 //#endregion
