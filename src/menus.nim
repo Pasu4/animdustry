@@ -275,7 +275,8 @@ makeSystem("drawUI", []):
       unit.draw(unit, pos)
     
     #draw count
-    defaultFont.draw("x" & $(1 + save.duplicates.getOrDefault(unit.name, 0)), screen.grow(vec2(-3f.px, 0f)), scale = 0.75f.px, color = colorAccent, align = daTopRight)
+    let unitKey = if unit.isModded: unit.modNamespace & "::" & unit.name else: unit.name
+    defaultFont.draw("x" & $(1 + save.duplicates.getOrDefault(unitKey, 0)), screen.grow(vec2(-3f.px, 0f)), scale = 0.75f.px, color = colorAccent, align = daTopRight)
     
     #draw title and other UI
     titleFont.draw(
@@ -428,7 +429,7 @@ makeSystem("drawUI", []):
         if save.units.find(unit) == -1:
           save.units.add unit
         else:
-          let key = unit.name
+          let key = unit.qualifiedName
           if not save.duplicates.hasKey(key):
             save.duplicates[key] = 1
           else:

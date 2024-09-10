@@ -352,10 +352,6 @@ makeSystem("core", []):
 
     if save.lastUnit == nil or save.lastUnit == unitBoulder:
       save.lastUnit = unitAlpha
-
-    #resize scores to hold all maps
-    if save.scores.len < allMaps.len:
-      save.scores.setLen(allMaps.len)
     
     #play the intro once
     if not save.introDone:

@@ -43,6 +43,7 @@ var
   downloadFailed*: bool = false
   downloadErrorString*: string = ""
   restartRequired* = false
+  customModSettings*: JsonNode
 
 template modError(filePath) =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
@@ -81,6 +82,16 @@ proc loadModList* =
       ))
   finally:
     client.close()
+
+proc qualifiedName*(unit: Unit): string =
+  if not unit.isModded:
+    return unit.name
+  return unit.modNamespace & "::" & unit.name
+
+proc qualifiedName*(map: Beatmap): string =
+  if not map.isModded:
+    return map.name
+  return map.modNamespace & "::" & map.name
 
 proc loadMods* =
   var mainScriptPaths: Table[string, string] # Table of JS main scripts
@@ -235,7 +246,8 @@ proc loadMods* =
                     abilityReload: unitNode{"abilityReload"}.getInt(0),
                     unmoving: unitNode{"unmoving"}.getBool(false),
                     isModded: true,
-                    modPath: modPath
+                    modPath: modPath,
+                    modNamespace: currentNamespace
                   )
                 parsedUnit.canAngery = fileExists(modPath / "unitSprites/" & unitName & "-angery.png")
                 parsedUnit.canHappy = fileExists(modPath / "unitSprites/" & unitName & "-happy.png")
@@ -279,6 +291,7 @@ proc loadMods* =
 
                     isModded: true,
                     modPath: modPath,
+                    modNamespace: currentNamespace,
                     alwaysUnlocked: mapNode{"alwaysUnlocked"}.getBool()
                   )
 

@@ -33,6 +33,7 @@ type Beatmap* = ref object
   # mod
   isModded*: bool
   modPath*: string
+  modNamespace*: string = ""
   alwaysUnlocked*: bool
 
 type Unit* = ref object
@@ -66,6 +67,7 @@ type Unit* = ref object
   # mod
   isModded*: bool
   modPath*: string
+  modNamespace*: string = ""
   canAngery*: bool # only used for modded units!
   canHappy*: bool # only used for modded units!
 
