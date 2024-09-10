@@ -746,6 +746,12 @@ makeSystem("drawUI", []):
         modRect.xy + vec2(textMargin), bounds = modRect.wh - vec2(textMargin * 2f, textMargin * 3f + titleHeight), align = daTopLeft, color = colorWhite, scale = fau.pixelScl * 0.5f
       )
 
+      # Update indicator
+      if remoteModList[i].namespace in installedModList.map(x => x.namespace):
+        let m = installedModList.filter(x => x.namespace == remoteModList[i].namespace)[0]
+        if m.version < remoteModList[i].version and m.isRepo == false:
+          lineRect(modRect.xy + vec2(1.px), modRect.wh - vec2(2.px), color = colorGreen.withA(sin(fau.time * 2f) * 0.5f + 0.5f), stroke = 2f.px)
+
     # Page change buttons
     if modPage > 0             and (button(rectCenter(screen.centerX - 2f, screen.y + 1f + bottomMargin, 1.5f, 1f), "<") or keyPageup.tapped):
       modPage -= 1
