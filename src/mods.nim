@@ -58,61 +58,7 @@ proc loadModList* =
   var client = newHttpClient()
   try:
     echo "Fetching mod list"
-    # var modListJson
-    # TODO Remove once I have internet
-    modList = parseJson("""
-    {
-      "updated": "2024-06-05T12:46:48Z",
-      "mods": [
-        {
-          "name": "Crux",
-          "namespace": "crux",
-          "author": "Pasu4",
-          "description": "Adds a map to the game. Work in progress.",
-          "version": "0.1.0",
-          "tags": [
-            "map"
-          ],
-          "debug": false,
-          "enabled": true,
-          "repoName": "Pasu4/crux-mod",
-          "repoOwner": "Pasu4",
-          "repoUrl": "https://github.com/Pasu4/crux-mod",
-          "downloadUrl": "https://github.com/Pasu4/crux-mod/archive/master.zip",
-          "creationDate": "2024-01-31T10:53:28Z",
-          "lastUpdate": "2024-05-31T09:37:40Z"
-        }
-      ],
-      "problems": {}
-    }
-    """)
-    # Duplicate 9 times for testing
-    for i in 0..9:
-      modList["mods"].add(modList["mods"].getElems()[0])
-    #[
-    modList = client.downloadJsonFromGithub("https://github.com/Pasu4/animdustry-mods", "mod-list.json", "HEAD")
-    for m in modList["mods"].getElems():
-      try:
-        echo "Fetching ", m["id"].getStr(), " from ", m["repo"].getStr()
-        let
-          modRepoUri = m["repo"].getStr()
-          fileName = (if client.fileExistsOnGithub(modRepoUri, "mod.json"): "mod.json" else: "mod.hjson")
-          modJson = client.downloadJsonFromGithub(modRepoUri, fileName)
-          mle = ModListEntry(
-            name: modJson["name"].getStr(),
-            id: m["id"].getStr(),
-            namespace: modJson["namespace"].getStr(),
-            repo: modRepoUri,
-            wip: modJson{"wip"}.getBool(false),
-            dependencies: modJson{"dependencies"}.getElems().map(proc(j: JsonNode): string = j.getStr())
-          )
-        modList.add(mle)
-
-      # except JsonParsingError, HjsonParsingError, KeyError:
-      #   echo "Error parsing mod \"", m["id"].getStr(), "\": ", getCurrentExceptionMsg()
-      except HttpRequestError, ProtocolError:
-        echo getCurrentExceptionMsg()
-    ]#
+    modList = parseJson(client.getContent("https://raw.githubusercontent.com/Pasu4/animdustry-mods/master/mod-list.json"))
 
     modListLastUpdated = modList["updated"].getStr()
 
@@ -455,7 +401,7 @@ proc downloadMod*(m: RemoteMod) {.async.} =
     echo "Updating installed mod list..."
     downloadProgressString = "Updating installed mod list..."
     await sleepAsync(0)
-    
+
     var found = false
     for i in 0..installedModList.high:
       if installedModList[i].namespace == m.namespace:
