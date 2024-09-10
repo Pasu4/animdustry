@@ -570,7 +570,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
     of "DrawSpace":
       let col = elem["col"].getStr()
       capture col:
-        procs.add(proc() = patSpace(getColor(col), musicTime()))
+        procs.add(proc() = patSpace(getColor(col), apiMusicTime()))
 
     of "DrawUnit":
       let
@@ -579,7 +579,7 @@ proc parseScript(drawStack: JsonNode): seq[proc()] =
         color = elem{"color"}.getStr($colorWhite)
         part = elem{"part"}.getStr("")
       capture pos, scl, color, part:
-        procs.add(proc() = currentUnit.getTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
+        procs.add(proc() = currentUnit.apiGetTexture(part).draw(evalVec2(pos), scl = evalVec2(scl), color = getColor(color)))
     #endregion
 
     #region Draw

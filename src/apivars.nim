@@ -54,8 +54,8 @@ var
   apiEffectWarnBullet*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
   apiEffectStrikeWave*: proc(pos: Vec2, life: float32, rotation: float32 = 0.0)
 
-  getTexture*: proc(unit: Unit, name: string = ""): Texture
-  musicTime*: proc(): float
+  apiGetTexture*: proc(unit: Unit, name: string = ""): Texture
+  apiMusicTime*: proc(): float
 
 # Export bloom procs
 proc exportBloom*(bloomA: proc(), bloomB: proc()) =
@@ -100,8 +100,8 @@ template exportProcs* =
   apivars.apiEffectWarnBullet = proc(pos: Vec2, life: float32, rotation: float32) = effectWarnBullet(pos, life = life, rotation = rotation)
   apivars.apiEffectStrikeWave = proc(pos: Vec2, life: float32, rotation: float32) = effectStrikeWave(pos, life = life, rotation = rotation)
 
-  apivars.getTexture = getTexture
-  apivars.musicTime = musicTime
+  apivars.apiGetTexture = getTexture
+  apivars.apiMusicTime = musicTime
   
 template drawBloom*(body: untyped) =
   drawBloomA()

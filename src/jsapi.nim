@@ -986,7 +986,7 @@ proc initJsApi*() =
       scl = getVec2(1)
       color = getColorDefault(2, colorWhite)
       part = $ctx.duk_get_string_default(3, "")
-    currentUnit.getTexture(part).draw(pos, scl = scl, color = color)
+    currentUnit.apiGetTexture(part).draw(pos, scl = scl, color = color)
     return 0
   ))
 
