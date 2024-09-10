@@ -1,13 +1,14 @@
-import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri, asyncdispatch]
+import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri, asyncdispatch, asyncfile]
 import zippy/ziparchives
 import jsonapi, jsapi, apivars, patterns, hjson, semver
 
-type InstalledMod = object
+type InstalledMod* = object
   namespace*: string
   version*: SemVer
   enabled*: bool
+  isRepo*: bool # Whether the mod contains a git repository
 
-type RemoteMod = object
+type RemoteMod* = object
   name*: string
   namespace*: string
   author*: string
@@ -38,45 +39,15 @@ var
   modListLoaded* = false
   modListLastUpdated*: string
   activeDownload*: Future[void] = asyncdispatch.all[void]() # Initialized as completed
+  downloadProgressString*: string = ""
   downloadFailed*: bool = false
+  downloadErrorString*: string = ""
   restartRequired* = false
 
 template modError(filePath) =
   modErrorLog &= &"In {filePath[modDir.len..^1]}:\n{getCurrentExceptionMsg()}\n"
   mode = gmModError
   continue
-
-# Downloads a json file from the latest release of the repository.
-# If there is no latest release, downloads from head.
-# TODO Use mod repo
-proc downloadJsonFromGithub(client: HttpClient, repo, filepath: string, specificRef = ""): JsonNode =
-  let
-    parsedUri = parseUri(repo)
-    path = parsedUri.path.split('/')
-    releaseResponse = client.get(&"https://api.github.com/repos/{path[1]}/{path[2]}/releases/latest")
-    latestRef = # HEAD if latest release is not found
-      if specificRef.len != 0:
-        specificRef
-      elif releaseResponse.status.startsWith("200"):
-        parseJson(releaseResponse.body())["tag_name"].getStr()
-      else:
-        "HEAD"
-    fileUri = &"https://api.github.com/repos/{path[1]}/{path[2]}/contents/{filepath}?ref={latestRef}"
-    json = parseJson(client.getContent(fileUri))
-    content = base64.decode(json["content"].getStr())
-    contentJson =
-      if filepath.endsWith(".hjson"):
-        parseJson(hjson2json(content))
-      else:
-        parseJson(content)
-  return contentJson
-
-proc fileExistsOnGithub(client: HttpClient, repo, filepath: string): bool =
-  let
-    parsedUri = parseUri(repo)
-    path = parsedUri.path.split('/')
-    apiUri = &"https://api.github.com/repos/{path[1]}/{path[2]}/contents/{filepath}"
-  return client.get(apiUri).status.startsWith("200")
 
 proc loadModList* =
   if modListLoaded:
@@ -185,6 +156,7 @@ proc loadMods* =
             modNode = parseJson(modJson)
             modEnabled = modNode{"enabled"}.getBool(true)
             modDebug = modNode{"debug"}.getBool(false)
+            isRepo = dirExists(modPath / ".git")
           
           modName = modNode["name"].getStr()
           modAuthor = modNode["author"].getStr()
@@ -195,7 +167,9 @@ proc loadMods* =
 
           installedModList.add(InstalledMod(
             namespace: currentNamespace,
-            version: modNode["version"].getStr().newSemVer("0.0.0")
+            version: modNode["version"].getStr().newSemVer("0.0.0"),
+            enabled: modEnabled,
+            isRepo: isRepo
           ))
 
           if not modEnabled: continue
@@ -409,16 +383,21 @@ proc loadMods* =
   creditsText &= "\n" & creditsTextEnd
 
 proc downloadMod*(m: RemoteMod) {.async.} =
+  echo "Starting download of ", m.name
+  downloadProgressString = "Starting download..."
+  await sleepAsync(0) # Allow UI to update
+
   downloadFailed = false
   restartRequired = true
-  let client = newHttpClient()
 
-  echo "Starting download of ", m.name
+  let client = newAsyncHttpClient()
+
 
   try:
     let
       tempPath = dataDir / "temp"
-
+    downloadProgressString = "Downloading mod..."
+    await sleepAsync(0)
     # Download zip file
     if dirExists(tempPath):
       removeDir(tempPath)
@@ -426,27 +405,57 @@ proc downloadMod*(m: RemoteMod) {.async.} =
 
     echo "Downloading from ", m.downloadUrl
     let
-      response = client.get(m.downloadUrl)
-      content = response.body()
+      response = await client.get(m.downloadUrl)
+      content = await response.body
     echo "Writing to ", tempPath / "temp.zip"
-    writeFile(tempPath / "temp.zip", content)
+    downloadProgressString = "Writing to temporary file..."
+    await sleepAsync(0)
+
+    var tempFile: AsyncFile
+    # writeFile(tempPath / "temp.zip", content)
+    try:
+      tempFile = openAsync(tempPath / "temp.zip", fmWrite)
+      await tempFile.write(content)
+    except:
+      downloadFailed = true
+      echo "Error writing file: ", getCurrentExceptionMsg()
+      downloadErrorString = getCurrentExceptionMsg()
+      return # Will still execute finally block
+    finally:
+      tempFile.close()
 
     # Extract file
     echo "Extracting..."
+    downloadProgressString = "Extracting mod..."
+    await sleepAsync(0)
     extractAll(tempPath / "temp.zip", tempPath / "extracted")
     
     # Delete old mod folder if it exists
     if dirExists(modDir / m.namespace):
       echo "Deleting old mod folder..."
+      downloadProgressString = "Deleting old mod folder..."
+      await sleepAsync(0)
       removeDir(modDir / m.namespace)
     
     # Move extracted file to mod folder
     for kind, path in walkDir(tempPath / "extracted"):
       echo "Moving downloaded mod to ", modDir / m.namespace, "..."
+      downloadProgressString = "Moving mod to mod folder..."
+      await sleepAsync(0)
       moveDir(path, modDir / m.namespace) # The extracted file's name does not matter
-      break # Only one file is expected
+      break # Only one directory is expected
+
+    # Delete temp folder
+    echo "Deleting temp folder..."
+    downloadProgressString = "Cleaning up..."
+    await sleepAsync(0)
+    removeDir(tempPath)
 
     # Update installed mod list
+    echo "Updating installed mod list..."
+    downloadProgressString = "Updating installed mod list..."
+    await sleepAsync(0)
+    
     var found = false
     for i in 0..installedModList.high:
       if installedModList[i].namespace == m.namespace:
@@ -463,6 +472,7 @@ proc downloadMod*(m: RemoteMod) {.async.} =
   except:
     downloadFailed = true
     echo "Error downloading mod: ", getCurrentExceptionMsg()
+    downloadErrorString = getCurrentExceptionMsg()
 
   finally:
     client.close()

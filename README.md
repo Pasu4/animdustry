@@ -10,6 +10,8 @@ An example for a mod can be found [here](https://github.com/Pasu4/animdustry-mod
 
 If you have questions, best ask them in the [art-gamedev](https://discord.com/channels/391020510269669376/1195444175672442930) thread on the Mindustry Discord server.
 
+[Changelog](CHANGELOG)
+
 ## Compiling
 
 For information on compiling, please refer to [the original repository](https://github.com/Anuken/animdustry/blob/master/README.md#compiling).

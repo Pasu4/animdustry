@@ -786,25 +786,27 @@ makeSystem("drawUI", []):
     )
 
     # Install / update button
+    proc getLocalMod(): InstalledMod = installedModList.filter(x => x.namespace == m.namespace)[0] # Only use when the mod is installed
     let
       installed = m.namespace in installedModList.map(x => x.namespace)
       buttonText = if installed: "Update" else: "Install"
-      upToDate = installed and m.version <= installedModList.filter(x => x.namespace == m.namespace)[0].version
+      upToDate = installed and m.version <= getLocalMod().version
+      isRepo = installed and getLocalMod().isRepo
       # Should only show the button if the mod is not installed or the remote version is newer
-      showButton = activeDownload.finished and (not installed or not upToDate)
+      showButton = activeDownload.finished and (not installed or not upToDate) and not isRepo
     if showButton and button(rectCenter(screen.centerX, screen.y + 1f + bottomMargin, 3f, 1f), buttonText):
       activeDownload = downloadMod(m)
 
-    # Downloading text
-    if not activeDownload.finished:
-      defaultFont.draw("Downloading...", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
+    # Repository download denied text
+    if isRepo:
+      defaultFont.draw("Local mod is a git repository.\nUpdate via git.", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite.mix(colorRed, sin(fau.time * 2f) * 0.5f + 0.5f))
 
     # Download failed text
     if downloadFailed:
-      defaultFont.draw("Download failed", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite.mix(colorRed, sin(fau.time * 2f) * 0.5f + 0.5f))
+      defaultFont.draw("Download failed:\n" & downloadErrorString, rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite.mix(colorRed, sin(fau.time * 2f) * 0.5f + 0.5f))
 
     # Up to date text
-    if upToDate:
+    if upToDate and not isRepo:
       defaultFont.draw("Up to date", rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
 
     # Return to mod browser
@@ -812,6 +814,12 @@ makeSystem("drawUI", []):
       safeTransition:
         soundBack.play()
         mode = gmModBrowser
+
+    # Downloading text
+    # Put this last to not get overlapping text when the download finishes
+    if not activeDownload.finished:
+      poll() # Apparently asyncdispatch is not running, so we need to poll manually
+      defaultFont.draw("Downloading...\n" & downloadProgressString, rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
 
   drawFlush()
 
