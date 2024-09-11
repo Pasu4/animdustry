@@ -147,7 +147,7 @@ makeSystem("drawUI", []):
     
     introTime += fau.delta * 0.5f
     introTime = introTime.clamp
-    draw("warn".patchConst, vec2())
+    draw("warn".patch, vec2())
 
     titleFont.draw("MOD ERROR", vec2(0f, 3.5f))
     defaultFont.draw(when isMobile: "[ tap to continue ]" else: "[ SPACE or ESC to continue ]", vec2(0f, -3.5f), color = colorUi.withA(fau.time.absin(0.5f, 1f)))
