@@ -825,7 +825,8 @@ makeSystem("drawUI", []):
     # Downloading text
     # Put this last to not get overlapping text when the download finishes
     if not activeDownload.finished:
-      poll() # Apparently asyncdispatch is not running, so we need to poll manually
+      when not isMobile:
+        poll() # Apparently asyncdispatch is not running, so we need to poll manually
       defaultFont.draw("Downloading...\n" & downloadProgressString, rectCenter(screen.centerX, screen.y + 2f + bottomMargin, 100f, 1f), align = daTop, color = colorWhite)
 
   drawFlush()

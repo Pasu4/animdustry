@@ -92,7 +92,7 @@ task androidBuild, "Android build":
       rmDir &"android/src/c{arch}"
     let cpu = if arch == "32": "" else: "64"
 
-    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -d:ssl -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
+    shell &"nim c -f --compileOnly --cpu:arm{cpu} --os:android -d:danger -c --noMain:on --nimcache:android/src/c{arch} src/{app}.nim"
     var 
       includes: seq[string]
       sources: seq[string]

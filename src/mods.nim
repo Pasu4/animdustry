@@ -1,6 +1,10 @@
-import os, vars, types, strformat, core, fau/assets, std/[json, strutils, sequtils, tables, httpclient, base64, uri, asyncdispatch, asyncfile]
-import zippy/ziparchives
-import jsonapi, jsapi, apivars, patterns, hjson, semver
+import os, strformat, core, fau/assets, fau/globals, std/[json, strutils, sequtils, tables, httpclient, base64, uri, asyncdispatch, asyncfile]
+import vars, types, jsonapi, jsapi, apivars, patterns, hjson, semver
+
+when not isMobile:
+  import zippy/ziparchives
+else:
+  import zip/zipfiles
 
 type InstalledMod* = object
   namespace*: string
@@ -342,78 +346,114 @@ proc loadMods* =
   creditsText &= "\n" & creditsTextEnd
 
 proc downloadMod*(m: RemoteMod) {.async.} =
-  echo "Starting download of ", m.name
-  downloadProgressString = "Starting download..."
-  await sleepAsync(0) # Allow UI to update
-
-  downloadFailed = false
-  restartRequired = true
-
-  let client = newAsyncHttpClient()
-
-
   try:
-    let
-      tempPath = dataDir / "temp"
-    downloadProgressString = "Downloading mod..."
-    await sleepAsync(0)
-    # Download zip file
+    echo "Starting download of ", m.name
+
+    downloadFailed = false
+    restartRequired = true
+
+    let tempPath = dataDir / "temp"
+
+    # Async does not work on Android
+    when not isMobile:
+      downloadProgressString = "Downloading mod..."
+      await sleepAsync(0) # Allow UI to update
+
+    # Create empty temp directory
     if dirExists(tempPath):
       removeDir(tempPath)
     createDir(tempPath)
 
-    echo "Downloading from ", m.downloadUrl
-    let
-      response = await client.get(m.downloadUrl)
-      content = await response.body
-    echo "Writing to ", tempPath / "temp.zip"
-    downloadProgressString = "Writing to temporary file..."
-    await sleepAsync(0)
+    # Zippy and async don't work on Android
+    when not isMobile:
+      echo "Downloading from ", m.downloadUrl
+      
+      # Download zip file
+      let client = newAsyncHttpClient()
+      var content: string
+      try:
+        let response = await client.get(m.downloadUrl)
+        content = await response.body
+      finally:
+        client.close()
+      
+      echo "Writing to ", tempPath / "temp.zip"
+      downloadProgressString = "Writing to temporary file..."
+      await sleepAsync(0)
 
-    var tempFile: AsyncFile
-    # writeFile(tempPath / "temp.zip", content)
-    try:
-      tempFile = openAsync(tempPath / "temp.zip", fmWrite)
-      await tempFile.write(content)
-    except:
-      downloadFailed = true
-      echo "Error writing file: ", getCurrentExceptionMsg()
-      downloadErrorString = getCurrentExceptionMsg()
-      return # Will still execute finally block
-    finally:
-      tempFile.close()
+      var tempFile: AsyncFile
+      # writeFile(tempPath / "temp.zip", content)
+      try:
+        tempFile = openAsync(tempPath / "temp.zip", fmWrite)
+        await tempFile.write(content)
+      except:
+        downloadFailed = true
+        echo "Error writing file: ", getCurrentExceptionMsg()
+        downloadErrorString = getCurrentExceptionMsg()
+        return # Will still execute finally block
+      finally:
+        tempFile.close()
 
-    # Extract file
-    echo "Extracting..."
-    downloadProgressString = "Extracting mod..."
-    await sleepAsync(0)
-    extractAll(tempPath / "temp.zip", tempPath / "extracted")
-    
+      # Extract file
+      echo "Extracting..."
+      downloadProgressString = "Extracting mod..."
+      await sleepAsync(0)
+      extractAll(tempPath / "temp.zip", tempPath / "extracted")
+        
+    else: # isMobile
+
+      echo "Downloading from ", m.downloadUrl
+
+      # Download zip file
+      let client = newHttpClient()
+      var content: string
+      try:
+        let response = client.get(m.downloadUrl)
+        content = response.body
+      finally:
+        client.close()
+      echo "Writing to ", tempPath / "temp.zip"
+
+      writeFile(tempPath / "temp.zip", content)
+
+      # Extract file
+      echo "Extracting..."
+      var archive: ZipArchive
+      if not archive.open(tempPath / "temp.zip"):
+        downloadErrorString = "Error opening zip file"
+      archive.extractAll(tempPath / "extracted")
+
+    # endwhen
+
     # Delete old mod folder if it exists
     if dirExists(modDir / m.namespace):
       echo "Deleting old mod folder..."
-      downloadProgressString = "Deleting old mod folder..."
-      await sleepAsync(0)
+      when not isMobile:
+        downloadProgressString = "Deleting old mod folder..."
+        await sleepAsync(0)
       removeDir(modDir / m.namespace)
     
     # Move extracted file to mod folder
     for kind, path in walkDir(tempPath / "extracted"):
       echo "Moving downloaded mod to ", modDir / m.namespace, "..."
-      downloadProgressString = "Moving mod to mod folder..."
-      await sleepAsync(0)
+      when not isMobile:
+        downloadProgressString = "Moving mod to mod folder..."
+        await sleepAsync(0)
       moveDir(path, modDir / m.namespace) # The extracted file's name does not matter
       break # Only one directory is expected
 
     # Delete temp folder
     echo "Deleting temp folder..."
-    downloadProgressString = "Cleaning up..."
-    await sleepAsync(0)
+    when not isMobile:
+      downloadProgressString = "Cleaning up..."
+      await sleepAsync(0)
     removeDir(tempPath)
 
     # Update installed mod list
     echo "Updating installed mod list..."
-    downloadProgressString = "Updating installed mod list..."
-    await sleepAsync(0)
+    when not isMobile:
+      downloadProgressString = "Updating installed mod list..."
+      await sleepAsync(0)
 
     var found = false
     for i in 0..installedModList.high:
@@ -428,12 +468,9 @@ proc downloadMod*(m: RemoteMod) {.async.} =
         enabled: true
       ))
 
+    echo "Download finished."
+
   except:
     downloadFailed = true
     echo "Error downloading mod: ", getCurrentExceptionMsg()
     downloadErrorString = getCurrentExceptionMsg()
-
-  finally:
-    client.close()
-
-  echo "Download finished."
