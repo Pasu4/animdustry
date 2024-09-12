@@ -64,6 +64,7 @@ proc loadModList* =
   try:
     echo "Fetching mod list"
     modList = parseJson(client.getContent("https://raw.githubusercontent.com/Pasu4/animdustry-mods/master/mod-list.json"))
+    echo "Mod list fetched"
 
     modListLastUpdated = modList["updated"].getStr()
 

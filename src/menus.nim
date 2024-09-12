@@ -493,8 +493,8 @@ makeSystem("drawUI", []):
       var region = initPatch(map.preview.texture, (r.xy - screen.xy) / screen.wh, (r.topRight - screen.xy) / screen.wh)
       swap(region.v, region.v2)
 
-      drawRect(region, r.x, r.y, r.w, r.h - 0.5f.px, mixColor = (if over: colorWhite.withA(0.2f) else: colorClear).mix(rgb(0.3f), unlocked.not.float32 * 0.7f), blend = blendDisabled)
-      lineRect(r, stroke = 2f.px, color = map.fadeColor * (1.5f + offset * 0.5f), margin = -3f.px)
+      drawRect(region, r.x, r.y, r.w, r.h, mixColor = (if over: colorWhite.withA(0.2f) else: colorClear).mix(rgb(0.3f), unlocked.not.float32 * 0.7f), blend = blendDisabled)
+      lineRect(r, stroke = 2f.px, color = map.fadeColor * (1.5f + offset * 0.5f), margin = 1f.px)
 
       let patchBounds = r
 
