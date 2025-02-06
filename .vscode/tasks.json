@@ -19,7 +19,7 @@
       "type": "shell",
       "command": "./build.sh",
       "windows": {
-        "command": "wsl ./build.sh",
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; ./build.sh",
       },
       "problemMatcher": [],
       "group": "build"

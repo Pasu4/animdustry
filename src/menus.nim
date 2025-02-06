@@ -456,10 +456,12 @@ makeSystem("drawUI", []):
       safeTransition:
         mode = gmSettings
 
-    if button(rect(screen.topLeft + vec2(buttonSize, -buttonSize), vec2(buttonSize * 1.5f, buttonSize)), text = "Mods"):
-      safeTransition:
-        loadModList()
-        mode = gmModBrowser
+    # TODO: Fix on mobile
+    when not isMobile:
+      if button(rect(screen.topLeft + vec2(buttonSize, -buttonSize), vec2(buttonSize * 1.5f, buttonSize)), text = "Mods"):
+        safeTransition:
+          loadModList()
+          mode = gmModBrowser
 
     var anyHover = false
 

@@ -3,8 +3,8 @@ import vars, types, jsonapi, jsapi, apivars, patterns, hjson, semver
 
 when not isMobile:
   import zippy/ziparchives
-else:
-  import zip/zipfiles
+# else:
+#   import zip/zipfiles
 
 type InstalledMod* = object
   namespace*: string
@@ -401,30 +401,30 @@ proc downloadMod*(m: RemoteMod) {.async.} =
       await sleepAsync(0)
       extractAll(tempPath / "temp.zip", tempPath / "extracted")
         
-    else: # isMobile
+    # else: # isMobile
 
-      echo "Downloading from ", m.downloadUrl
+    #   echo "Downloading from ", m.downloadUrl
 
-      # Download zip file
-      let client = newHttpClient()
-      var content: string
-      try:
-        let response = client.get(m.downloadUrl)
-        content = response.body
-      finally:
-        client.close()
-      echo "Writing to ", tempPath / "temp.zip"
+    #   # Download zip file
+    #   let client = newHttpClient()
+    #   var content: string
+    #   try:
+    #     let response = client.get(m.downloadUrl)
+    #     content = response.body
+    #   finally:
+    #     client.close()
+    #   echo "Writing to ", tempPath / "temp.zip"
 
-      writeFile(tempPath / "temp.zip", content)
+    #   writeFile(tempPath / "temp.zip", content)
 
-      # Extract file
-      echo "Extracting..."
-      var archive: ZipArchive
-      if not archive.open(tempPath / "temp.zip"):
-        downloadErrorString = "Error opening zip file"
-      archive.extractAll(tempPath / "extracted")
+    #   # Extract file
+    #   echo "Extracting..."
+    #   var archive: ZipArchive
+    #   if not archive.open(tempPath / "temp.zip"):
+    #     downloadErrorString = "Error opening zip file"
+    #   archive.extractAll(tempPath / "extracted")
 
-    # endwhen
+    # `when` block ends here
 
     # Delete old mod folder if it exists
     if dirExists(modDir / m.namespace):
