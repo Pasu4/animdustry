@@ -163,16 +163,20 @@ proc clearTextures*(unit: Unit) = unit.textures.clear()
 proc getTexture*(unit: Unit, name: string = ""): Texture =
   ## Loads a unit texture from the textures/ folder. Result is cached. Crashes if the texture isn't found!
   if not unit.textures.hasKey(name):
-    let tex =
-      if not unit.isModded:
-        echo "Loading asset ", "textures/" & unit.name & name & ".png"
-        loadTextureAsset("textures/" & unit.name & name & ".png")
-      else:
-        echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
-        loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
-    tex.filter = tfLinear
-    unit.textures[name] = tex
-    return tex
+    try:
+      let tex =
+        if not unit.isModded:
+          echo "Loading asset ", "textures/" & unit.name & name & ".png"
+          loadTextureAsset("textures/" & unit.name & name & ".png")
+        else:
+          echo "Loading file ", unit.modPath / "unitSplashes" / unit.name & name & ".png"
+          loadTextureFile(unit.modPath / "unitSplashes" / unit.name & name & ".png")
+      tex.filter = tfLinear
+      unit.textures[name] = tex
+    except:
+      echo "Error: Cannot load texture for ", unit.name & name
+      echo getCurrentExceptionMsg()
+      unit.textures[name] = "error".patch.texture
   return unit.textures[name]
 
 # For modded units because they don't use the atlas
@@ -216,14 +220,19 @@ proc importCustomTexture*(sourceNamespace: string, sourceName: string, targetNam
     sourceKey = &"{sourceNamespace}_{sourceName}"
     targetKey = &"{targetNamespace}_{targetName}"
   if not customTextures.hasKey(sourceKey):
-    # load the texture from file
-    echo "Importing texture ", sourceKey, " from ", sourceNamespace, " to ", targetKey, " in ", targetNamespace
-    if sourceNamespace notin modPaths:
-      echo "Error: Mod path not found for ", sourceNamespace
-      return
-    let tex = loadTextureFile(modPaths[sourceNamespace] / "sprites" / sourceName & ".png")
-    tex.filter = tfNearest
-    customTextures[targetKey] = tex
+    try:
+      # load the texture from file
+      echo "Importing texture ", sourceKey, " from ", sourceNamespace, " to ", targetKey, " in ", targetNamespace
+      if sourceNamespace notin modPaths:
+        echo "Error: Mod path not found for ", sourceNamespace
+        return
+      let tex = loadTextureFile(modPaths[sourceNamespace] / "sprites" / sourceName & ".png")
+      tex.filter = tfNearest
+      customTextures[targetKey] = tex
+    except:
+      echo "Error: Cannot load texture for ", sourceKey
+      echo getCurrentExceptionMsg()
+      customTextures[targetKey] = "error".patch.texture
   else:
     # copy buffered texture
     customTextures[targetKey] = customTextures[sourceKey]

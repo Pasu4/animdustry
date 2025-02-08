@@ -19,7 +19,7 @@
       "type": "shell",
       "command": "./build.sh",
       "windows": {
-        "command": "wsl PATH=~/.nimble/bin:/usr/bin`; ./build.sh",
+        "command": "wsl PATH=~/.nimble/bin:/usr/bin`;ANDROID_SDK_ROOT=~/Android/Sdk`;ANDROID_HOME=`$ANDROID_SDK_ROOT`;PATH=`$PATH:`$ANDROID_SDK_ROOT/tools:`$ANDROID_SDK_ROOT/platform-tools`; ./build.sh",
       },
       "problemMatcher": [],
       "group": "build"
