@@ -176,7 +176,7 @@ proc getTexture*(unit: Unit, name: string = ""): Texture =
     except:
       echo "Error: Cannot load texture for ", unit.name & name
       echo getCurrentExceptionMsg()
-      unit.textures[name] = "error".patch.texture
+      unit.textures[name] = loadTextureAsset("textures/error.png")
   return unit.textures[name]
 
 # For modded units because they don't use the atlas
@@ -191,8 +191,8 @@ proc getGameTexture*(unit: Unit, name: string = ""): Texture =
     except:
       echo "Error: Cannot load texture for ", unit.name & name
       echo getCurrentExceptionMsg()
-      unit.textures[key] = "error".patch.texture
-      return "error".patch.texture
+      unit.textures[key] = loadTextureAsset("textures/error.png")
+      return loadTextureAsset("textures/error.png")
   return unit.textures[key]
 
 # For modded bullets, enemies, etc.
@@ -208,10 +208,10 @@ proc getCustomTexture*(namespace: string, name: string, file = name): Texture =
     except:
       echo "Error: Cannot load texture for ", name
       echo getCurrentExceptionMsg()
-      customTextures[key] = "error".patch.texture
+      customTextures[key] = loadTextureAsset("textures/error.png")
   if key notin customTextures:
     echo "Error: Texture not found for ", key
-    customTextures[key] = "error".patch.texture
+    customTextures[key] = loadTextureAsset("textures/error.png")
   return customTextures[key]
 
 # import a texture from another mod
@@ -232,7 +232,7 @@ proc importCustomTexture*(sourceNamespace: string, sourceName: string, targetNam
     except:
       echo "Error: Cannot load texture for ", sourceKey
       echo getCurrentExceptionMsg()
-      customTextures[targetKey] = "error".patch.texture
+      customTextures[targetKey] = loadTextureAsset("textures/error.png")
   else:
     # copy buffered texture
     customTextures[targetKey] = customTextures[sourceKey]
