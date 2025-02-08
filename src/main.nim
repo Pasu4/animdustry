@@ -179,24 +179,35 @@ proc getTexture*(unit: Unit, name: string = ""): Texture =
 proc getGameTexture*(unit: Unit, name: string = ""): Texture =
   let key = "__game" & name
   if not unit.textures.hasKey(key):
-    let tex = loadTextureFile(unit.modPath / "unitSprites" / unit.name & name & ".png")
-    tex.filter = tfNearest
-    unit.textures[key] = tex
-    return tex
+    try:
+      let tex = loadTextureFile(unit.modPath / "unitSprites" / unit.name & name & ".png")
+      tex.filter = tfNearest
+      unit.textures[key] = tex
+      return tex
+    except:
+      echo "Error: Cannot load texture for ", unit.name & name
+      echo getCurrentExceptionMsg()
+      unit.textures[key] = "error".patch.texture
+      return "error".patch.texture
   return unit.textures[key]
 
 # For modded bullets, enemies, etc.
 proc getCustomTexture*(namespace: string, name: string, file = name): Texture =
   let key = &"{namespace}_{name}"
   if not customTextures.hasKey(key):
-    echo "Loading file ", modPaths[namespace] / "sprites" / name & ".png (key ", key, ")"
-    let tex = loadTextureFile(modPaths[namespace] / "sprites" / name & ".png")
-    tex.filter = tfNearest
-    customTextures[key] = tex
-    return tex
+    try:
+      echo "Loading file ", modPaths[namespace] / "sprites" / name & ".png (key ", key, ")"
+      let tex = loadTextureFile(modPaths[namespace] / "sprites" / name & ".png")
+      tex.filter = tfNearest
+      customTextures[key] = tex
+      return tex
+    except:
+      echo "Error: Cannot load texture for ", name
+      echo getCurrentExceptionMsg()
+      customTextures[key] = "error".patch.texture
   if key notin customTextures:
     echo "Error: Texture not found for ", key
-    return "error".patch.texture
+    customTextures[key] = "error".patch.texture
   return customTextures[key]
 
 # import a texture from another mod
