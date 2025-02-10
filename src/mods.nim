@@ -286,6 +286,7 @@ proc loadMods* =
                   mapName = (if modLegacy: "" else: mapNode["name"].getStr())
                   songName = mapNode["songName"].getStr()
                   parsedMap = Beatmap(
+                    name: mapNode["name"].getStr(),
                     songName: songName,
                     music: mapNode["music"].getStr(),
                     bpm: mapNode["bpm"].getFloat(),
