@@ -855,6 +855,7 @@ class Color {
 
 /**
  * A custom entity.
+ * @hideconstructor
  */
 class CustomEntity {
     /**
