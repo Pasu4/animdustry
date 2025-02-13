@@ -161,3 +161,11 @@ type Settings* = object
   gamepadLeft*: bool
   #whether to show FPS on-screen (debugging only)
   showFps*: bool
+
+type CustomEntityState* = object
+  id*: int
+  pos*: Vec2i = vec2i(0, 0)
+  sprite*: string = ""
+  scl*: float32 = 1.0
+  rot*: float32 = 0.0
+  smoothPos*: Vec2 = vec2(0, 0)

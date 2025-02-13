@@ -72,6 +72,608 @@ const d8mid = [new Vec2(0)]; // placeholder
 
 //#endregion
 
+//#region Sprites
+
+class Sprites {
+    /**
+     * `"arrow"`
+     * @readonly
+     * @type {string}
+     */
+    static arrow;
+    /**
+     * `"beach"`
+     * @readonly
+     * @type {string}
+     */
+    static beach;
+    /**
+     * `"big-copper"`
+     * @readonly
+     * @type {string}
+     */
+    static bigCopper;
+    /**
+     * `"circle"`
+     * @readonly
+     * @type {string}
+     */
+    static circle;
+    /**
+     * `"ckat"`
+     * @readonly
+     * @type {string}
+     */
+    static ckat;
+    /**
+     * `"cloud1"`
+     * @readonly
+     * @type {string}
+     */
+    static cloud1;
+    /**
+     * `"cloud2"`
+     * @readonly
+     * @type {string}
+     */
+    static cloud2;
+    /**
+     * `"cloud3"`
+     * @readonly
+     * @type {string}
+     */
+    static cloud3;
+    /**
+     * `"cloud4"`
+     * @readonly
+     * @type {string}
+     */
+    static cloud4;
+    /**
+     * `"empty"`
+     * @readonly
+     * @type {string}
+     */
+    static empty;
+    /**
+     * `"error"`
+     * @readonly
+     * @type {string}
+     */
+    static error;
+    /**
+     * `"explode0"`
+     * @readonly
+     * @type {string}
+     */
+    static explode0;
+    /**
+     * `"explode1"`
+     * @readonly
+     * @type {string}
+     */
+    static explode1;
+    /**
+     * `"explode2"`
+     * @readonly
+     * @type {string}
+     */
+    static explode2;
+    /**
+     * `"explode3"`
+     * @readonly
+     * @type {string}
+     */
+    static explode3;
+    /**
+     * `"explode4"`
+     * @readonly
+     * @type {string}
+     */
+    static explode4;
+    /**
+     * `"hit0"`
+     * @readonly
+     * @type {string}
+     */
+    static hit0;
+    /**
+     * `"hit1"`
+     * @readonly
+     * @type {string}
+     */
+    static hit1;
+    /**
+     * `"hit2"`
+     * @readonly
+     * @type {string}
+     */
+    static hit2;
+    /**
+     * `"hit3"`
+     * @readonly
+     * @type {string}
+     */
+    static hit3;
+    /**
+     * `"hit4"`
+     * @readonly
+     * @type {string}
+     */
+    static hit4;
+    /**
+     * `"hit5"`
+     * @readonly
+     * @type {string}
+     */
+    static hit5;
+    /**
+     * `"laser"`
+     * @readonly
+     * @type {string}
+     */
+    static laser;
+    /**
+     * `"longcloud1"`
+     * @readonly
+     * @type {string}
+     */
+    static longcloud1;
+    /**
+     * `"longcloud2"`
+     * @readonly
+     * @type {string}
+     */
+    static longcloud2;
+    /**
+     * `"longcloud3"`
+     * @readonly
+     * @type {string}
+     */
+    static longcloud3;
+    /**
+     * `"longcloud4"`
+     * @readonly
+     * @type {string}
+     */
+    static longcloud4;
+    /**
+     * `"longcloud5"`
+     * @readonly
+     * @type {string}
+     */
+    static longcloud5;
+    /**
+     * `"petal"`
+     * @readonly
+     * @type {string}
+     */
+    static petal;
+    /**
+     * `"reload"`
+     * @readonly
+     * @type {string}
+     */
+    static reload;
+    /**
+     * `"shadow"`
+     * @readonly
+     * @type {string}
+     */
+    static shadow;
+    /**
+     * `"smoke0"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke0;
+    /**
+     * `"smoke1"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke1;
+    /**
+     * `"smoke2"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke2;
+    /**
+     * `"smoke3"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke3;
+    /**
+     * `"smoke4"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke4;
+    /**
+     * `"smoke5"`
+     * @readonly
+     * @type {string}
+     */
+    static smoke5;
+    /**
+     * `"star1"`
+     * @readonly
+     * @type {string}
+     */
+    static star1;
+    /**
+     * `"star2"`
+     * @readonly
+     * @type {string}
+     */
+    static star2;
+    /**
+     * `"star3"`
+     * @readonly
+     * @type {string}
+     */
+    static star3;
+    /**
+     * `"sun"`
+     * @readonly
+     * @type {string}
+     */
+    static sun;
+    /**
+     * `"tile"`
+     * @readonly
+     * @type {string}
+     */
+    static tile;
+    /**
+     * `"wall"`
+     * @readonly
+     * @type {string}
+     */
+    static wall;
+
+    /**
+     * `"arc"`
+     * @readonly
+     * @type {string}
+     */
+    static arc;
+    /**
+     * `"book"`
+     * @readonly
+     * @type {string}
+     */
+    static book;
+    /**
+     * `"bullet-blue"`
+     * @readonly
+     * @type {string}
+     */
+    static bulletBlue;
+    /**
+     * `"bullet-pink"`
+     * @readonly
+     * @type {string}
+     */
+    static bulletPink;
+    /**
+     * `"bullet-purple"`
+     * @readonly
+     * @type {string}
+     */
+    static bulletPurple;
+    /**
+     * `"bullet-tri"`
+     * @readonly
+     * @type {string}
+     */
+    static bulletTri;
+    /**
+     * `"bullet"`
+     * @readonly
+     * @type {string}
+     */
+    static bullet;
+    /**
+     * `"conveyor"`
+     * @readonly
+     * @type {string}
+     */
+    static conveyor;
+    /**
+     * `"copper"`
+     * @readonly
+     * @type {string}
+     */
+    static copper;
+    /**
+     * `"duo"`
+     * @readonly
+     * @type {string}
+     */
+    static duo;
+    /**
+     * `"fail"`
+     * @readonly
+     * @type {string}
+     */
+    static fail;
+    /**
+     * `"headphones"`
+     * @readonly
+     * @type {string}
+     */
+    static headphones;
+    /**
+     * `"health"`
+     * @readonly
+     * @type {string}
+     */
+    static health;
+    /**
+     * `"info"`
+     * @readonly
+     * @type {string}
+     */
+    static info;
+    /**
+     * `"junction"`
+     * @readonly
+     * @type {string}
+     */
+    static junction;
+    /**
+     * `"lancer"`
+     * @readonly
+     * @type {string}
+     */
+    static lancer;
+    /**
+     * `"lancer2"`
+     * @readonly
+     * @type {string}
+     */
+    static lancer2;
+    /**
+     * `"mine"`
+     * @readonly
+     * @type {string}
+     */
+    static mine;
+    /**
+     * `"overflow-gate"`
+     * @readonly
+     * @type {string}
+     */
+    static overflowGate;
+    /**
+     * `"pause"`
+     * @readonly
+     * @type {string}
+     */
+    static pause;
+    /**
+     * `"play"`
+     * @readonly
+     * @type {string}
+     */
+    static play;
+    /**
+     * `"progress-tick"`
+     * @readonly
+     * @type {string}
+     */
+    static progressTick;
+    /**
+     * `"progress"`
+     * @readonly
+     * @type {string}
+     */
+    static progress;
+    /**
+     * `"router"`
+     * @readonly
+     * @type {string}
+     */
+    static router;
+    /**
+     * `"settings"`
+     * @readonly
+     * @type {string}
+     */
+    static settings;
+    /**
+     * `"shield"`
+     * @readonly
+     * @type {string}
+     */
+    static shield;
+    /**
+     * `"skat"`
+     * @readonly
+     * @type {string}
+     */
+    static skat;
+    /**
+     * `"sorter"`
+     * @readonly
+     * @type {string}
+     */
+    static sorter;
+    /**
+     * `"unit-alpha-happy"`
+     * @readonly
+     * @type {string}
+     */
+    static unitAlphaHappy;
+    /**
+     * `"unit-alpha-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitAlphaHit;
+    /**
+     * `"unit-alpha"`
+     * @readonly
+     * @type {string}
+     */
+    static unitAlpha;
+    /**
+     * `"unit-boulder-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitBoulderHit;
+    /**
+     * `"unit-boulder"`
+     * @readonly
+     * @type {string}
+     */
+    static unitBoulder;
+    /**
+     * `"unit-crawler-angery"`
+     * @readonly
+     * @type {string}
+     */
+    static unitCrawlerAngery;
+    /**
+     * `"unit-crawler-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitCrawlerHit;
+    /**
+     * `"unit-crawler"`
+     * @readonly
+     * @type {string}
+     */
+    static unitCrawler;
+    /**
+     * `"unit-mono-happy"`
+     * @readonly
+     * @type {string}
+     */
+    static unitMonoHappy;
+    /**
+     * `"unit-mono-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitMonoHit;
+    /**
+     * `"unit-mono"`
+     * @readonly
+     * @type {string}
+     */
+    static unitMono;
+    /**
+     * `"unit-oct-angery"`
+     * @readonly
+     * @type {string}
+     */
+    static unitOctAngery;
+    /**
+     * `"unit-oct-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitOctHit;
+    /**
+     * `"unit-oct"`
+     * @readonly
+     * @type {string}
+     */
+    static unitOct;
+    /**
+     * `"unit-oxynoe-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitOxynoeHit;
+    /**
+     * `"unit-oxynoe"`
+     * @readonly
+     * @type {string}
+     */
+    static unitOxynoe;
+    /**
+     * `"unit-quad-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitQuadHit;
+    /**
+     * `"unit-quad"`
+     * @readonly
+     * @type {string}
+     */
+    static unitQuad;
+    /**
+     * `"unit-sei-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitSeiHit;
+    /**
+     * `"unit-sei"`
+     * @readonly
+     * @type {string}
+     */
+    static unitSei;
+    /**
+     * `"unit-zenith-angery"`
+     * @readonly
+     * @type {string}
+     */
+    static unitZenithAngery;
+    /**
+     * `"unit-zenith-hit"`
+     * @readonly
+     * @type {string}
+     */
+    static unitZenithHit;
+    /**
+     * `"unit-zenith"`
+     * @readonly
+     * @type {string}
+     */
+    static unitZenith;
+    /**
+     * `"warn"`
+     * @readonly
+     * @type {string}
+     */
+    static warn;
+    /**
+     * `"wave0"`
+     * @readonly
+     * @type {string}
+     */
+    static wave0;
+    /**
+     * `"wave1"`
+     * @readonly
+     * @type {string}
+     */
+    static wave1;
+    /**
+     * `"wave2"`
+     * @readonly
+     * @type {string}
+     */
+    static wave2;
+    /**
+     * `"wave3"`
+     * @readonly
+     * @type {string}
+     */
+    static wave3;
+}
+
+//#endregion
+
 //#region Classes
 
 /**
@@ -127,6 +729,7 @@ class Color {
      * @param {number} a The alpha component.
      */
     constructor(r, g, b, a) { }
+
     /**
      * Mixes two colors together according to its mode.
      * - mix: Interpolate between the colors.
@@ -274,6 +877,43 @@ class Color {
     static yellow;
 }
 
+/**
+ * A custom entity.
+ */
+class CustomEntity {
+    /**
+     * The grid position of the entity.
+     * @type {Vec2}
+     */
+    pos;
+    /**
+     * The sprite of the entity.
+     * @type {string}
+     */
+    sprite;
+    /**
+     * The rotation of the entity in degrees.
+     * @type {number}
+     */
+    rot;
+    /**
+     * The scale of the entity.
+     * @type {number}
+     */
+    scl;
+    /**
+     * The real position of the entity.
+     * @type {Vec2}
+     * @readonly
+     */
+    smoothPos;
+    /**
+     * The script of the entity. It is probably possible, but not recommended, to change this value.
+     * @type {function():void}
+     */
+    script;
+}
+
 //#endregion
 
 //#region Objects
@@ -319,7 +959,7 @@ var state = {
      */
     time,
     /**
-     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused (TODO actually test this).
+     * The global time that is independent of the current beatmap. Very useful for animating values. Does not freeze in menus or when the game is paused.
      * @type {number}
      * @readonly
      */
@@ -402,6 +1042,12 @@ var state = {
      * @readonly
      */
     beatSpacing,
+    /**
+     * The current interpolated beat.
+     * @type {number}
+     * @readonly
+     */
+    smoothTurn
 }
 
 //#endregion
@@ -1167,6 +1813,17 @@ function makeBulletCircle(pos, tex = "") { }
  */
 function makeLaser(pos, dir) { }
 
+/**
+ * Creates a custom entity on the playing field. Should only be used in map update scripts.
+ * @param {Vec2} pos The position of the entity.
+ * @param {function():void} script The function to run each frame. `this` can be used in the function to access the entity (type is `CustomEntity`).
+ * @param {int} [lifetime=-1] The number of turns the entity will exist. -1 for infinite.
+ * @param {bool} [destructible=false] Whether the entity can be destroyed by the player.
+ * @param {bool} [damagePlayer=false] Whether the entity damages the player on contact.
+ * @param {bool} [deleteOnContact=false] Whether the entity is destroyed on contact with the player. Only works if `damagePlayer` is `true`.
+ */
+function makeCustomEntity(pos, script, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false) { }
+
 //#endregion
 
 //#region Effects
@@ -1241,13 +1898,13 @@ function importSprite(name, namespace, alias = name) { }
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#d4">d4</a></li><li><a href="global.html#d4edge">d4edge</a></li><li><a href="global.html#d4mid">d4mid</a></li><li><a href="global.html#d8">d8</a></li><li><a href="global.html#d8mid">d8mid</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#deg">deg</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#importSprite">importSprite</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#mapSize">mapSize</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#rad">rad</a></li><li><a href="global.html#shadowOffset">shadowOffset</a></li><li><a href="global.html#state">state</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Color.html">Color</a></li><li><a href="CustomEntity.html">CustomEntity</a></li><li><a href="Vec2.html">Vec2</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beginBloom">beginBloom</a></li><li><a href="global.html#changeBpm">changeBpm</a></li><li><a href="global.html#d4">d4</a></li><li><a href="global.html#d4edge">d4edge</a></li><li><a href="global.html#d4mid">d4mid</a></li><li><a href="global.html#d8">d8</a></li><li><a href="global.html#d8mid">d8mid</a></li><li><a href="global.html#damageBlocks">damageBlocks</a></li><li><a href="global.html#deg">deg</a></li><li><a href="global.html#drawArc">drawArc</a></li><li><a href="global.html#drawArcRadius">drawArcRadius</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBeatAlt">drawBeatAlt</a></li><li><a href="global.html#drawBeatSquare">drawBeatSquare</a></li><li><a href="global.html#drawBounceSquares">drawBounceSquares</a></li><li><a href="global.html#drawCircles">drawCircles</a></li><li><a href="global.html#drawClouds">drawClouds</a></li><li><a href="global.html#drawCrescent">drawCrescent</a></li><li><a href="global.html#drawFadeIn">drawFadeIn</a></li><li><a href="global.html#drawFadeOut">drawFadeOut</a></li><li><a href="global.html#drawFadeShapes">drawFadeShapes</a></li><li><a href="global.html#drawFallSquares">drawFallSquares</a></li><li><a href="global.html#drawFft">drawFft</a></li><li><a href="global.html#drawFillCircle">drawFillCircle</a></li><li><a href="global.html#drawFillLight">drawFillLight</a></li><li><a href="global.html#drawFillPoly">drawFillPoly</a></li><li><a href="global.html#drawFillQuad">drawFillQuad</a></li><li><a href="global.html#drawFillQuadGradient">drawFillQuadGradient</a></li><li><a href="global.html#drawFillRect">drawFillRect</a></li><li><a href="global.html#drawFillSquare">drawFillSquare</a></li><li><a href="global.html#drawFillTri">drawFillTri</a></li><li><a href="global.html#drawFillTriGradient">drawFillTriGradient</a></li><li><a href="global.html#drawFlame">drawFlame</a></li><li><a href="global.html#drawGradient">drawGradient</a></li><li><a href="global.html#drawLine">drawLine</a></li><li><a href="global.html#drawLineAngle">drawLineAngle</a></li><li><a href="global.html#drawLineAngleCenter">drawLineAngleCenter</a></li><li><a href="global.html#drawLineRect">drawLineRect</a></li><li><a href="global.html#drawLineSquare">drawLineSquare</a></li><li><a href="global.html#drawLines">drawLines</a></li><li><a href="global.html#drawLongClouds">drawLongClouds</a></li><li><a href="global.html#drawMissiles">drawMissiles</a></li><li><a href="global.html#drawPetals">drawPetals</a></li><li><a href="global.html#drawPoly">drawPoly</a></li><li><a href="global.html#drawRadCircles">drawRadCircles</a></li><li><a href="global.html#drawRadLines">drawRadLines</a></li><li><a href="global.html#drawRadLinesRound">drawRadLinesRound</a></li><li><a href="global.html#drawRadTris">drawRadTris</a></li><li><a href="global.html#drawRain">drawRain</a></li><li><a href="global.html#drawRoundLine">drawRoundLine</a></li><li><a href="global.html#drawShape">drawShape</a></li><li><a href="global.html#drawShapeBack">drawShapeBack</a></li><li><a href="global.html#drawSkats">drawSkats</a></li><li><a href="global.html#drawSpace">drawSpace</a></li><li><a href="global.html#drawSpikes">drawSpikes</a></li><li><a href="global.html#drawSpin">drawSpin</a></li><li><a href="global.html#drawSpinGradient">drawSpinGradient</a></li><li><a href="global.html#drawSpinShape">drawSpinShape</a></li><li><a href="global.html#drawSquares">drawSquares</a></li><li><a href="global.html#drawStars">drawStars</a></li><li><a href="global.html#drawStripes">drawStripes</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#drawTilesFft">drawTilesFft</a></li><li><a href="global.html#drawTilesSquare">drawTilesSquare</a></li><li><a href="global.html#drawTriSquare">drawTriSquare</a></li><li><a href="global.html#drawTris">drawTris</a></li><li><a href="global.html#drawUnit">drawUnit</a></li><li><a href="global.html#drawVertGradient">drawVertGradient</a></li><li><a href="global.html#drawZoom">drawZoom</a></li><li><a href="global.html#effectExplode">effectExplode</a></li><li><a href="global.html#effectExplodeHeal">effectExplodeHeal</a></li><li><a href="global.html#effectStrikeWave">effectStrikeWave</a></li><li><a href="global.html#effectWarn">effectWarn</a></li><li><a href="global.html#effectWarnBullet">effectWarnBullet</a></li><li><a href="global.html#endBloom">endBloom</a></li><li><a href="global.html#getScl">getScl</a></li><li><a href="global.html#hoverOffset">hoverOffset</a></li><li><a href="global.html#importSprite">importSprite</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#makeArc">makeArc</a></li><li><a href="global.html#makeBullet">makeBullet</a></li><li><a href="global.html#makeBulletCircle">makeBulletCircle</a></li><li><a href="global.html#makeConveyor">makeConveyor</a></li><li><a href="global.html#makeCustomEntity">makeCustomEntity</a></li><li><a href="global.html#makeDelay">makeDelay</a></li><li><a href="global.html#makeDelayBullet">makeDelayBullet</a></li><li><a href="global.html#makeDelayBulletWarn">makeDelayBulletWarn</a></li><li><a href="global.html#makeLaser">makeLaser</a></li><li><a href="global.html#makeLaserSegment">makeLaserSegment</a></li><li><a href="global.html#makeRouter">makeRouter</a></li><li><a href="global.html#makeSorter">makeSorter</a></li><li><a href="global.html#makeTimedBullet">makeTimedBullet</a></li><li><a href="global.html#makeTurret">makeTurret</a></li><li><a href="global.html#makeWall">makeWall</a></li><li><a href="global.html#mapSize">mapSize</a></li><li><a href="global.html#px">px</a></li><li><a href="global.html#rad">rad</a></li><li><a href="global.html#shadowOffset">shadowOffset</a></li><li><a href="global.html#state">state</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat May 18 2024 22:03:09 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Feb 12 2025 17:08:27 GMT+0100 (Mitteleuropäische Normalzeit)
 </footer>
 
 <script> prettyPrint(); </script>

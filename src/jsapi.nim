@@ -9,6 +9,11 @@ var
   ctx: DTContext
   callbackId = 0
   debugMode* = false
+  nextEntityId = 0
+
+# Forward declarations
+
+proc getCustomEntityJs*(namespace: string): (proc(state: CustomEntityState): CustomEntityState)
 
 #region QOL functions
 
@@ -54,6 +59,7 @@ proc getColorDefault(idx: cint, default: Color): Color =
     (ctx.duk_get_prop_string(idx, "a") == 0)
 
   if invalid:
+    # TODO: pop?
     return default
   
   let r = ctx.duk_get_number(-4).float
@@ -96,7 +102,7 @@ template setObjNumber(name: string, value: float, writable = true) =
   setObjectProperty(name, writable, ctx.duk_push_number(value))
 
 template setObjString(name: string, value: string, writable = true) =
-  setObjectProperty(name, writable, ctx.duk_push_string(value))
+  setObjectProperty(name, writable, (discard ctx.duk_push_string(value.cstring)))
 
 template setObjBoolean(name: string, value: bool, writable = true) =
   setObjectProperty(name, writable, ctx.duk_push_boolean(if value: 1 else: 0))
@@ -128,6 +134,24 @@ proc getObjString(idx: int, name: string): string =
   let res = $ctx.duk_get_string(-1)
   ctx.duk_pop()
   return res
+
+proc getObjVec2(idx: cint, name: string): Vec2 =
+  discard ctx.duk_get_prop_string(idx, name)
+  let
+    x = getObjNumber(idx, "x").float
+    y = getObjNumber(idx, "y").float
+  ctx.duk_pop()
+  return vec2(x, y)
+
+proc getObjVec2i(idx: cint, name: string): Vec2i =
+  discard ctx.duk_get_prop_string(idx, name)
+  let
+    x = getObjInt(idx, "x").int
+    y = getObjInt(idx, "y").int
+  ctx.duk_pop()
+  return vec2i(x, y)
+
+# Stack getters
 
 # Global property setters
 template setGlobalProperty(name: string, writable: bool, body: untyped) =
@@ -537,10 +561,126 @@ proc initJsApi*() =
 
   #endregion
 
-  #region Global objects
+  #region Sprites
 
   discard ctx.duk_push_object()
+
+  setObjString("arrow", "arrow", false)
+  setObjString("beach", "beach", false)
+  setObjString("bigCopper", "big-copper", false)
+  setObjString("circle", "circle", false)
+  setObjString("ckat", "ckat", false)
+  setObjString("cloud1", "cloud1", false)
+  setObjString("cloud2", "cloud2", false)
+  setObjString("cloud3", "cloud3", false)
+  setObjString("cloud4", "cloud4", false)
+  setObjString("empty", "empty", false)
+  setObjString("error", "error", false)
+  setObjString("explode0", "explode0", false)
+  setObjString("explode1", "explode1", false)
+  setObjString("explode2", "explode2", false)
+  setObjString("explode3", "explode3", false)
+  setObjString("explode4", "explode4", false)
+  setObjString("hit0", "hit0", false)
+  setObjString("hit1", "hit1", false)
+  setObjString("hit2", "hit2", false)
+  setObjString("hit3", "hit3", false)
+  setObjString("hit4", "hit4", false)
+  setObjString("hit5", "hit5", false)
+  setObjString("laser", "laser", false)
+  setObjString("longcloud1", "longcloud1", false)
+  setObjString("longcloud2", "longcloud2", false)
+  setObjString("longcloud3", "longcloud3", false)
+  setObjString("longcloud4", "longcloud4", false)
+  setObjString("longcloud5", "longcloud5", false)
+  setObjString("petal", "petal", false)
+  setObjString("reload", "reload", false)
+  setObjString("shadow", "shadow", false)
+  setObjString("smoke0", "smoke0", false)
+  setObjString("smoke1", "smoke1", false)
+  setObjString("smoke2", "smoke2", false)
+  setObjString("smoke3", "smoke3", false)
+  setObjString("smoke4", "smoke4", false)
+  setObjString("smoke5", "smoke5", false)
+  setObjString("star1", "star1", false)
+  setObjString("star2", "star2", false)
+  setObjString("star3", "star3", false)
+  setObjString("sun", "sun", false)
+  setObjString("tile", "tile", false)
+  setObjString("wall", "wall", false)
+
+  setObjString("arc", "arc", false)
+  setObjString("book", "book", false)
+  setObjString("bulletBlue", "bullet-blue", false)
+  setObjString("bulletPink", "bullet-pink", false)
+  setObjString("bulletPurple", "bullet-purple", false)
+  setObjString("bulletTri", "bullet-tri", false)
+  setObjString("bullet", "bullet", false)
+  setObjString("conveyor", "conveyor", false)
+  setObjString("copper", "copper", false)
+  setObjString("duo", "duo", false)
+  setObjString("fail", "fail", false)
+  setObjString("headphones", "headphones", false)
+  setObjString("health", "health", false)
+  setObjString("info", "info", false)
+  setObjString("junction", "junction", false)
+  setObjString("lancer", "lancer", false)
+  setObjString("lancer2", "lancer2", false)
+  setObjString("mine", "mine", false)
+  setObjString("overflowGate", "overflow-gate", false)
+  setObjString("pause", "pause", false)
+  setObjString("play", "play", false)
+  setObjString("progressTick", "progress-tick", false)
+  setObjString("progress", "progress", false)
+  setObjString("router", "router", false)
+  setObjString("settings", "settings", false)
+  setObjString("shield", "shield", false)
+  setObjString("skat", "skat", false)
+  setObjString("sorter", "sorter", false)
+  setObjString("unitAlphaHappy", "unit-alpha-happy", false)
+  setObjString("unitAlphaHit", "unit-alpha-hit", false)
+  setObjString("unitAlpha", "unit-alpha", false)
+  setObjString("unitBoulderHit", "unit-boulder-hit", false)
+  setObjString("unitBoulder", "unit-boulder", false)
+  setObjString("unitCrawlerAngery", "unit-crawler-angery", false)
+  setObjString("unitCrawlerHit", "unit-crawler-hit", false)
+  setObjString("unitCrawler", "unit-crawler", false)
+  setObjString("unitMonoHappy", "unit-mono-happy", false)
+  setObjString("unitMonoHit", "unit-mono-hit", false)
+  setObjString("unitMono", "unit-mono", false)
+  setObjString("unitOctAngery", "unit-oct-angery", false)
+  setObjString("unitOctHit", "unit-oct-hit", false)
+  setObjString("unitOct", "unit-oct", false)
+  setObjString("unitOxynoeHit", "unit-oxynoe-hit", false)
+  setObjString("unitOxynoe", "unit-oxynoe", false)
+  setObjString("unitQuadHit", "unit-quad-hit", false)
+  setObjString("unitQuad", "unit-quad", false)
+  setObjString("unitSeiHit", "unit-sei-hit", false)
+  setObjString("unitSei", "unit-sei", false)
+  setObjString("unitZenithAngery", "unit-zenith-angery", false)
+  setObjString("unitZenithHit", "unit-zenith-hit", false)
+  setObjString("unitZenith", "unit-zenith", false)
+  setObjString("warn", "warn", false)
+  setObjString("wave0", "wave0", false)
+  setObjString("wave1", "wave1", false)
+  setObjString("wave2", "wave2", false)
+  setObjString("wave3", "wave3", false)
+
+  discard ctx.duk_put_global_string("Sprites")
+
+  #endregion
+  
+  #region Global objects
+
+  # Global
+  discard ctx.duk_push_object()
   discard ctx.duk_put_global_string("state")
+
+  # Stash (inaccessible from JS)
+  ctx.duk_push_global_stash()
+  discard ctx.duk_push_object()
+  discard ctx.duk_put_prop_string(-2, "entities")
+  ctx.duk_pop() # global stack
 
   #endregion
 
@@ -1469,6 +1609,32 @@ proc initJsApi*() =
     return 0
   ))
 
+  # makeCustomEntity(pos: Vec2, script: () => any, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false)
+  setGlobalFunc("makeCustomEntity", 6, (proc(ctx: DTContext): cint{.stdcall.} =
+    let
+      pos = getVec2(0)
+      script = getCustomEntityJs(currentNamespace)
+      lifetime = ctx.duk_get_int_default(2, -1).int
+      destructible = ctx.duk_get_boolean_default(3, 0) == 1
+      damagePlayer = ctx.duk_get_boolean_default(4, 0) == 1
+      deleteOnContact = ctx.duk_get_boolean_default(5, 0) == 1
+    
+    apiMakeCustomEntity(nextEntityId, vec2i(pos), script, lifetime, destructible, damagePlayer, deleteOnContact)
+
+    # Add entity to the list of custom entities
+    ctx.duk_push_global_stash()                         # [stash]
+    discard ctx.duk_get_prop_string(-1, "entities")     # [stash, entities]
+    discard ctx.duk_push_object()                       # [stash, entities, entity]
+    ctx.duk_dup(1)                                      # [stash, entities, entity, script]
+    discard ctx.duk_put_prop_string(-2, "script")       # [stash, entities, entity]
+    setObjVec2("pos", pos)
+    discard ctx.duk_put_prop_string(-2, $nextEntityId)  # [stash, entities]
+    ctx.duk_pop_2()                                     # []
+
+    nextEntityId.inc
+    return 0
+  ))
+
   #endregion
 
   #region Effects
@@ -1555,6 +1721,13 @@ proc initJsApi*() =
 
   #endregion
 
+proc resetEntities() =
+  ctx.duk_push_global_stash()                     # [stash]
+  discard ctx.duk_del_prop_string(-1, "entities") # [stash]
+  discard ctx.duk_push_object()                   # [stash, entities]
+  discard ctx.duk_put_prop_string(-2, "entities") # [stash]
+  ctx.duk_pop()                                   # []
+
 proc updateJs*(namespace: string) =
   currentNamespace = namespace
 
@@ -1620,6 +1793,42 @@ proc getUnitAbilityJs*(namespace, name: string): (proc(entity: EntityRef, moves:
         ctx.duk_push_int(moves.cint)
         pushVec2(vec2(gridPosition))
         pushVec2(vec2(lastMove))
+    )
+
+proc getCustomEntityJs*(namespace: string): (proc(state: CustomEntityState): CustomEntityState) =
+  capture namespace:
+    return (proc(state: CustomEntityState): CustomEntityState =
+      updateJs(namespace)
+
+      # Get entity by id
+      ctx.duk_push_global_stash()                         # [stash]
+      discard ctx.duk_get_prop_string(-1, "entities")     # [stash, entities]
+      discard ctx.duk_get_prop_string(-1, $state.id)      # [stash, entities, currentEntity]
+
+      # Set state
+      setObjVec2("pos", vec2(state.pos), true)
+      setObjString("sprite", state.sprite, true)
+      setObjNumber("rot", state.rot, true)
+      setObjNumber("scl", state.scl, true)
+      setObjVec2("smoothPos", state.smoothPos, false)
+
+      # Call function
+      discard ctx.duk_push_string("script")               # [stash, entities, currentEntity, "script"]
+      let err = ctx.duk_pcall_prop(-2, 0)                 # [stash, entities, currentEntity, result]
+      if err != 0:
+        raise newException(JavaScriptError, $ctx.duk_safe_to_string(-1))
+      ctx.duk_pop()                                       # [stash, entities, currentEntity]
+
+      # Get state
+      let res = CustomEntityState(
+        id: state.id,
+        pos: vec2i(getObjVec2(-1, "pos")),
+        sprite: getObjString(-1, "sprite"),
+        rot: getObjNumber(-1, "rot"),
+        scl: getObjNumber(-1, "scl")
+      )
+      ctx.duk_pop_3()                                     # []
+      return res
     )
 
 proc evalScriptJs*(script: string) =

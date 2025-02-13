@@ -98,10 +98,17 @@ register(defaultCompOpts):
       spawn: SpawnConveyors
     
     Damage = object
+      deleteOnContact: bool = true
+      cooldown: bool = false
 
     RunDelay = object
       delay: int
       callback: proc()
+
+    CustomEntity = object
+      namespace: string
+      lastState: CustomEntityState = CustomEntityState(pos: vec2i(0, 0), sprite: "", rot: 0.0, scl: 1.0)
+      script: proc(state: CustomEntityState): CustomEntityState {.closure.}
   
 #snap position to grid position
 GridPos.onAdd:

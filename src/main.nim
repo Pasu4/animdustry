@@ -61,6 +61,16 @@ onEcsBuilt:
   proc makeUnit(pos: Vec2i, aunit: Unit) =
     discard newEntityWith(Input(nextBeat: -1), Pos(), GridPos(vec: pos), UnitDraw(unit: aunit))
 
+  proc makeCustomEntity(id: int, pos: Vec2i, script: (proc(state: CustomEntityState): CustomEntityState), lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false) =
+    let entity = newEntityWith(CustomEntity(lastState: CustomEntityState(id: id, pos: pos), script: script), Scaled(scl: 1f), Pos(), GridPos(vec: pos))
+    if lifetime > 0:
+      entity.add(Lifetime(turns: lifetime))
+    if destructible:
+      entity.add(Destructible())
+    if damagePlayer:
+      entity.add(Damage(deleteOnContact: deleteOnContact))
+
+
   proc reset() =
     resetEntityStorage()
 
@@ -720,6 +730,9 @@ makeSystem("damagePlayer", [GridPos, Pos, Damage, not Deleting]):
     #TODO maybe item movement should be based on player movement?
     var hit = false
 
+    if state.newTurn:
+      item.damage.cooldown = false
+
     template deleteCurrent =
       if item.entity.has(DrawLaser):
         sys.toDelete.add item.entity
@@ -727,39 +740,46 @@ makeSystem("damagePlayer", [GridPos, Pos, Damage, not Deleting]):
         sys.deleteList.add item.entity
       effectHit(item.gridPos.vec.vec2)
       
-    #hit player first.
-    for other in sysWall.groups:
-      let pos = other.gridPos
-      if pos.vec == item.gridPos.vec:
-        deleteCurrent()
-        
-        other.wall.health.dec
-        if other.wall.health <= 0:
-          other.entity.addIfMissing Deleting(time: 1f)
-        
-        #cannot damage player anymore
-        hit = true
-
-    if not hit:
-      for other in sysInput.groups:
+    if not item.damage.cooldown:
+      #hit player first.
+      for other in sysWall.groups:
         let pos = other.gridPos
-        if pos.vec == item.gridPos.vec and (other.input.justMoved or other.pos.vec.within(item.pos.vec, 0.23f)):
-          other.unitDraw.hitTime = 1f
-          soundHit.play()
-          deleteCurrent()
+        if pos.vec == item.gridPos.vec:
+          if item.damage.deleteOnContact:
+            deleteCurrent()
+          
+          other.wall.health.dec
+          if other.wall.health <= 0:
+            other.entity.addIfMissing Deleting(time: 1f)
+          
+          #cannot damage player anymore
+          hit = true
+          item.damage.cooldown = true
 
-          #damage shields instead
-          if not other.input.shielded:
-            state.hitTime = 1f
-            addPoints(-15)
+      if not hit:
+        for other in sysInput.groups:
+          let pos = other.gridPos
+          if pos.vec == item.gridPos.vec and (other.input.justMoved or other.pos.vec.within(item.pos.vec, 0.23f)):
+            other.unitDraw.hitTime = 1f
+            soundHit.play()
 
-            #do not actually deal damage (iframes)
-            if other.input.hitTurn < state.turn - 1:
-              state.hits.inc
-              state.totalHits.inc
-              other.input.hitTurn = state.turn
-          else:
-            other.input.shielded = false
+            if item.damage.deleteOnContact:
+              deleteCurrent()
+
+            #damage shields instead
+            if not other.input.shielded:
+              state.hitTime = 1f
+              addPoints(-15)
+
+              #do not actually deal damage (iframes)
+              if other.input.hitTurn < state.turn - 1:
+                state.hits.inc
+                state.totalHits.inc
+                other.input.hitTurn = state.turn
+            else:
+              other.input.shielded = false
+            
+            item.damage.cooldown = true
     
   for i in sys.toDelete:
     i.remove Damage
@@ -938,7 +958,7 @@ makeSystem("drawBounce", [Pos, DrawBounce, Scaled]):
     if item.drawBounce.sprite.patch.exists:
       draw(item.drawBounce.sprite.patch, item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
     else:
-      draw(getCustomTexture(currentNameSpace, item.drawBounce.sprite), item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
+      draw(getCustomTexture(currentNamespace, item.drawBounce.sprite), item.pos.vec, z = zlayer(item) - 2f.px, rotation = item.drawBounce.rotation, scl = vec2(1f + state.moveBeat.pow(7f) * 0.3f) * item.scaled.scl)
 
 makeSystem("drawLaser", [Pos, DrawLaser, Scaled]):
   all:
@@ -995,6 +1015,30 @@ makeSystem("drawBullet", [Pos, DrawBullet, Velocity, Scaled]):
       draw(sprite.patch, item.pos.vec, z = zlayer(item), rotation = item.velocity.vec.vec2.angle, mixColor = colorWhite.withA(state.moveBeat.pow(5f)), scl = item.scaled.scl.vec2#[, scl = vec2(1f - moveBeat.pow(7f) * 0.3f, 1f + moveBeat.pow(7f) * 0.3f)]#)
     else:
       draw(getCustomTexture(currentNamespace, sprite), item.pos.vec, z = zlayer(item), rotation = item.velocity.vec.vec2.angle, mixColor = colorWhite.withA(state.moveBeat.pow(5f)), scl = item.scaled.scl.vec2)
+
+makeSystem("customEntity", [GridPos, Pos, CustomEntity, Scaled]):
+  all:
+    let script = item.customEntity.script
+    item.customEntity.lastState = script(item.customEntity.lastState)
+    
+    item.gridPos.vec = item.customEntity.lastState.pos
+
+    if item.customEntity.lastState.sprite.patch.exists:
+      draw(
+        item.customEntity.lastState.sprite.patch,
+        item.pos.vec,
+        z = zlayer(item),
+        rotation = item.customEntity.lastState.rot,
+        scl = item.scaled.scl.vec2 * item.customEntity.lastState.scl,
+      )
+    else:
+      draw(
+        getCustomTexture(currentNamespace, item.customEntity.lastState.sprite),
+        item.pos.vec,
+        z = zlayer(item),
+        rotation = item.customEntity.lastState.rot,
+        scl = item.scaled.scl.vec2 * item.customEntity.lastState.scl,
+      )
 
 include menus
 

@@ -36,6 +36,7 @@ var
   apiMakeTurret*: proc(pos: Vec2i, face: Vec2i, reload = 4, life = 8, tex = "duo")
   apiMakeArc*: proc(pos: Vec2i, dir: Vec2i, tex = "arc", bounces = 1, life = 3)
   apiMakeWall*: proc(pos: Vec2i, sprite = "wall", life = 10, health = 3)
+  apiMakeCustomEntity*: proc(id: int, pos: Vec2i, script: proc(state: CustomEntityState): CustomEntityState, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false)
 
   apiMakeDelayBullet*: proc(pos, dir: Vec2i, tex = "")
   apiMakeDelayBulletWarn*: proc(pos, dir: Vec2i, tex = "")
@@ -82,6 +83,7 @@ template exportProcs* =
   apivars.apiMakeTurret       = makeTurret
   apivars.apiMakeArc          = makeArc
   apivars.apiMakeWall         = makeWall
+  apivars.apiMakeCustomEntity = makeCustomEntity
 
   apivars.apiMakeDelayBullet      = proc(pos, dir: Vec2i, tex = "") = delayBullet(pos, dir, tex)
   apivars.apiMakeDelayBulletWarn  = proc(pos, dir: Vec2i, tex = "") = delayBulletWarn(pos, dir, tex)
