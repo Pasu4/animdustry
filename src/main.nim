@@ -1018,8 +1018,23 @@ makeSystem("drawBullet", [Pos, DrawBullet, Velocity, Scaled]):
 
 makeSystem("customEntity", [GridPos, Pos, CustomEntity, Scaled]):
   all:
+    # Communicate deletion to JS
+    if item.entity.has(Deleting):
+      item.customEntity.lastState.deleting = true
+
     let script = item.customEntity.script
     item.customEntity.lastState = script(item.customEntity.lastState)
+
+    # Delete immediately if requested by JS
+    if item.customEntity.lastState.deletingImmediate:
+      if item.entity.has(Deleting):
+        item.entity.fetch(Deleting).time = 0
+      else:
+        item.entity.add(Deleting(time: 0))
+
+    # Delete if requested by JS
+    if item.customEntity.lastState.deleting:
+      item.entity.addIfMissing Deleting(time: 1f)
     
     item.gridPos.vec = item.customEntity.lastState.pos
 

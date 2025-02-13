@@ -880,10 +880,35 @@ class CustomEntity {
      */
     smoothPos;
     /**
+     * Whether the object is being deleted.
+     * @type {bool}
+     * @readonly
+     */
+    deleting;
+    /**
+     * Whether the object is being deleted immediately.
+     */
+    deletingImmediate;
+    /**
      * The script of the entity. It is probably possible, but not recommended, to change this value.
      * @type {function():void}
      */
     script;
+
+    /**
+     * Deletes the entity with an animation.
+     * The entity's script will still run until the end of the animation.
+     * Calling this multiple times has no effect.
+     */
+    destroy() { }
+
+    /**
+     * Deletes the entity immediately without an animation.
+     * The entity's script will not run after this function is called.
+     * Calling this multiple times has no effect.
+     * The entity will be removed from the game in the next frame.
+     */
+    destroyImmediate() { }
 }
 
 //#endregion
@@ -1793,6 +1818,7 @@ function makeLaser(pos, dir) { }
  * @param {bool} [destructible=false] Whether the entity can be destroyed by the player.
  * @param {bool} [damagePlayer=false] Whether the entity damages the player on contact.
  * @param {bool} [deleteOnContact=false] Whether the entity is destroyed on contact with the player. Only works if `damagePlayer` is `true`.
+ * @returns {CustomEntity} The created entity.
  */
 function makeCustomEntity(pos, script, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false) { }
 

@@ -165,7 +165,9 @@ type Settings* = object
 type CustomEntityState* = object
   id*: int
   pos*: Vec2i = vec2i(0, 0)
-  sprite*: string = ""
   scl*: float32 = 1.0
   rot*: float32 = 0.0
+  sprite*: string = ""
   smoothPos*: Vec2 = vec2(0, 0)
+  deleting*: bool = false
+  deletingImmediate*: bool = false

@@ -135,6 +135,12 @@ proc getObjString(idx: int, name: string): string =
   ctx.duk_pop()
   return res
 
+proc getObjBoolean(idx: int, name: string): bool =
+  discard ctx.duk_get_prop_string(idx.cint, name)
+  let res = ctx.duk_get_boolean(-1) == 1
+  ctx.duk_pop()
+  return res
+
 proc getObjVec2(idx: cint, name: string): Vec2 =
   discard ctx.duk_get_prop_string(idx, name)
   let
@@ -158,6 +164,11 @@ template setGlobalProperty(name: string, writable: bool, body: untyped) =
   ctx.duk_push_global_object()              # push global object
   setObjectProperty(name, writable, body)   # set property
   ctx.duk_pop()                             # pop global object
+
+template setGlobalStashProperty(name: string, body: untyped) =
+  ctx.duk_push_global_stash()               # push global stash
+  setObjectProperty(name, true, body)       # set property (writable, cannot access from JS anyway)
+  ctx.duk_pop()                             # pop global stash
 
 template setGlobalInt(name: string, value: int, writable = true) =
   setGlobalProperty(name, writable, ctx.duk_push_int(value))
@@ -198,6 +209,9 @@ template setGlobalVec2iArray(name: string, values: seq[Vec2i], writable = true) 
 ## f: The function to push
 template setGlobalFunc(name: string, argc: int, f: DTCFunction) =
   setGlobalProperty(name, false, (discard ctx.duk_push_c_function(f, argc)))
+
+template setGlobalStashFunc(name: string, argc: int, f: DTCFunction) =
+  setGlobalStashProperty(name, (discard ctx.duk_push_c_function(f, argc)))
 
 template callNamespaceFunc(namespace: string, name: string, argc: int, body: untyped) =
   # Get function
@@ -1609,7 +1623,7 @@ proc initJsApi*() =
     return 0
   ))
 
-  # makeCustomEntity(pos: Vec2, script: () => any, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false)
+  # makeCustomEntity(pos: Vec2, script: () => any, lifetime = -1, destructible = false, damagePlayer = false, deleteOnContact = false): CustomEntity
   setGlobalFunc("makeCustomEntity", 6, (proc(ctx: DTContext): cint{.stdcall.} =
     let
       pos = getVec2(0)
@@ -1622,16 +1636,54 @@ proc initJsApi*() =
     apiMakeCustomEntity(nextEntityId, vec2i(pos), script, lifetime, destructible, damagePlayer, deleteOnContact)
 
     # Add entity to the list of custom entities
-    ctx.duk_push_global_stash()                         # [stash]
-    discard ctx.duk_get_prop_string(-1, "entities")     # [stash, entities]
-    discard ctx.duk_push_object()                       # [stash, entities, entity]
-    ctx.duk_dup(1)                                      # [stash, entities, entity, script]
-    discard ctx.duk_put_prop_string(-2, "script")       # [stash, entities, entity]
+    ctx.duk_push_global_stash()                                           # [stash]
+    discard ctx.duk_get_prop_string(-1, "entities")                       # [stash, entities]
+    discard ctx.duk_push_object()                                         # [stash, entities, entity]
+
+    # Add properties to the entity
+    ctx.duk_dup(1)                                                        # [stash, entities, entity, script]
+    discard ctx.duk_put_prop_string(-2, "script")                         # [stash, entities, entity]
+    discard ctx.duk_get_prop_string(-3, "CustomEntity_destroy")           # [stash, entities, entity, destroy]
+    discard ctx.duk_put_prop_string(-2, "destroy")                        # [stash, entities, entity]
+    discard ctx.duk_get_prop_string(-3, "CustomEntity_destroyImmediate")  # [stash, entities, entity, destroyImmediate]
+    discard ctx.duk_put_prop_string(-2, "destroyImmediate")               # [stash, entities, entity]
+    
+    setObjInt("id", nextEntityId)
     setObjVec2("pos", pos)
-    discard ctx.duk_put_prop_string(-2, $nextEntityId)  # [stash, entities]
-    ctx.duk_pop_2()                                     # []
+    setObjNumber("rot", 0)
+    setObjInt("scl", 1)
+    setObjString("sprite", "")
+    setObjBoolean("deleting", false)
+    setObjBoolean("deletingImmediate", false)
+
+    # Return object
+    ctx.duk_dup_top()                                                     # [stash, entities, entity, entity]
+    discard ctx.duk_put_prop_string(-3, $nextEntityId)                    # [stash, entities, entity]
 
     nextEntityId.inc
+
+    return 1 # Return entity (duktape will handle the cleanup)
+  ))
+
+  #endregion
+
+  #region Custom entity methods
+
+  # destroy()
+  setGlobalStashFunc("CustomEntity_destroy", 0, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_this()
+    setObjBoolean("deleting", true)
+    # let id = getObjInt(-1, "id")
+    # echo "Destroying entity #", id
+    return 0
+  ))
+
+  # destroyImmediate()
+  setGlobalStashFunc("CustomEntity_destroyImmediate", 0, (proc(ctx: DTContext): cint{.stdcall.} =
+    ctx.duk_push_this()
+    setObjBoolean("deletingImmediate", true)
+    # let id = getObjInt(-1, "id")
+    # echo "Destroying entity #", id, " immediately"
     return 0
   ))
 
@@ -1805,12 +1857,29 @@ proc getCustomEntityJs*(namespace: string): (proc(state: CustomEntityState): Cus
       discard ctx.duk_get_prop_string(-1, "entities")     # [stash, entities]
       discard ctx.duk_get_prop_string(-1, $state.id)      # [stash, entities, currentEntity]
 
-      # Set state
-      setObjVec2("pos", vec2(state.pos), true)
-      setObjString("sprite", state.sprite, true)
-      setObjNumber("rot", state.rot, true)
-      setObjNumber("scl", state.scl, true)
+      # Load modified values
+      let
+        deleting = state.deleting or getObjBoolean(-1, "deleting")
+        deletingImmediate = state.deletingImmediate or getObjBoolean(-1, "deletingImmediate")
+
+      # Write readonly properties
       setObjVec2("smoothPos", state.smoothPos, false)
+      setObjBoolean("deleting", deleting, false)
+      setObjBoolean("deletingImmediate", deletingImmediate, false)
+
+      # Check if entity is being deleted
+      if deletingImmediate:
+        ctx.duk_pop_3()                                   # []
+        return CustomEntityState(
+          id:                 state.id,
+          pos:                getObjVec2i(-1, "pos"),
+          rot:                getObjNumber(-1, "rot"),
+          scl:                getObjNumber(-1, "scl"),
+          sprite:             getObjString(-1, "sprite"),
+
+          deleting:           deleting,
+          deletingImmediate:  deletingImmediate,
+        )
 
       # Call function
       discard ctx.duk_push_string("script")               # [stash, entities, currentEntity, "script"]
@@ -1819,13 +1888,16 @@ proc getCustomEntityJs*(namespace: string): (proc(state: CustomEntityState): Cus
         raise newException(JavaScriptError, $ctx.duk_safe_to_string(-1))
       ctx.duk_pop()                                       # [stash, entities, currentEntity]
 
-      # Get state
+      # Load modified state
       let res = CustomEntityState(
-        id: state.id,
-        pos: vec2i(getObjVec2(-1, "pos")),
-        sprite: getObjString(-1, "sprite"),
-        rot: getObjNumber(-1, "rot"),
-        scl: getObjNumber(-1, "scl")
+        id:                 state.id,
+        pos:                vec2i(getObjVec2(-1, "pos")),
+        rot:                getObjNumber(-1, "rot"),
+        scl:                getObjNumber(-1, "scl"),
+        sprite:             getObjString(-1, "sprite"),
+
+        deleting:           deleting or getObjBoolean(-1, "deleting"),
+        deletingImmediate:  deletingImmediate or getObjBoolean(-1, "deletingImmediate")
       )
       ctx.duk_pop_3()                                     # []
       return res
