@@ -345,6 +345,43 @@ exampleNamespace.exampleMap_update = function() {
 }
 ```
 
+## Custom entities
+
+You can create a custom entity using the `makeCustomEntity` function.
+An entity takes a function as a script.
+This script is then called every frame while the entity is alive.
+The function's `this` binding is of type `CustomEntity`.
+Any function (with no parameters and return type) can be an entity script, and unlike the other special functions, it does not require a specific naming convention.
+You can also add addititional properties to the object.
+The properties `pos`, `rot`, `scl` and `sprite` can be changed at any point during the entity's lifetime, this can be used for movement of sprite animations.
+
+```js
+// The entity script
+exampleNamespace.exampleEntity = function() {
+    if(!this.initDone) {
+        this.initDone = true;
+        this.sprite = Sprites.arc;
+        this.rot = rad(270);
+
+        this.startTurn = state.turn;
+    }
+
+    var lifeTurn = state.turn - this.startTurn;
+
+    if(lifeTurn % 2 == 0) {
+        // Shoot a bullet from the entity's position
+        makeBullet(this.pos, this.dir, Sprites.bullet);
+    }
+}
+
+// Wrapper function for spawning
+exampleNamespace.makeExampleEntity = function(pos, dir) {
+    var entity = makeCustomEntity(new Vec2(-3, 6), exampleNamespace.exampleEntity, 10, false, true, false);
+    entity.dir = dir; // Add custom data
+    return entity;
+}
+```
+
 ## credits.txt
 
 A `credits.txt` file should be placed at the root of your mod folder.

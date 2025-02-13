@@ -46,598 +46,602 @@ const d8mid = [new Vec2(0)]; // placeholder
 
 //#region Sprites
 
+/**
+ * Contains all the default sprites used in the game.
+ * @hideconstructor
+ */
 class Sprites {
     /**
-     * `"arrow"`
+     * @default "arrow"
      * @readonly
      * @type {string}
      */
     static arrow;
     /**
-     * `"beach"`
+     * @default "beach"
      * @readonly
      * @type {string}
      */
     static beach;
     /**
-     * `"big-copper"`
+     * @default "big-copper"
      * @readonly
      * @type {string}
      */
     static bigCopper;
     /**
-     * `"circle"`
+     * @default "circle"
      * @readonly
      * @type {string}
      */
     static circle;
     /**
-     * `"ckat"`
+     * @default "ckat"
      * @readonly
      * @type {string}
      */
     static ckat;
     /**
-     * `"cloud1"`
+     * @default "cloud1"
      * @readonly
      * @type {string}
      */
     static cloud1;
     /**
-     * `"cloud2"`
+     * @default "cloud2"
      * @readonly
      * @type {string}
      */
     static cloud2;
     /**
-     * `"cloud3"`
+     * @default "cloud3"
      * @readonly
      * @type {string}
      */
     static cloud3;
     /**
-     * `"cloud4"`
+     * @default "cloud4"
      * @readonly
      * @type {string}
      */
     static cloud4;
     /**
-     * `"empty"`
+     * @default "empty"
      * @readonly
      * @type {string}
      */
     static empty;
     /**
-     * `"error"`
+     * @default "error"
      * @readonly
      * @type {string}
      */
     static error;
     /**
-     * `"explode0"`
+     * @default "explode0"
      * @readonly
      * @type {string}
      */
     static explode0;
     /**
-     * `"explode1"`
+     * @default "explode1"
      * @readonly
      * @type {string}
      */
     static explode1;
     /**
-     * `"explode2"`
+     * @default "explode2"
      * @readonly
      * @type {string}
      */
     static explode2;
     /**
-     * `"explode3"`
+     * @default "explode3"
      * @readonly
      * @type {string}
      */
     static explode3;
     /**
-     * `"explode4"`
+     * @default "explode4"
      * @readonly
      * @type {string}
      */
     static explode4;
     /**
-     * `"hit0"`
+     * @default "hit0"
      * @readonly
      * @type {string}
      */
     static hit0;
     /**
-     * `"hit1"`
+     * @default "hit1"
      * @readonly
      * @type {string}
      */
     static hit1;
     /**
-     * `"hit2"`
+     * @default "hit2"
      * @readonly
      * @type {string}
      */
     static hit2;
     /**
-     * `"hit3"`
+     * @default "hit3"
      * @readonly
      * @type {string}
      */
     static hit3;
     /**
-     * `"hit4"`
+     * @default "hit4"
      * @readonly
      * @type {string}
      */
     static hit4;
     /**
-     * `"hit5"`
+     * @default "hit5"
      * @readonly
      * @type {string}
      */
     static hit5;
     /**
-     * `"laser"`
+     * @default "laser"
      * @readonly
      * @type {string}
      */
     static laser;
     /**
-     * `"longcloud1"`
+     * @default "longcloud1"
      * @readonly
      * @type {string}
      */
     static longcloud1;
     /**
-     * `"longcloud2"`
+     * @default "longcloud2"
      * @readonly
      * @type {string}
      */
     static longcloud2;
     /**
-     * `"longcloud3"`
+     * @default "longcloud3"
      * @readonly
      * @type {string}
      */
     static longcloud3;
     /**
-     * `"longcloud4"`
+     * @default "longcloud4"
      * @readonly
      * @type {string}
      */
     static longcloud4;
     /**
-     * `"longcloud5"`
+     * @default "longcloud5"
      * @readonly
      * @type {string}
      */
     static longcloud5;
     /**
-     * `"petal"`
+     * @default "petal"
      * @readonly
      * @type {string}
      */
     static petal;
     /**
-     * `"reload"`
+     * @default "reload"
      * @readonly
      * @type {string}
      */
     static reload;
     /**
-     * `"shadow"`
+     * @default "shadow"
      * @readonly
      * @type {string}
      */
     static shadow;
     /**
-     * `"smoke0"`
+     * @default "smoke0"
      * @readonly
      * @type {string}
      */
     static smoke0;
     /**
-     * `"smoke1"`
+     * @default "smoke1"
      * @readonly
      * @type {string}
      */
     static smoke1;
     /**
-     * `"smoke2"`
+     * @default "smoke2"
      * @readonly
      * @type {string}
      */
     static smoke2;
     /**
-     * `"smoke3"`
+     * @default "smoke3"
      * @readonly
      * @type {string}
      */
     static smoke3;
     /**
-     * `"smoke4"`
+     * @default "smoke4"
      * @readonly
      * @type {string}
      */
     static smoke4;
     /**
-     * `"smoke5"`
+     * @default "smoke5"
      * @readonly
      * @type {string}
      */
     static smoke5;
     /**
-     * `"star1"`
+     * @default "star1"
      * @readonly
      * @type {string}
      */
     static star1;
     /**
-     * `"star2"`
+     * @default "star2"
      * @readonly
      * @type {string}
      */
     static star2;
     /**
-     * `"star3"`
+     * @default "star3"
      * @readonly
      * @type {string}
      */
     static star3;
     /**
-     * `"sun"`
+     * @default "sun"
      * @readonly
      * @type {string}
      */
     static sun;
     /**
-     * `"tile"`
+     * @default "tile"
      * @readonly
      * @type {string}
      */
     static tile;
     /**
-     * `"wall"`
+     * @default "wall"
      * @readonly
      * @type {string}
      */
     static wall;
 
     /**
-     * `"arc"`
+     * @default "arc"
      * @readonly
      * @type {string}
      */
     static arc;
     /**
-     * `"book"`
+     * @default "book"
      * @readonly
      * @type {string}
      */
     static book;
     /**
-     * `"bullet-blue"`
+     * @default "bullet-blue"
      * @readonly
      * @type {string}
      */
     static bulletBlue;
     /**
-     * `"bullet-pink"`
+     * @default "bullet-pink"
      * @readonly
      * @type {string}
      */
     static bulletPink;
     /**
-     * `"bullet-purple"`
+     * @default "bullet-purple"
      * @readonly
      * @type {string}
      */
     static bulletPurple;
     /**
-     * `"bullet-tri"`
+     * @default "bullet-tri"
      * @readonly
      * @type {string}
      */
     static bulletTri;
     /**
-     * `"bullet"`
+     * @default "bullet"
      * @readonly
      * @type {string}
      */
     static bullet;
     /**
-     * `"conveyor"`
+     * @default "conveyor"
      * @readonly
      * @type {string}
      */
     static conveyor;
     /**
-     * `"copper"`
+     * @default "copper"
      * @readonly
      * @type {string}
      */
     static copper;
     /**
-     * `"duo"`
+     * @default "duo"
      * @readonly
      * @type {string}
      */
     static duo;
     /**
-     * `"fail"`
+     * @default "fail"
      * @readonly
      * @type {string}
      */
     static fail;
     /**
-     * `"headphones"`
+     * @default "headphones"
      * @readonly
      * @type {string}
      */
     static headphones;
     /**
-     * `"health"`
+     * @default "health"
      * @readonly
      * @type {string}
      */
     static health;
     /**
-     * `"info"`
+     * @default "info"
      * @readonly
      * @type {string}
      */
     static info;
     /**
-     * `"junction"`
+     * @default "junction"
      * @readonly
      * @type {string}
      */
     static junction;
     /**
-     * `"lancer"`
+     * @default "lancer"
      * @readonly
      * @type {string}
      */
     static lancer;
     /**
-     * `"lancer2"`
+     * @default "lancer2"
      * @readonly
      * @type {string}
      */
     static lancer2;
     /**
-     * `"mine"`
+     * @default "mine"
      * @readonly
      * @type {string}
      */
     static mine;
     /**
-     * `"overflow-gate"`
+     * @default "overflow-gate"
      * @readonly
      * @type {string}
      */
     static overflowGate;
     /**
-     * `"pause"`
+     * @default "pause"
      * @readonly
      * @type {string}
      */
     static pause;
     /**
-     * `"play"`
+     * @default "play"
      * @readonly
      * @type {string}
      */
     static play;
     /**
-     * `"progress-tick"`
+     * @default "progress-tick"
      * @readonly
      * @type {string}
      */
     static progressTick;
     /**
-     * `"progress"`
+     * @default "progress"
      * @readonly
      * @type {string}
      */
     static progress;
     /**
-     * `"router"`
+     * @default "router"
      * @readonly
      * @type {string}
      */
     static router;
     /**
-     * `"settings"`
+     * @default "settings"
      * @readonly
      * @type {string}
      */
     static settings;
     /**
-     * `"shield"`
+     * @default "shield"
      * @readonly
      * @type {string}
      */
     static shield;
     /**
-     * `"skat"`
+     * @default "skat"
      * @readonly
      * @type {string}
      */
     static skat;
     /**
-     * `"sorter"`
+     * @default "sorter"
      * @readonly
      * @type {string}
      */
     static sorter;
     /**
-     * `"unit-alpha-happy"`
+     * @default "unit-alpha-happy"
      * @readonly
      * @type {string}
      */
     static unitAlphaHappy;
     /**
-     * `"unit-alpha-hit"`
+     * @default "unit-alpha-hit"
      * @readonly
      * @type {string}
      */
     static unitAlphaHit;
     /**
-     * `"unit-alpha"`
+     * @default "unit-alpha"
      * @readonly
      * @type {string}
      */
     static unitAlpha;
     /**
-     * `"unit-boulder-hit"`
+     * @default "unit-boulder-hit"
      * @readonly
      * @type {string}
      */
     static unitBoulderHit;
     /**
-     * `"unit-boulder"`
+     * @default "unit-boulder"
      * @readonly
      * @type {string}
      */
     static unitBoulder;
     /**
-     * `"unit-crawler-angery"`
+     * @default "unit-crawler-angery"
      * @readonly
      * @type {string}
      */
     static unitCrawlerAngery;
     /**
-     * `"unit-crawler-hit"`
+     * @default "unit-crawler-hit"
      * @readonly
      * @type {string}
      */
     static unitCrawlerHit;
     /**
-     * `"unit-crawler"`
+     * @default "unit-crawler"
      * @readonly
      * @type {string}
      */
     static unitCrawler;
     /**
-     * `"unit-mono-happy"`
+     * @default "unit-mono-happy"
      * @readonly
      * @type {string}
      */
     static unitMonoHappy;
     /**
-     * `"unit-mono-hit"`
+     * @default "unit-mono-hit"
      * @readonly
      * @type {string}
      */
     static unitMonoHit;
     /**
-     * `"unit-mono"`
+     * @default "unit-mono"
      * @readonly
      * @type {string}
      */
     static unitMono;
     /**
-     * `"unit-oct-angery"`
+     * @default "unit-oct-angery"
      * @readonly
      * @type {string}
      */
     static unitOctAngery;
     /**
-     * `"unit-oct-hit"`
+     * @default "unit-oct-hit"
      * @readonly
      * @type {string}
      */
     static unitOctHit;
     /**
-     * `"unit-oct"`
+     * @default "unit-oct"
      * @readonly
      * @type {string}
      */
     static unitOct;
     /**
-     * `"unit-oxynoe-hit"`
+     * @default "unit-oxynoe-hit"
      * @readonly
      * @type {string}
      */
     static unitOxynoeHit;
     /**
-     * `"unit-oxynoe"`
+     * @default "unit-oxynoe"
      * @readonly
      * @type {string}
      */
     static unitOxynoe;
     /**
-     * `"unit-quad-hit"`
+     * @default "unit-quad-hit"
      * @readonly
      * @type {string}
      */
     static unitQuadHit;
     /**
-     * `"unit-quad"`
+     * @default "unit-quad"
      * @readonly
      * @type {string}
      */
     static unitQuad;
     /**
-     * `"unit-sei-hit"`
+     * @default "unit-sei-hit"
      * @readonly
      * @type {string}
      */
     static unitSeiHit;
     /**
-     * `"unit-sei"`
+     * @default "unit-sei"
      * @readonly
      * @type {string}
      */
     static unitSei;
     /**
-     * `"unit-zenith-angery"`
+     * @default "unit-zenith-angery"
      * @readonly
      * @type {string}
      */
     static unitZenithAngery;
     /**
-     * `"unit-zenith-hit"`
+     * @default "unit-zenith-hit"
      * @readonly
      * @type {string}
      */
     static unitZenithHit;
     /**
-     * `"unit-zenith"`
+     * @default "unit-zenith"
      * @readonly
      * @type {string}
      */
     static unitZenith;
     /**
-     * `"warn"`
+     * @default "warn"
      * @readonly
      * @type {string}
      */
     static warn;
     /**
-     * `"wave0"`
+     * @default "wave0"
      * @readonly
      * @type {string}
      */
     static wave0;
     /**
-     * `"wave1"`
+     * @default "wave1"
      * @readonly
      * @type {string}
      */
     static wave1;
     /**
-     * `"wave2"`
+     * @default "wave2"
      * @readonly
      * @type {string}
      */
     static wave2;
     /**
-     * `"wave3"`
+     * @default "wave3"
      * @readonly
      * @type {string}
      */
@@ -856,21 +860,25 @@ class CustomEntity {
     /**
      * The grid position of the entity.
      * @type {Vec2}
+     * @default new Vec2(0)
      */
     pos;
     /**
      * The sprite of the entity.
      * @type {string}
+     * @default ""
      */
     sprite;
     /**
      * The rotation of the entity in degrees.
      * @type {number}
+     * @default 0
      */
     rot;
     /**
      * The scale of the entity.
      * @type {number}
+     * @default 1
      */
     scl;
     /**
@@ -887,6 +895,7 @@ class CustomEntity {
     deleting;
     /**
      * Whether the object is being deleted immediately.
+     * @readonly
      */
     deletingImmediate;
     /**
