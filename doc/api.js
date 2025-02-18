@@ -896,6 +896,7 @@ class CustomEntity {
     deleting;
     /**
      * Whether the object is being deleted immediately.
+     * @type {bool}
      * @readonly
      */
     deletingImmediate;
